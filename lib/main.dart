@@ -14,39 +14,20 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text(appTitle),
         ),
-        body: const MyCustomForm(),
+        // body: const MyCustomForm(),
       ),
     );
   }
 }
 
-class MyCustomForm extends StatelessWidget {
-  const MyCustomForm({super.key});
+/* IDEA for Data Input Sync with Local Storage
+   Implement one of the following:
+   Sync occurs when click/tap outside of field
+     (basically, when no longer interacting)
+   Sync occurs set time after no changes
+     (may be kinda hard to do)
+*/
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Enter a search term',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your username',
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
+/* Text Editing Controller!
+https://api.flutter.dev/flutter/widgets/TextEditingController-class.html
+*/
