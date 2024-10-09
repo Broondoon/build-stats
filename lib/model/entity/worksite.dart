@@ -1,13 +1,23 @@
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 
 class Worksite {
-  int id;
-  int? ownerId;
-  List<Checklist>? checklists;
+  String id;
+  String? ownerId;
+  List<Checklist> checklists;
 
   Worksite({
     required this.id,
     this.ownerId,
-    this.checklists,
-  })
+    required this.checklists,
+  });
+
+  factory Worksite.fromJson(Map<String, dynamic> json) {
+    return Worksite(
+      id: json['id'],
+      ownerId: json['ownerId'],
+      checklists: json['checklists']
+          .map<Checklist>((json) => Checklist.fromJson(json))
+          .toList(),
+    );
+  }
 }
