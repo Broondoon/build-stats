@@ -1,23 +1,32 @@
 import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:localstorage/localstorage.dart';
 
 class Worksite {
   String id;
   String? ownerId;
-  List<Checklist> checklists;
+  List<String> checklistIds = [];
+  List<Checklist> checklists =
+      []; //only for internal use. do not transfer out of app.
 
   Worksite({
     required this.id,
     this.ownerId,
-    required this.checklists,
+    required this.checklistIds,
   });
 
   factory Worksite.fromJson(Map<String, dynamic> json) {
     return Worksite(
       id: json['id'],
       ownerId: json['ownerId'],
-      checklists: json['checklists']
-          .map<Checklist>((json) => Checklist.fromJson(json))
-          .toList(),
+      checklistIds: json['checklistIds'].toList(),
     );
+  }
+
+  toJson() {
+    return {
+      'id': id,
+      'ownerId': ownerId,
+      'checklistIds': checklistIds,
+    };
   }
 }

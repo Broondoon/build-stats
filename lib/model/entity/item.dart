@@ -3,7 +3,7 @@ import 'package:build_stats_flutter/model/entity/checklist.dart';
 class Item {
   String id;
   int checklistId;
-  Checklist? checklist;
+  //Checklist? checklist;
   String? unit;
   String? desc;
   String? result;
@@ -31,5 +31,18 @@ class Item {
         comment: json['comment'],
         creatorId: json['creatorId'],
         verified: json['verified']);
+  }
+
+  toJson() {
+    return {
+      'id': id,
+      'checklistId': checklistId,
+      'unit': unit,
+      'desc': desc,
+      'result': result,
+      'comment': comment,
+      'creatorId': creatorId,
+      'verified': verified
+    };
   }
 }
