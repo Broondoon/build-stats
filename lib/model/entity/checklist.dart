@@ -31,7 +31,7 @@ class Checklist {
     return {
       'id': id,
       'worksiteId': worksiteId,
-      'date': date,
+      'date': date?.toIso8601String(),
       'comment': comment,
       'items': itemIds,
     };

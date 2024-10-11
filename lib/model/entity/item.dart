@@ -2,7 +2,7 @@ import 'package:build_stats_flutter/model/entity/checklist.dart';
 
 class Item {
   String id;
-  int checklistId;
+  String checklistId;
   //Checklist? checklist;
   String? unit;
   String? desc;

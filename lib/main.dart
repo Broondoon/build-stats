@@ -1,5 +1,9 @@
 import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
+import 'package:build_stats_flutter/model/storage/checklistCache.dart';
+import 'package:build_stats_flutter/model/storage/itemCache.dart';
+import 'package:build_stats_flutter/model/storage/worksiteCache.dart';
 // import 'package:build_stats_flutter/tutorial_main.dart';
 
 import 'package:flutter/material.dart';
@@ -8,7 +12,35 @@ import 'package:provider/provider.dart';
 
 void main() async {
   await initLocalStorage();
+  await initTestStorage();
   runApp(const MyApp());
+}
+
+Future<void> initTestStorage() async {
+  Worksite testWorksite =
+      Worksite(id: "Worksite1", checklistIds: ["Checklist1"]);
+  Checklist testChecklist = Checklist(
+      id: "1",
+      worksiteId: "Worksite1",
+      date: DateTime.now(),
+      comment: "This is a comment",
+      itemIds: ["Item1"]);
+  Item testItem = Item(
+      id: "1",
+      checklistId: "Checklist1",
+      unit: "unit",
+      desc: "desc",
+      result: "result",
+      comment: "comment",
+      creatorId: 1,
+      verified: true);
+  print("starting storage");
+  await WorksiteCache.StoreWorksite(testWorksite);
+  print("stored worksite");
+  await Checklistcache.StoreChecklist(testChecklist);
+  print("stored checklist");
+  await ItemCache.StoreItem(testItem);
+  print("stored item");
 }
 
 class MyApp extends StatelessWidget {
@@ -42,11 +74,15 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var currWorksite = Worksite(id: 1234);
-  Checklist? currChecklist; // = currWorksite.checklists?[0];
+  Worksite? currWorksite;
+  Checklist? currChecklist;
 
-  void getChecklist(int index) {
-    currChecklist = currWorksite.checklists?[index];
+  void setWorksite(Worksite worksite) {
+    currWorksite = worksite;
+  }
+
+  void setChecklist(Checklist checklist) {
+    currChecklist = checklist;
   }
 }
 
