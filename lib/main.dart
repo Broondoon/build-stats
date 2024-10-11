@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _loadItems() async {
     // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
-    currChecklist = await Checklistcache.GetChecklistById("1");
+    currChecklist = await Checklistcache.GetChecklistById("Checklist1");
     setState(() {
       currItems = currChecklist?.items;
     });
@@ -121,42 +121,115 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: Center(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text("Date: ${currChecklist?.date?.day}"), // ?? "No date"),
-                ],
-              ),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(1),
+              side: BorderSide(
+                color: Colors.black,
+                width: 2,
+              )
+            ),
+            child: Column(
+              children: [
+                DateRow(currChecklist: currChecklist),
+            
+                Text("Randy Mayhem's Extreme Demolitions"),
+            
+                Text("Categories:"),
+            
+                CategoryExpansionTile(catTitle: Text("Labour")),
+            
+                CategoryExpansionTile(catTitle: Text("Equipment")),
+            
+                CategoryExpansionTile(catTitle: Text("Materials")),
+            
+                CommentCard()
 
-              Text("Bob Dob Destructions"),
-
-              Text("Categories:"),
-
-              CategoryExpansionTile(catTitle: Text("Labour")),
-
-              CategoryExpansionTile(catTitle: Text("Equipment")),
-
-              CategoryExpansionTile(catTitle: Text("Materials")),
-
-              // const Text('Spacer 1'),
-              // Text(appState.currWorksite.id.toString()),
-              // TextField(
-              //   decoration: InputDecoration(
-              //     border: OutlineInputBorder(),
-              //     hintText: 'Enter something here!'
-              //   ),
-              // ),
-              // TextFormField(
-              //   decoration: const InputDecoration(
-              //     border: UnderlineInputBorder(),
-              //     labelText: 'Another text input!'
-              //   ),
-              // ),
-            ],
+                // const Text('Spacer 1'),
+                // Text(appState.currWorksite.id.toString()),
+                // TextField(
+                //   decoration: InputDecoration(
+                //     border: OutlineInputBorder(),
+                //     hintText: 'Enter something here!'
+                //   ),
+                // ),
+                // TextFormField(
+                //   decoration: const InputDecoration(
+                //     border: UnderlineInputBorder(),
+                //     labelText: 'Another text input!'
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class CommentCard extends StatelessWidget {
+  const CommentCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Card(
+          margin: EdgeInsets.all(20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.black,
+              width: 1,
+            )
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: "Comment here!"
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DateRow extends StatelessWidget {
+  const DateRow({
+    super.key,
+    required this.currChecklist,
+  });
+
+  final Checklist? currChecklist;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      
+      children: [
+        IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          iconSize: 10,
+          onPressed: () {},
+        ),
+        
+        Text("Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
+        
+        IconButton(
+          icon: Icon(Icons.arrow_forward_ios),
+          iconSize: 10,
+          onPressed: () {},
+        ),
+      ],
     );
   }
 }
@@ -172,6 +245,19 @@ class CategoryExpansionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: catTitle,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {},
+          ),
+        ],
+      ),
       children: [
         RowItem(),
       ],
@@ -200,6 +286,7 @@ class RowItem extends StatelessWidget {
               child: TextFormField(
                 decoration: const InputDecoration(
                     // border: OutlineInputBorder(),
+                    border: InputBorder.none,
                     hintText: 'Units'),
               )),
 
@@ -211,6 +298,7 @@ class RowItem extends StatelessWidget {
               child: TextFormField(
             decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
+                border: InputBorder.none,
                 hintText: 'Description'),
           )),
 
@@ -223,6 +311,7 @@ class RowItem extends StatelessWidget {
               child: TextFormField(
                 decoration: const InputDecoration(
                     // border: OutlineInputBorder(),
+                    border: InputBorder.none,
                     hintText: 'Result'),
               )),
         ],
