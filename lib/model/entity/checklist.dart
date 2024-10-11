@@ -17,13 +17,17 @@ class Checklist {
       this.comment,
       required this.itemIds});
 
+  // var nullToList = (List<String> ?jsonList) => jsonList ?? <String>[];
+
   factory Checklist.fromJson(Map<String, dynamic> json) {
     return Checklist(
       id: json['id'],
-      worksiteId: json['worksiteId'],
-      date: json['date'],
+      worksiteId: json['worksiteId'] ?? "-1234",
+      date: DateTime.parse(json['date'] ?? "1969-07-20"),
       comment: json['comment'],
-      itemIds: json['itemIds'].toList(),
+      // itemIds: json['itemIds']?.toList().then(), // BIG POTENTIAL ISSUE; allowing NULL here is somewhat DANGEROUS
+      // itemIds: nullToList(json['itemIds']),
+      itemIds: json['itemIds'] ?? <String>[],
     );
   }
 

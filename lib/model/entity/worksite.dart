@@ -18,7 +18,7 @@ class Worksite {
     return Worksite(
       id: json['id'],
       ownerId: json['ownerId'],
-      checklistIds: json['checklistIds'].toList(),
+      checklistIds: json['checklistIds'].cast<String>().toList()
     );
   }
 

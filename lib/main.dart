@@ -11,6 +11,8 @@ import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  print(DateTime.now());
   await initLocalStorage();
   await initTestStorage();
   runApp(const MyApp());
@@ -86,9 +88,31 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  Checklist? currChecklist;
+  List<Item>? currItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadItems();
+  }  
+
+  Future<void> _loadItems() async {
+    // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
+    currChecklist = await Checklistcache.GetChecklistById("1");
+    setState(() {
+      currItems = currChecklist?.items;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
@@ -101,13 +125,7 @@ class MyHomePage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Text(" < "),
-                  // SizedBox(width: 50),
-                  // Spacer(),
-                  Text(" < DATE > "),
-                  // Spacer(),
-                  // SizedBox(width: 50),
-                  // Text(" > "),
+                  Text("Date: ${currChecklist?.date?.day}"), // ?? "No date"),
                 ],
               ),
 
