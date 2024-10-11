@@ -16,6 +16,7 @@ void main() async {
   await initLocalStorage();
   await initTestStorage();
   runApp(const MyApp());
+  print("APP IS RUNNING YAY");
 }
 
 Future<void> initTestStorage() async {
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Build Stats',
         theme: ThemeData(
           useMaterial3: true,
@@ -133,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 DateRow(currChecklist: currChecklist),
             
-                Text("Randy Mayhem's Extreme Demolitions"),
+                Text("Solid Foundations Landscaping"),
             
                 Text("Categories:"),
             
@@ -222,8 +224,9 @@ class DateRow extends StatelessWidget {
           onPressed: () {},
         ),
         
-        Text("Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
-        
+        // Text("Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
+        Text("Date: 2024-10-11"),
+
         IconButton(
           icon: Icon(Icons.arrow_forward_ios),
           iconSize: 10,
@@ -252,10 +255,10 @@ class CategoryExpansionTile extends StatelessWidget {
             icon: Icon(Icons.add),
             onPressed: () {},
           ),
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {},
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.add),
+          //   onPressed: () {},
+          // ),
         ],
       ),
       children: [
@@ -296,7 +299,7 @@ class RowItem extends StatelessWidget {
 
           Expanded(
               child: TextFormField(
-            decoration: const InputDecoration(
+                decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
                 border: InputBorder.none,
                 hintText: 'Description'),
@@ -309,10 +312,11 @@ class RowItem extends StatelessWidget {
           SizedBox(
               width: 100,
               child: TextFormField(
+                readOnly: true,
                 decoration: const InputDecoration(
                     // border: OutlineInputBorder(),
                     border: InputBorder.none,
-                    hintText: 'Result'),
+                    hintText: 'Value'),
               )),
         ],
       ),
