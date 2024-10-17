@@ -1,3 +1,6 @@
+# Project Temp Storage
+/lib/model/storage/TestFileStorage/*
+
 # Miscellaneous
 *.class
 *.log
