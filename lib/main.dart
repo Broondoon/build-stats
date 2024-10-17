@@ -1,22 +1,27 @@
+// View Imports:
+import 'package:build_stats_flutter/views/item/item_view.dart';
+
+// Model Imports:
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/model/storage/checklistCache.dart';
 import 'package:build_stats_flutter/model/storage/itemCache.dart';
 import 'package:build_stats_flutter/model/storage/worksiteCache.dart';
-// import 'package:build_stats_flutter/tutorial_main.dart';
 
+// Resource Imports:
+import 'package:build_stats_flutter/resources/app_colours.dart';
+
+// External Imports:
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  print(DateTime.now());
   await initLocalStorage();
   await initTestStorage();
   runApp(const MyApp());
-  print("APP IS RUNNING YAY");
 }
 
 Future<void> initTestStorage() async {
@@ -37,13 +42,10 @@ Future<void> initTestStorage() async {
       comment: "comment",
       creatorId: 1,
       verified: true);
-  print("starting storage");
+  
   await WorksiteCache.StoreWorksite(testWorksite);
-  print("stored worksite");
   await Checklistcache.StoreChecklist(testChecklist);
-  print("stored checklist");
   await ItemCache.StoreItem(testItem);
-  print("stored item");
 }
 
 class MyApp extends StatelessWidget {
@@ -63,17 +65,6 @@ class MyApp extends StatelessWidget {
         home: MyHomePage(),
       ),
     );
-
-    // const appTitle = 'Form Styling Demo';
-    // return MaterialApp(
-    //   title: appTitle,
-    //   home: Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text(appTitle),
-    //     ),
-    //     // body: const MyCustomForm(),
-    //   ),
-    // );
   }
 }
 
@@ -87,6 +78,11 @@ class MyAppState extends ChangeNotifier {
 
   void setChecklist(Checklist checklist) {
     currChecklist = checklist;
+  }
+
+  void newItem(List<Widget> currItems) {
+    currItems.add(RowItem());
+    notifyListeners();
   }
 }
 
@@ -120,81 +116,57 @@ class _MyHomePageState extends State<MyHomePage> {
     // var appState = context.watch<MyAppState>();
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Center(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(1),
-              side: BorderSide(
-                color: Colors.black,
-                width: 2,
-              )
-            ),
-            child: Column(
-              children: [
-                DateRow(currChecklist: currChecklist),
-            
-                Text("Solid Foundations Landscaping"),
-            
-                Text("Categories:"),
-            
-                CategoryExpansionTile(catTitle: Text("Labour")),
-            
-                CategoryExpansionTile(catTitle: Text("Equipment")),
-            
-                CategoryExpansionTile(catTitle: Text("Materials")),
-            
-                CommentCard()
-
-                // const Text('Spacer 1'),
-                // Text(appState.currWorksite.id.toString()),
-                // TextField(
-                //   decoration: InputDecoration(
-                //     border: OutlineInputBorder(),
-                //     hintText: 'Enter something here!'
-                //   ),
-                // ),
-                // TextFormField(
-                //   decoration: const InputDecoration(
-                //     border: UnderlineInputBorder(),
-                //     labelText: 'Another text input!'
-                //   ),
-                // ),
-              ],
-            ),
+      // backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: MyAppColours.linGradColours,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class CommentCard extends StatelessWidget {
-  const CommentCard({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Card(
-          margin: EdgeInsets.all(20),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-              color: Colors.black,
-              width: 1,
-            )
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: "Comment here!"
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Center(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(1),
+                side: BorderSide(
+                  color: Colors.black,
+                  width: 2,
+                )
+              ),
+              child: Column(
+                children: [
+                  DateRow(currChecklist: currChecklist),
+              
+                  Text("Solid Foundations Landscaping"),
+              
+                  Text("Categories:"),
+              
+                  CategoryExpansionTile(catTitle: Text("Labour")),
+              
+                  CategoryExpansionTile(catTitle: Text("Equipment")),
+              
+                  CategoryExpansionTile(catTitle: Text("Materials")),
+              
+                  CommentCard()
+        
+                  // const Text('Spacer 1'),
+                  // Text(appState.currWorksite.id.toString()),
+                  // TextField(
+                  //   decoration: InputDecoration(
+                  //     border: OutlineInputBorder(),
+                  //     hintText: 'Enter something here!'
+                  //   ),
+                  // ),
+                  // TextFormField(
+                  //   decoration: const InputDecoration(
+                  //     border: UnderlineInputBorder(),
+                  //     labelText: 'Another text input!'
+                  //   ),
+                  // ),
+                ],
               ),
             ),
           ),
@@ -237,23 +209,36 @@ class DateRow extends StatelessWidget {
   }
 }
 
-class CategoryExpansionTile extends StatelessWidget {
+class CategoryExpansionTile extends StatefulWidget {
   final Text catTitle;
-  const CategoryExpansionTile({
+
+  CategoryExpansionTile({
     super.key,
     required this.catTitle,
   });
 
   @override
+  State<CategoryExpansionTile> createState() => _CategoryExpansionTileState();
+}
+
+class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
+  List<Widget> elemList = [];
+
+  @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    
     return ExpansionTile(
-      title: catTitle,
+      title: widget.catTitle,
+      maintainState: true, // bug fix! Nice; easy one liner
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {},
+            onPressed: (){
+              appState.newItem(elemList);
+            },
           ),
           // IconButton(
           //   icon: Icon(Icons.add),
@@ -261,106 +246,129 @@ class CategoryExpansionTile extends StatelessWidget {
           // ),
         ],
       ),
-      children: [
-        RowItem(),
-      ],
+      children: elemList + [CatCommentCard()],
     );
   }
 }
 
-class RowItem extends StatelessWidget {
-  const RowItem({
+class CatCommentCard extends StatelessWidget {
+  const CatCommentCard({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-          border: Border.all(
-        // color: Colors.blueAccent,
-        width: 1,
-      )),
-      child: Row(
-        children: [
-          SizedBox(
-              width: 100,
-              child: TextFormField(
-                decoration: const InputDecoration(
-                    // border: OutlineInputBorder(),
-                    border: InputBorder.none,
-                    hintText: 'Units'),
-              )),
-
-          // SizedBox(width: 10),
-          VerticalDivider(),
-          // SizedBox(width: 25),
-
-          Expanded(
-              child: TextFormField(
-                decoration: const InputDecoration(
-                // border: OutlineInputBorder(),
-                border: InputBorder.none,
-                hintText: 'Description'),
-          )),
-
-          // SizedBox(width: 25),
-          VerticalDivider(),
-          // SizedBox(width: 25),
-
-          SizedBox(
-              width: 100,
-              child: TextFormField(
-                readOnly: true,
-                decoration: const InputDecoration(
-                    // border: OutlineInputBorder(),
-                    border: InputBorder.none,
-                    hintText: 'Value'),
-              )),
-        ],
+    return Card(
+      margin: EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+        side: BorderSide(
+          color: Colors.black,
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(1),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            hintText: "Comment here..."
+          ),
+        )
       ),
     );
   }
 }
 
-// class MyChecklistPage extends StatefulWidget {
-//   @override
-//   State<MyChecklistPage> createState() => _MyChecklistPageState();
-// }
+class CommentCard extends StatelessWidget {
+  const CommentCard({
+    super.key,
+  });
 
-// class _MyChecklistPageState extends State<MyChecklistPage> {
-//   var currWorksite = Worksite(id: 1234);
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Card(
+          margin: EdgeInsets.all(20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.black,
+              width: 1,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: "Comment here!"
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// class RowItem extends StatelessWidget {
+//   const RowItem({
+//     super.key,
+//   });
 
 //   @override
 //   Widget build(BuildContext context) {
-    
+//     return Container(
+//       height: 40,
+//       decoration: BoxDecoration(
+//           border: Border.all(
+//         // color: Colors.blueAccent,
+//         width: 1,
+//       )),
+//       child: Row(
+//         children: [
+//           SizedBox(
+//               width: 100,
+//               child: TextFormField(
+//                 decoration: const InputDecoration(
+//                     // border: OutlineInputBorder(),
+//                     border: InputBorder.none,
+//                     hintText: 'Units'),
+//               )),
 
-//     return LayoutBuilder(
-//       builder: (context, constraints) {
-//         return Scaffold(
-//           body: Row(
-//             children: [
-//               SafeArea(
+//           // SizedBox(width: 10),
+//           VerticalDivider(),
+//           // SizedBox(width: 25),
 
-//               ),
-//               Expanded(
-//                 child: Container(
-//                   color: Theme.of(context).colorScheme.primaryContainer,
-//                   child: page, // GeneratorPage(),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         );
-//       }
+//           Expanded(
+//               child: TextFormField(
+//                 decoration: const InputDecoration(
+//                 // border: OutlineInputBorder(),
+//                 border: InputBorder.none,
+//                 hintText: 'Description'),
+//           )),
+
+//           // SizedBox(width: 25),
+//           VerticalDivider(),
+//           // SizedBox(width: 25),
+
+//           SizedBox(
+//               width: 100,
+//               child: TextFormField(
+//                 readOnly: true,
+//                 decoration: const InputDecoration(
+//                     // border: OutlineInputBorder(),
+//                     border: InputBorder.none,
+//                     hintText: 'Value'),
+//               )),
+//         ],
+//       ),
 //     );
 //   }
 // }
-
-
-
-
 
 /* IDEA for Data Input Sync with Local Storage
    Implement one of the following:
