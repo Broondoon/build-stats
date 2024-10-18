@@ -17,8 +17,10 @@ class WorksiteCache {
     }
     if (worksite != null) {
       worksite.checklists = [];
-      worksite.checklistIds.forEach((x) => Checklistcache.LoadChecklistById(x)
-          .then((checklist) => {worksite?.checklists.add(checklist!)}));
+      for (var x in worksite.checklistIds) {
+        Checklistcache.GetChecklistById(x)
+            .then((checklist) => {worksite?.checklists.add(checklist!)});
+      }
     }
     return worksite;
   }

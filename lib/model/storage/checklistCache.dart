@@ -17,8 +17,10 @@ class Checklistcache {
     }
     if (checklist != null) {
       checklist.items = [];
-      checklist.itemIds.forEach((x) => ItemCache.LoadItemById(x)
-          .then((item) => {checklist?.items.add(item!)}));
+      for (var x in checklist.itemIds) {
+        await ItemCache.GetItemById(x)
+            .then((item) => {checklist?.items.add(item!)});
+      }
     }
     return checklist;
   }
