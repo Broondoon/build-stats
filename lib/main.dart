@@ -1,9 +1,9 @@
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
-import 'package:build_stats_flutter/model/storage/checklistCache.dart';
-import 'package:build_stats_flutter/model/storage/itemCache.dart';
-import 'package:build_stats_flutter/model/storage/worksiteCache.dart';
+import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
+import 'package:build_stats_flutter/model/storage/item_cache.dart';
+import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 // import 'package:build_stats_flutter/tutorial_main.dart';
 
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ Future<void> initTestStorage() async {
   print("starting storage");
   await WorksiteCache.StoreWorksite(testWorksite);
   print("stored worksite");
-  await Checklistcache.StoreChecklist(testChecklist);
+  await ChecklistCache.StoreChecklist(testChecklist);
   print("stored checklist");
   await ItemCache.StoreItem(testItem);
   print("stored item");
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _loadItems() async {
     // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
-    currChecklist = await Checklistcache.GetChecklistById("Checklist1");
+    currChecklist = await ChecklistCache.GetChecklistById("Checklist1");
     setState(() {
       currItems = currChecklist?.items;
     });

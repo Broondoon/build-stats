@@ -1,5 +1,5 @@
 # Project Temp Storage
-/lib/model/storage/TestFileStorage/*
+/lib/model/storage/local_storage/test_storage/*
 
 # Miscellaneous
 *.class
