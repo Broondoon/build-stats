@@ -27,7 +27,7 @@ class Checklist {
       comment: json['comment'],
       // itemIds: json['itemIds']?.toList().then(), // BIG POTENTIAL ISSUE; allowing NULL here is somewhat DANGEROUS
       // itemIds: nullToList(json['itemIds']),
-      itemIds: json['itemIds'] ?? <String>[],
+      itemIds: List<String>.from(json['itemIds'] ?? <String>[]),
     );
   }
 
@@ -37,7 +37,7 @@ class Checklist {
       'worksiteId': worksiteId,
       'date': date?.toIso8601String(),
       'comment': comment,
-      'items': itemIds,
+      'itemIds': itemIds,
     };
   }
 }
