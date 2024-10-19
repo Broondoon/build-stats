@@ -1,9 +1,9 @@
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
-import 'package:build_stats_flutter/model/storage/checklistCache.dart';
-import 'package:build_stats_flutter/model/storage/itemCache.dart';
-import 'package:build_stats_flutter/model/storage/worksiteCache.dart';
+import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
+import 'package:build_stats_flutter/model/storage/item_cache.dart';
+import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 // import 'package:build_stats_flutter/tutorial_main.dart';
 
 import 'package:flutter/material.dart';
@@ -20,16 +20,18 @@ void main() async {
 }
 
 Future<void> initTestStorage() async {
-  Worksite testWorksite =
-      Worksite(id: "Worksite1", checklistIds: ["Checklist1"]);
+  Worksite testWorksite = Worksite(
+    id: "Worksite1",
+    checklistIds: ["Checklist1"],
+  );
   Checklist testChecklist = Checklist(
-      id: "1",
+      id: "Checklist1",
       worksiteId: "Worksite1",
       date: DateTime.now(),
       comment: "This is a comment",
       itemIds: ["Item1"]);
   Item testItem = Item(
-      id: "1",
+      id: "Item1",
       checklistId: "Checklist1",
       unit: "unit",
       desc: "desc",
@@ -40,7 +42,7 @@ Future<void> initTestStorage() async {
   print("starting storage");
   await WorksiteCache.StoreWorksite(testWorksite);
   print("stored worksite");
-  await Checklistcache.StoreChecklist(testChecklist);
+  await ChecklistCache.StoreChecklist(testChecklist);
   print("stored checklist");
   await ItemCache.StoreItem(testItem);
   print("stored item");
@@ -105,16 +107,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _loadItems();
-  }  
+  }
 
   Future<void> _loadItems() async {
     // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
-    currChecklist = await Checklistcache.GetChecklistById("Checklist1");
+    currChecklist = await ChecklistCache.GetChecklistById("Checklist1");
     setState(() {
       currItems = currChecklist?.items;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
@@ -125,26 +127,25 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
           child: Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(1),
-              side: BorderSide(
-                color: Colors.black,
-                width: 2,
-              )
-            ),
+                borderRadius: BorderRadius.circular(1),
+                side: BorderSide(
+                  color: Colors.black,
+                  width: 2,
+                )),
             child: Column(
               children: [
                 DateRow(currChecklist: currChecklist),
-            
+
                 Text("Solid Foundations Landscaping"),
-            
+
                 Text("Categories:"),
-            
+
                 CategoryExpansionTile(catTitle: Text("Labour")),
-            
+
                 CategoryExpansionTile(catTitle: Text("Equipment")),
-            
+
                 CategoryExpansionTile(catTitle: Text("Materials")),
-            
+
                 CommentCard()
 
                 // const Text('Spacer 1'),
@@ -183,19 +184,16 @@ class CommentCard extends StatelessWidget {
         child: Card(
           margin: EdgeInsets.all(20),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-              color: Colors.black,
-              width: 1,
-            )
-          ),
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: Colors.black,
+                width: 1,
+              )),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
               decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: "Comment here!"
-              ),
+                  border: InputBorder.none, hintText: "Comment here!"),
             ),
           ),
         ),
@@ -216,16 +214,16 @@ class DateRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      
       children: [
         IconButton(
           icon: Icon(Icons.arrow_back_ios),
           iconSize: 10,
           onPressed: () {},
         ),
-        
-        // Text("Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
-        Text("Date: 2024-10-11"),
+
+        Text(
+            "Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
+        //Text("Date: 2024-10-11"),
 
         IconButton(
           icon: Icon(Icons.arrow_forward_ios),
@@ -299,7 +297,7 @@ class RowItem extends StatelessWidget {
 
           Expanded(
               child: TextFormField(
-                decoration: const InputDecoration(
+            decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
                 border: InputBorder.none,
                 hintText: 'Description'),
