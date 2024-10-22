@@ -5,9 +5,10 @@ import 'package:build_stats_flutter/views/item/item_view.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
-import 'package:build_stats_flutter/model/storage/checklistCache.dart';
-import 'package:build_stats_flutter/model/storage/itemCache.dart';
-import 'package:build_stats_flutter/model/storage/worksiteCache.dart';
+import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
+import 'package:build_stats_flutter/model/storage/item_cache.dart';
+import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
+// import 'package:build_stats_flutter/tutorial_main.dart';
 
 // Resource Imports:
 import 'package:build_stats_flutter/resources/app_colours.dart';
@@ -25,16 +26,18 @@ void main() async {
 }
 
 Future<void> initTestStorage() async {
-  Worksite testWorksite =
-      Worksite(id: "Worksite1", checklistIds: ["Checklist1"]);
+  Worksite testWorksite = Worksite(
+    id: "Worksite1",
+    checklistIds: ["Checklist1"],
+  );
   Checklist testChecklist = Checklist(
-      id: "1",
+      id: "Checklist1",
       worksiteId: "Worksite1",
       date: DateTime.now(),
       comment: "This is a comment",
       itemIds: ["Item1"]);
   Item testItem = Item(
-      id: "1",
+      id: "Item1",
       checklistId: "Checklist1",
       unit: "unit",
       desc: "desc",
@@ -44,7 +47,9 @@ Future<void> initTestStorage() async {
       verified: true);
   
   await WorksiteCache.StoreWorksite(testWorksite);
-  await Checklistcache.StoreChecklist(testChecklist);
+  print("stored worksite");
+  await ChecklistCache.StoreChecklist(testChecklist);
+  print("stored checklist");
   await ItemCache.StoreItem(testItem);
 }
 
@@ -101,20 +106,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _loadItems();
-  }  
+  }
 
   Future<void> _loadItems() async {
     // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
-    currChecklist = await Checklistcache.GetChecklistById("Checklist1");
+    currChecklist = await ChecklistCache.GetChecklistById("Checklist1");
     setState(() {
       currItems = currChecklist?.items;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
-
     return Scaffold(
       // backgroundColor: Colors.transparent,
       body: Container(
@@ -188,16 +192,16 @@ class DateRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      
       children: [
         IconButton(
           icon: Icon(Icons.arrow_back_ios),
           iconSize: 10,
           onPressed: () {},
         ),
-        
-        // Text("Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
-        Text("Date: 2024-10-11"),
+
+        Text(
+            "Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
+        //Text("Date: 2024-10-11"),
 
         IconButton(
           icon: Icon(Icons.arrow_forward_ios),
