@@ -8,25 +8,25 @@ class DataConnection<T> implements DataConnectionService<T> {
   //So we just overwrite everything with the server cache.
 
   @override
-  Future<bool> delete(String key) {
+  Future<bool> delete(String path, String key) {
     // TODO: implement delete
     throw UnimplementedError();
   }
 
   @override
-  Future<Iterable<T>> get(List<String> keys) {
+  Future<Iterable<T>> get(String path, List<String> keys) {
     // TODO: implement get
     throw UnimplementedError();
   }
 
   @override
-  Future<T> post(T value) {
+  Future<T> post(String path, T value) {
     // TODO: implement post
     throw UnimplementedError();
   }
 
   @override
-  Future<T> put(T value) {
+  Future<T> put(String path, T value) {
     // TODO: implement put
     throw UnimplementedError();
   }
