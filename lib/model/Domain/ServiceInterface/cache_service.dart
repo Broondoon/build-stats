@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:core';
 
 abstract class CacheService<T> {
@@ -6,4 +7,5 @@ abstract class CacheService<T> {
   Future<void> delete(String key);
   Future<T?> load(String key);
   Future<void> save(String key, T value);
+  Future<HashMap<String, String>> getCacheCheckSums();
 }

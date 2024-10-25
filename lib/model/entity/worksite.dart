@@ -59,4 +59,8 @@ class Worksite {
           currentChecklist?.TESTING_GetChecklistIdsByDate.toString(),
     };
   }
+
+  getChecksum() {
+    throw UnimplementedError();
+  }
 }

@@ -79,4 +79,8 @@ class ChecklistDay {
       'dateUpdated': dateUpdated?.toIso8601String(),
     };
   }
+
+  getChecksum() {
+    throw UnimplementedError();
+  }
 }

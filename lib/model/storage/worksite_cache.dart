@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'package:build_stats_flutter/model/Domain/ServiceInterface/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
@@ -104,5 +105,11 @@ class WorksiteCache implements CacheService<Worksite> {
     String updatedJson =
         jsonEncode(worksites.map((worksite) => worksite.toJson()).toList());
     await FileAccess.SaveDataFile(WorksiteFileString, updatedJson);
+  }
+
+  @override
+  Future<HashMap<String, String>> getCacheCheckSums() {
+    // TODO: implement getCacheCheckSums
+    throw UnimplementedError();
   }
 }

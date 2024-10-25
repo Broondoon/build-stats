@@ -50,6 +50,12 @@ class ChecklistCache implements CacheService<ChecklistDay> {
     throw UnimplementedError();
   }
 
+  @override
+  Future<HashMap<String, String>> getCacheCheckSums() {
+    // TODO: implement getCacheCheckSums
+    throw UnimplementedError();
+  }
+
   // static Future<ChecklistDay> CreateNewChecklist() async {
   //   //randomly generate a number for the id
   //   Checklist newChecklistDa = Checklist(id: "-1", items: []);

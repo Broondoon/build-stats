@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'package:build_stats_flutter/model/Domain/ServiceInterface/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
@@ -99,5 +100,11 @@ class ItemCache implements CacheService<Item> {
     String updatedJson =
         jsonEncode(items.map((item) => item.toJson()).toList());
     await FileAccess.SaveDataFile(ItemFileString, updatedJson);
+  }
+
+  @override
+  Future<HashMap<String, String>> getCacheCheckSums() {
+    // TODO: implement getCacheCheckSums
+    throw UnimplementedError();
   }
 }
