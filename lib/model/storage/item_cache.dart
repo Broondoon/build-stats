@@ -1,21 +1,50 @@
 import 'dart:convert';
+import 'package:build_stats_flutter/model/Domain/ServiceInterface/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
+import 'package:build_stats_flutter/model/Domain/ServiceInterface/cache_service.dart';
 import 'package:build_stats_flutter/model/storage/data_sync/data_connection.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 import 'package:localstorage/localstorage.dart';
 
-class ItemCache {
-  //final Map<int, Item?> _itemCache = {};
-  static Future<Item?> GetItemById(String id) async {
+class ItemCache implements CacheService<Item> {
+  final DataConnectionService<Item> _dataConnectionService;
+  ItemCache(this._dataConnectionService);
+
+  @override
+  Future<Item?> getById(String key) async {
     Item? item;
-    String? itemJson = localStorage.getItem(id);
+    String? itemJson = localStorage.getItem(key);
     if (itemJson != null) {
       item = Item.fromJson(jsonDecode(itemJson));
     } else {
-      item = await LoadItemById(id);
+      item = await load(key);
     }
     return item;
+  }
+
+  @override
+  Future<void> delete(String key) {
+    // TODO: implement delete
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Item> load(String key) {
+    // TODO: implement load
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> save(String key, value) {
+    // TODO: implement save
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> store(String key, value) {
+    // TODO: implement store
+    throw UnimplementedError();
   }
 
   static Future<List<Item>> _getItems() async {

@@ -1,25 +1,53 @@
+import 'dart:collection';
+
 import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:build_stats_flutter/resources/app_strings.dart';
 import 'package:localstorage/localstorage.dart';
 
+//see if we can use this to update IDs and such?
+//https://api.flutter.dev/flutter/foundation/ValueNotifier-class.html
 class Worksite {
   String id;
   String? ownerId;
-  List<String> checklistIds = [];
-  List<Checklist> checklists =
-      []; //only for internal use. do not transfer out of app.
+  List<String>? checklistIds;
+  DateTime dateCreated;
+  DateTime dateUpdated;
+  Checklist? currentChecklist;
 
   Worksite({
     required this.id,
     this.ownerId,
-    required this.checklistIds,
+    this.checklistIds,
+    required this.dateCreated,
+    required this.dateUpdated,
+    this.currentChecklist, //only for temporary use
   });
 
   factory Worksite.fromJson(Map<String, dynamic> json) {
-    return Worksite(
+    String TEMP_firstChecklistDayId = "temp" + json['id'];
+    Worksite worksite = Worksite(
       id: json['id'],
       ownerId: json['ownerId'],
       checklistIds: List<String>.from(json['checklistIds'] ?? <String>[]),
+      dateCreated: DateTime.parse(json['dateCreated'] ?? FallbackDate),
+      dateUpdated: DateTime.parse(json['dateUpdated'] ?? FallbackDate),
+      //for dev only
+      currentChecklist:
+          Checklist(id: TEMP_firstChecklistDayId, worksiteId: json['id']),
     );
+
+    //FOR DEV ONLY. We're cheating here so we don't have to setup multple checklist funcitonality just yet.
+    HashMap<String, String> temp = HashMap<String, String>.from(
+        json['tempChecklistDayIds'] ?? <String, String>{});
+    for (String key in temp.keys) {
+      worksite.currentChecklist?.addChecklistDayID(ChecklistDay(
+          id: temp[key]!,
+          date: DateTime.parse(key),
+          checklistId: TEMP_firstChecklistDayId,
+          dateCreated: DateTime.now(),
+          dateUpdated: DateTime.now()));
+    }
+    return worksite;
   }
 
   toJson() {
@@ -27,6 +55,8 @@ class Worksite {
       'id': id,
       'ownerId': ownerId,
       'checklistIds': checklistIds,
+      'tempChecklistDayIds':
+          currentChecklist?.TESTING_GetChecklistIdsByDate.toString(),
     };
   }
 }

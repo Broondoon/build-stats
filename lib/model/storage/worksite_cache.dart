@@ -1,30 +1,54 @@
 import 'dart:convert';
+import 'package:build_stats_flutter/model/Domain/ServiceInterface/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
+import 'package:build_stats_flutter/model/Domain/ServiceInterface/cache_service.dart';
 import 'package:build_stats_flutter/model/storage/data_sync/data_connection.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 import 'package:localstorage/localstorage.dart';
 
-class WorksiteCache {
-  //final Map<int, Item?> _itemCache = {};
-  static Future<Worksite?> GetWorksiteById(String id) async {
+class WorksiteCache implements CacheService<Worksite> {
+  final DataConnectionService<Worksite> _dataConnectionService;
+  WorksiteCache(this._dataConnectionService);
+
+  @override
+  Future<Worksite?> getById(String key) async {
     Worksite? worksite;
-    String? worksiteJson = localStorage.getItem(id);
+    String? worksiteJson = localStorage.getItem(key);
     if (worksiteJson != null) {
       worksite = Worksite.fromJson(jsonDecode(worksiteJson));
     } else {
-      worksite = await LoadWorksiteById(id);
-    }
-    if (worksite != null) {
-      worksite.checklists = [];
-      for (var x in worksite.checklistIds) {
-        ChecklistCache.GetChecklistById(x)
-            .then((checklist) => {worksite?.checklists.add(checklist!)});
-      }
+      worksite = await LoadWorksiteById(key);
     }
     return worksite;
   }
+
+  @override
+  Future<void> delete(String key) {
+    // TODO: implement delete
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Worksite> load(String key) {
+    // TODO: implement load
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> save(String key, value) {
+    // TODO: implement save
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> store(String key, value) {
+    // TODO: implement store
+    throw UnimplementedError();
+  }
+
+  //Below should be entirly internal, and not for Frontend use
 
   static Future<List<Worksite>> _getWorksites() async {
     List<Worksite> worksites = [];

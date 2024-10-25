@@ -1,15 +1,16 @@
 import 'dart:io';
+import 'package:build_stats_flutter/model/Domain/ServiceInterface/file_IO_service.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 
-class FileAccess {
+class FileAccess implements FileIOService {
   //Made this it's own file so that it can be easily modified app wide later on if neccessary.
-  static Future<File> _getDataFile(String path) async {
+  Future<File> _getDataFile(String path) async {
     final directory = DataDirectoryPath;
-    final file = File('$directory/$path');
+    final file = File('$directory\\$path');
     return file;
   }
 
-  static Future<String> ReadJsonDataFile(String path) async {
+  Future<String> ReadJsonDataFile(String path) async {
     final file = await _getDataFile(path);
     String jsonString = "";
     if (await file.exists()) {
@@ -19,7 +20,7 @@ class FileAccess {
     return jsonString;
   }
 
-  static Future<void> SaveDataFile(String path, String data) async {
+  Future<bool> SaveDataFile(String path, String data) async {
     final file = await _getDataFile(path);
     if (await file.exists()) {
       await file.writeAsString(data);
@@ -27,12 +28,14 @@ class FileAccess {
       await file.create();
       await file.writeAsString(data);
     }
+    return true;
   }
 
-  static Future<void> DeleteDataFile(String path) async {
+  Future<bool> DeleteDataFile(String path) async {
     final file = await _getDataFile(path);
     if (await file.exists()) {
       await file.delete();
     }
+    return true;
   }
 }
