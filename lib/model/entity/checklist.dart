@@ -40,8 +40,6 @@ class Checklist {
 }
 
 class ChecklistDay extends Cacheable {
-  @override
-  String id;
   String checklistId;
   DateTime date;
   String? comment;
@@ -50,30 +48,40 @@ class ChecklistDay extends Cacheable {
   DateTime dateUpdated;
 
   ChecklistDay(
-      {required this.id,
+      {required super.id,
       required this.checklistId,
       required this.date,
       this.comment,
       required this.dateCreated,
-      required this.dateUpdated})
-      : super(id: id);
+      required this.dateUpdated});
 
   @override
   toJson() {
     return {
       'id': id,
       'checklistId': checklistId,
-      'date': date?.toIso8601String(),
+      'date': date.toIso8601String(),
       'comment': comment,
       'itemsByCatagory': itemsByCatagory.toString(),
-      'dateCreated': dateCreated?.toIso8601String(),
-      'dateUpdated': dateUpdated?.toIso8601String(),
+      'dateCreated': dateCreated.toIso8601String(),
+      'dateUpdated': dateUpdated.toIso8601String(),
     };
   }
 
   @override
-  getChecksum() {
-    throw UnimplementedError();
+  joinData() {
+    return [
+      id,
+      checklistId,
+      date.toIso8601String(),
+      comment ?? '',
+      itemsByCatagory.entries
+          .map((e) =>
+              '${e.key},${e.value.where((element) => !element.startsWith(ID_TempIDPrefix)).join(',')}')
+          .join('|'),
+      dateCreated.toIso8601String(),
+      dateUpdated.toIso8601String(),
+    ].join('|');
   }
 }
 

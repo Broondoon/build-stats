@@ -6,8 +6,7 @@ import 'package:build_stats_flutter/resources/app_strings.dart';
 
 //see if we can use this to update IDs and such?
 //https://api.flutter.dev/flutter/foundation/ValueNotifier-class.html
-class Worksite implements Cacheable {
-  String id;
+class Worksite extends Cacheable {
   String? ownerId;
   List<String>? checklistIds;
   DateTime dateCreated;
@@ -15,7 +14,7 @@ class Worksite implements Cacheable {
   Checklist? currentChecklist;
 
   Worksite({
-    required this.id,
+    required super.id,
     this.ownerId,
     this.checklistIds,
     required this.dateCreated,
@@ -35,8 +34,15 @@ class Worksite implements Cacheable {
   }
 
   @override
-  getChecksum() {
-    throw UnimplementedError();
+  joinData() {
+    return [
+      id,
+      checklistIds
+          ?.where((element) => !element.startsWith(ID_TempIDPrefix))
+          .join(','),
+      dateCreated.toIso8601String(),
+      dateUpdated.toIso8601String(),
+    ].join('|');
   }
 }
 

@@ -1,8 +1,7 @@
 import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 
-class Item implements Cacheable {
-  String id;
+class Item extends Cacheable {
   String checklistDayId;
   String? unit;
   String? desc;
@@ -14,7 +13,7 @@ class Item implements Cacheable {
   DateTime dateUpdated;
 
   Item(
-      {required this.id,
+      {required super.id,
       required this.checklistDayId,
       this.unit,
       this.desc,
@@ -42,8 +41,19 @@ class Item implements Cacheable {
   }
 
   @override
-  getChecksum() {
-    throw UnimplementedError();
+  joinData() {
+    return [
+      id,
+      checklistDayId,
+      unit ?? '',
+      desc ?? '',
+      result ?? '',
+      comment ?? '',
+      creatorId?.toString() ?? '',
+      verified?.toString() ?? '',
+      dateCreated.toIso8601String(),
+      dateUpdated.toIso8601String(),
+    ].join('|');
   }
 }
 
