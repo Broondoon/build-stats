@@ -1,5 +1,5 @@
-import 'package:build_stats_flutter/model/Domain/ServiceInterface/data_connection_service.dart';
-import 'package:build_stats_flutter/model/Domain/ServiceInterface/file_IO_service.dart';
+import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
+import 'package:build_stats_flutter/model/Domain/Interface/file_IO_service.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
@@ -25,7 +25,10 @@ class ChangeManager {
       this._itemCache,
       this._fileIOService);
 
-  Future<List<Worksite>> GetUserWorksites() async {
+  Future<List<Worksite>> GetUserWorksites(String userId) async {
+    List<Worksite> worksites =
+        (await _worksiteDataConnectionService.get(path, [userId])).toList();
+
     throw UnimplementedError();
   }
 
@@ -39,6 +42,23 @@ class ChangeManager {
 
   Future<Worksite> UpdateWorksite(Worksite worksite) async {
     throw UnimplementedError();
+
+    static Future<Null> SaveWorksite(Worksite worksite) async {
+    List<Worksite> worksites = await _getWorksites();
+
+    // Flag to check if the worksite was saved
+    // Traverse the hierarchy to find where to save the worksite
+    int worksiteIndex = worksites.indexWhere((i) => i.id == worksite.id);
+    if (worksiteIndex != -1) {
+      worksites[worksiteIndex] = worksite;
+    } else {
+      worksites.add(worksite);
+    }
+    // Encode the worksites back to JSON and save to the file
+    String updatedJson =
+        jsonEncode(worksites.map((worksite) => worksite.toJson()).toList());
+    await FileAccess.SaveDataFile(WorksiteFileString, updatedJson);
+  }
   }
 
   Future<bool> DeleteWorksite(Worksite worksite) async {

@@ -1,16 +1,20 @@
 import 'dart:io';
-import 'package:build_stats_flutter/model/Domain/ServiceInterface/file_IO_service.dart';
+import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
+import 'package:build_stats_flutter/model/Domain/Interface/file_IO_service.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:mutex/mutex.dart';
 
-class FileAccess implements FileIOService {
+class JsonFileAccess<T extends CacheableInterface> implements FileIOService {
+  final m = ReadWriteMutex();
+
   //Made this it's own file so that it can be easily modified app wide later on if neccessary.
   Future<File> _getDataFile(String path) async {
-    final directory = DataDirectoryPath;
-    final file = File('$directory\\$path');
+    final file = File(path);
     return file;
   }
 
-  Future<String> ReadJsonDataFile(String path) async {
+  @override
+  Future<String> readDataFile(String path) async {
     final file = await _getDataFile(path);
     String jsonString = "";
     if (await file.exists()) {
@@ -20,7 +24,8 @@ class FileAccess implements FileIOService {
     return jsonString;
   }
 
-  Future<bool> SaveDataFile(String path, String data) async {
+  @override
+  Future<bool> saveDataFile(String path, String data) async {
     final file = await _getDataFile(path);
     if (await file.exists()) {
       await file.writeAsString(data);
@@ -31,11 +36,18 @@ class FileAccess implements FileIOService {
     return true;
   }
 
-  Future<bool> DeleteDataFile(String path) async {
+  @override
+  Future<bool> deleteDataFile(String path) async {
     final file = await _getDataFile(path);
     if (await file.exists()) {
       await file.delete();
     }
     return true;
+  }
+
+  @override
+  Future<bool> deleteFromDataFile(String path, List<String> keys) {
+    // TODO: implement deleteFromDataFile
+    throw UnimplementedError();
   }
 }

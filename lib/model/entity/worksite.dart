@@ -1,12 +1,12 @@
 import 'dart:collection';
 
+import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
-import 'package:localstorage/localstorage.dart';
 
 //see if we can use this to update IDs and such?
 //https://api.flutter.dev/flutter/foundation/ValueNotifier-class.html
-class Worksite {
+class Worksite implements Cacheable {
   String id;
   String? ownerId;
   List<String>? checklistIds;
@@ -23,7 +23,26 @@ class Worksite {
     this.currentChecklist, //only for temporary use
   });
 
-  factory Worksite.fromJson(Map<String, dynamic> json) {
+  @override
+  toJson() {
+    return {
+      'id': id,
+      'ownerId': ownerId,
+      'checklistIds': checklistIds,
+      'tempChecklistDayIds':
+          currentChecklist?.TESTING_GetChecklistIdsByDate.toString(),
+    };
+  }
+
+  @override
+  getChecksum() {
+    throw UnimplementedError();
+  }
+}
+
+class WorksiteFactory extends CacheableFactory<Worksite> {
+  @override
+  Worksite fromJson(Map<String, dynamic> json) {
     String TEMP_firstChecklistDayId = "temp" + json['id'];
     Worksite worksite = Worksite(
       id: json['id'],
@@ -40,7 +59,7 @@ class Worksite {
     HashMap<String, String> temp = HashMap<String, String>.from(
         json['tempChecklistDayIds'] ?? <String, String>{});
     for (String key in temp.keys) {
-      worksite.currentChecklist?.addChecklistDayID(ChecklistDay(
+      worksite.currentChecklist?.addChecklistDay(ChecklistDay(
           id: temp[key]!,
           date: DateTime.parse(key),
           checklistId: TEMP_firstChecklistDayId,
@@ -48,19 +67,5 @@ class Worksite {
           dateUpdated: DateTime.now()));
     }
     return worksite;
-  }
-
-  toJson() {
-    return {
-      'id': id,
-      'ownerId': ownerId,
-      'checklistIds': checklistIds,
-      'tempChecklistDayIds':
-          currentChecklist?.TESTING_GetChecklistIdsByDate.toString(),
-    };
-  }
-
-  getChecksum() {
-    throw UnimplementedError();
   }
 }

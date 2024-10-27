@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 
 class Checklist {
@@ -38,7 +39,8 @@ class Checklist {
   }
 }
 
-class ChecklistDay {
+class ChecklistDay extends Cacheable {
+  @override
   String id;
   String checklistId;
   DateTime date;
@@ -53,21 +55,10 @@ class ChecklistDay {
       required this.date,
       this.comment,
       required this.dateCreated,
-      required this.dateUpdated});
+      required this.dateUpdated})
+      : super(id: id);
 
-  factory ChecklistDay.fromJson(Map<String, dynamic> json) {
-    return ChecklistDay(
-      id: json['id'],
-      checklistId: json['checklistId'],
-      date: DateTime.parse(json['date'] ?? FallbackDate),
-      comment: json['comment'],
-      itemsByCatagory: HashMap<String, List<String>>.from(
-          json['itemsByCatagory'] ?? <String, List<String>>{}),
-      dateCreated: DateTime.parse(json['dateCreated'] ?? FallbackDate),
-      dateUpdated: DateTime.parse(json['dateUpdated'] ?? FallbackDate),
-    );
-  }
-
+  @override
   toJson() {
     return {
       'id': id,
@@ -80,7 +71,26 @@ class ChecklistDay {
     };
   }
 
+  @override
   getChecksum() {
     throw UnimplementedError();
+  }
+}
+
+class ChecklistDayFactory extends CacheableFactory<ChecklistDay> {
+  @override
+  ChecklistDay fromJson(Map<String, dynamic> json) {
+    ChecklistDay result = ChecklistDay(
+      id: json['id'],
+      checklistId: json['checklistId'],
+      date: DateTime.parse(json['date'] ?? FallbackDate),
+      comment: json['comment'],
+      dateCreated: DateTime.parse(json['dateCreated'] ?? FallbackDate),
+      dateUpdated: DateTime.parse(json['dateUpdated'] ?? FallbackDate),
+    );
+    result.itemsByCatagory = HashMap<String, List<String>>.from(
+        json['itemsByCatagory'] ?? <String, List<String>>{});
+
+    return result;
   }
 }
