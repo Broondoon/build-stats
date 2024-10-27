@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
+import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 
 class Checklist {

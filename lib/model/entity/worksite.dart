@@ -4,8 +4,6 @@ import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 
-//see if we can use this to update IDs and such?
-//https://api.flutter.dev/flutter/foundation/ValueNotifier-class.html
 class Worksite extends Cacheable {
   String? ownerId;
   List<String>? checklistIds;
@@ -37,9 +35,11 @@ class Worksite extends Cacheable {
   joinData() {
     return [
       id,
+      ownerId ?? '',
       checklistIds
-          ?.where((element) => !element.startsWith(ID_TempIDPrefix))
-          .join(','),
+              ?.where((element) => !element.startsWith(ID_TempIDPrefix))
+              .join(',') ??
+          '',
       dateCreated.toIso8601String(),
       dateUpdated.toIso8601String(),
     ].join('|');
