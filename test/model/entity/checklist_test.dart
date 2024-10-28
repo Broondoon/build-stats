@@ -11,17 +11,17 @@ void main() {
     late ChecklistDay checklistDay2;
 
     setUp(() {
-      checklist = Checklist(id: '1', worksiteId: 'worksite1');
+      checklist = Checklist(id: 'checklist1', worksiteId: 'worksite1');
       checklistDay1 = ChecklistDay(
         id: 'day1',
-        checklistId: '1',
+        checklistId: 'checklist1',
         date: DateTime(2023, 1, 1),
         dateCreated: DateTime(2023, 1, 1),
         dateUpdated: DateTime(2023, 1, 1),
       );
       checklistDay2 = ChecklistDay(
         id: 'day2',
-        checklistId: '1',
+        checklistId: 'checklist1',
         date: DateTime(2023, 1, 2),
         dateCreated: DateTime(2023, 1, 2),
         dateUpdated: DateTime(2023, 1, 2),
@@ -64,7 +64,7 @@ void main() {
     setUp(() {
       checklistDay = ChecklistDay(
         id: 'day1',
-        checklistId: '1',
+        checklistId: 'checklist1',
         comment: 'Test comment',
         date: DateTime(2023, 1, 1),
         dateCreated: DateTime(2023, 1, 1),
@@ -78,7 +78,7 @@ void main() {
     test('ChecklistDay toJson', () {
       var json = checklistDay.toJson();
       expect(json['id'], 'day1');
-      expect(json['checklistId'], '1');
+      expect(json['checklistId'], 'checklist1');
       expect(json['date'], '2023-01-01T00:00:00.000');
       expect(json['comment'], 'Test comment');
       expect(json['itemsByCatagory'], '{cat1: [item1, item2]}');
@@ -89,7 +89,7 @@ void main() {
     test('ChecklistDay joinData', () {
       var joinedData = checklistDay.joinData();
       expect(joinedData,
-          'day1|1|2023-01-01T00:00:00.000|Test comment|cat1,item1,item2|2023-01-01T00:00:00.000|2023-01-01T00:00:00.000');
+          'day1|checklist1|2023-01-01T00:00:00.000|Test comment|cat1,item1,item2|2023-01-01T00:00:00.000|2023-01-01T00:00:00.000');
     });
 
     test('ChecklistDay getChecksum', () {
@@ -101,7 +101,7 @@ void main() {
     test('ChecklistDayFactory fromJson', () {
       var json = {
         'id': 'day1',
-        'checklistId': '1',
+        'checklistId': 'checklist1',
         'date': '2023-01-01T00:00:00.000',
         'comment': 'Test comment',
         'dateCreated': '2023-01-01T00:00:00.000',
@@ -111,7 +111,7 @@ void main() {
       var factory = ChecklistDayFactory();
       var checklistDay = factory.fromJson(json);
       expect(checklistDay.id, 'day1');
-      expect(checklistDay.checklistId, '1');
+      expect(checklistDay.checklistId, 'checklist1');
       expect(checklistDay.date, DateTime(2023, 1, 1));
       expect(checklistDay.comment, 'Test comment');
       expect(checklistDay.dateCreated, DateTime(2023, 1, 1));

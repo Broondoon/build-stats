@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
-import 'dart:math';
+import 'package:meta/meta.dart';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
 import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
@@ -27,16 +27,23 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
   final String _apiPath;
   final String _filePath;
   final HashMap<String, String> _cacheCheckSums = HashMap<String, String>();
+  @visibleForTesting
+  HashMap<String, String> get cacheCheckSums => _cacheCheckSums;
   final HashMap<String, bool> _cacheSyncFlags = HashMap<String, bool>();
+  @visibleForTesting
+  HashMap<String, bool> get cacheSyncFlags => _cacheSyncFlags;
   final m = ReadWriteMutex();
+  final LocalStorage cacheLocalStorage;
 
   CacheService(this._dataConnectionService, this._fileIOService, this._parser,
-      this._apiPath, this._filePath);
+      this._apiPath, this._filePath, this.cacheLocalStorage);
 
   @override
   Future<T?> getById(String key) async {
     String? entityJson = await m.protectRead(() async {
-      return (_cacheSyncFlags[key] ?? false) ? localStorage.getItem(key) : null;
+      return (_cacheSyncFlags[key] ?? false)
+          ? cacheLocalStorage.getItem(key)
+          : null;
     });
     return (entityJson != null)
         ? _parser.fromJson(jsonDecode(entityJson))
@@ -92,7 +99,7 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
         _cacheCheckSums[key] = value.getChecksum();
       }
       _cacheSyncFlags[key] = true;
-      localStorage.setItem(key, jsonEncode(value.toJson()));
+      cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
     } else {
       throw Exception("Store must be called within a write lock");
     }
@@ -112,7 +119,7 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
         _cacheCheckSums[key] = EntityState.deleted.toString();
       }
       _cacheSyncFlags.remove(key);
-      localStorage.removeItem(key);
+      cacheLocalStorage.removeItem(key);
     } else {
       throw Exception("Store must be called within a write lock");
     }

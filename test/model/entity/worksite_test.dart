@@ -3,25 +3,8 @@ import 'dart:collection';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
-import 'package:build_stats_flutter/model/entity/checklist.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
 
-// Create a mock class for Checklist
-class MockChecklist extends Mock implements Checklist {
-  @override
-  String get id =>
-      super.noSuchMethod(Invocation.getter(#id), returnValue: 'checklist1');
-
-  @override
-  String get worksiteId => super
-      .noSuchMethod(Invocation.getter(#worksiteId), returnValue: 'worksite1');
-
-  @override
-  HashMap<String, String> TESTING_GetChecklistIdsByDate() => super.noSuchMethod(
-        Invocation.method(#TESTING_GetChecklistIdsByDate, []),
-        returnValue: HashMap<String, String>(),
-      );
-}
+import '../../Mocks.dart';
 
 void main() {
   group('Worksite', () {
