@@ -3,28 +3,36 @@ import 'dart:collection';
 import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:meta/meta.dart';
 
-class Checklist {
-  String id;
+class Checklist extends Cacheable {
   String worksiteId;
   String? name;
+  DateTime dateCreated;
+  DateTime dateUpdated;
   late HashMap<String, String> _checklistIdsByDate;
+  @visibleForTesting
+  HashMap<String, String> get checklistIdsByDate => _checklistIdsByDate;
 
-  Checklist({required this.id, required this.worksiteId, this.name}) {
+  Checklist(
+      {required super.id,
+      required this.worksiteId,
+      this.name,
+      required this.dateCreated,
+      required this.dateUpdated}) {
     _checklistIdsByDate = HashMap<String, String>();
   }
-
-  HashMap<String, String> TESTING_GetChecklistIdsByDate() {
-    return _checklistIdsByDate;
-  }
-
-  addChecklistDay(ChecklistDay day) {
-    _checklistIdsByDate[day.date.toIso8601String()] = day.id;
+  addChecklistDay(ChecklistDay? day, DateTime? date, String? id) {
+    if (day == null && date == null && id == null) {
+      throw Exception('All arguments cannot be null');
+    }
+    _checklistIdsByDate[(day?.date ?? date)!.toIso8601String()] =
+        (day?.id ?? id)!;
   }
 
   (bool, String?) getChecklistDayID(DateTime date) {
     if (_checklistIdsByDate.isEmpty) {
-      return (false, DefaultBlankChecklistDayID);
+      return (false, ID_DefaultBlankChecklistDayID);
     } else if (_checklistIdsByDate.containsKey(date.toIso8601String())) {
       return (true, _checklistIdsByDate[date.toIso8601String()]);
     } else {
@@ -37,6 +45,51 @@ class Checklist {
       }
       return (false, _checklistIdsByDate[keys.last]);
     }
+  }
+
+  @override
+  toJson() {
+    return {
+      'id': id,
+      'worksiteId': worksiteId,
+      'name': name,
+      'checklistIdsByDate': _checklistIdsByDate.toString(),
+      'dateCreated': dateCreated.toIso8601String(),
+      'dateUpdated': dateUpdated.toIso8601String(),
+    };
+  }
+
+  @override
+  joinData() {
+    return [
+      id,
+      worksiteId,
+      name ?? '',
+      _checklistIdsByDate.entries
+          .where((e) => !e.value.startsWith(ID_TempIDPrefix))
+          .map((e) => '${e.key},${e.value}')
+          .join('|'),
+      dateCreated.toIso8601String(),
+      dateUpdated.toIso8601String(),
+    ].join('|');
+  }
+}
+
+class ChecklistFactory extends CacheableFactory<Checklist> {
+  @override
+  Checklist fromJson(Map<String, dynamic> json) {
+    Checklist result = Checklist(
+      id: json['id'],
+      worksiteId: json['worksiteId'],
+      name: json['name'],
+      dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
+      dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
+    );
+    for (String key in json['checklistIdsByDate'].keys) {
+      result.addChecklistDay(
+          null, DateTime.parse(key), json['checklistIdsByDate'][key]);
+    }
+    return result;
   }
 }
 
@@ -92,10 +145,10 @@ class ChecklistDayFactory extends CacheableFactory<ChecklistDay> {
     ChecklistDay result = ChecklistDay(
       id: json['id'],
       checklistId: json['checklistId'],
-      date: DateTime.parse(json['date'] ?? FallbackDate),
+      date: DateTime.parse(json['date'] ?? Default_FallbackDate),
       comment: json['comment'],
-      dateCreated: DateTime.parse(json['dateCreated'] ?? FallbackDate),
-      dateUpdated: DateTime.parse(json['dateUpdated'] ?? FallbackDate),
+      dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
+      dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
     );
     result.itemsByCatagory = HashMap<String, List<String>>.from(
         json['itemsByCatagory'] ?? <String, List<String>>{});
