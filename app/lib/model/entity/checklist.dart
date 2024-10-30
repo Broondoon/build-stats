@@ -1,10 +1,8 @@
 import 'dart:collection';
-import 'dart:convert';
 
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
-import 'package:meta/meta.dart';
+import 'package:shared/app_strings.dart';
 
 class Checklist extends Cacheable {
   String worksiteId;
@@ -72,7 +70,7 @@ class Checklist extends Cacheable {
   }
 
   @override
-  toJsonNoTempIds() {
+  toJsonTransfer() {
     return {
       'id': id,
       'worksiteId': worksiteId,
@@ -194,7 +192,7 @@ class ChecklistDay extends Cacheable {
   }
 
   @override
-  toJsonNoTempIds() {
+  toJsonTransfer() {
     return {
       'id': id,
       'checklistId': checklistId,

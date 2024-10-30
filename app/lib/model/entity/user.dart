@@ -1,8 +1,5 @@
-import 'dart:collection';
-
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/model/entity/checklist.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:shared/app_strings.dart';
 
 class User extends Cacheable {
   String companyId;
@@ -27,7 +24,7 @@ class User extends Cacheable {
   }
 
   @override
-  toJsonNoTempIds() {
+  toJsonTransfer() {
     return {
       'id': id,
       'companyId': companyId,

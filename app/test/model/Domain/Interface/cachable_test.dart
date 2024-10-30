@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
 
 void main() {
   group('Cacheable', () {

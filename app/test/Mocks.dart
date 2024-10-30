@@ -2,8 +2,8 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';

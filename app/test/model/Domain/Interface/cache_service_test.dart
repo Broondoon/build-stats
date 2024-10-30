@@ -1,15 +1,15 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:build_stats_flutter/model/Domain/Interface/cache_service.dart';
+import 'package:build_stats_flutter/model/Domain/Service/cache_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/file_IO_service.dart';
-import 'package:build_stats_flutter/resources/app_enums.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
+import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
+import 'package:shared/'
 import 'package:localstorage/localstorage.dart';
 
 import '../../../Mocks.dart';

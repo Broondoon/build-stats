@@ -1,4 +1,4 @@
-import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:shared/resources/app_strings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'dart:collection';

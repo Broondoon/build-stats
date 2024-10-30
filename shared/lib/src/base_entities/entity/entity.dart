@@ -1,16 +1,13 @@
-abstract class CacheableInterface {
-  toJson();
-  toJsonNoTempIds();
-  String getChecksum();
-  String joinData();
-}
+import 'package:shared/src/base_entities/entity/entity_interface.dart';
 
-class Cacheable implements CacheableInterface {
+enum EntityState { deleted }
+
+class Entity implements EntityInterface {
   String id;
   DateTime dateCreated;
   DateTime dateUpdated;
   bool flagForDeletion = false;
-  Cacheable(
+  Entity(
       {required this.id,
       required this.dateCreated,
       required this.dateUpdated,
@@ -23,7 +20,7 @@ class Cacheable implements CacheableInterface {
         'flagForDeletion': flagForDeletion
       };
   @override
-  toJsonNoTempIds() => {
+  toJsonTransfer() => {
         'id': id,
         'dateCreated': dateCreated.toIso8601String(),
         'dateUpdated': dateUpdated.toIso8601String()
@@ -53,6 +50,7 @@ class Cacheable implements CacheableInterface {
   }
 }
 
-abstract class CacheableFactory<T extends Cacheable> {
+abstract class EntityFactory<T extends Entity>
+    implements EntityFactoryInterface<T> {
   T fromJson(Map<String, dynamic> json) => throw UnimplementedError();
 }

@@ -1,8 +1,7 @@
-import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:shared/app_strings.dart';
 
 class DataSync {
   final WorksiteCache _worksiteCache;

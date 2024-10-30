@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/file_IO_service.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
 import 'package:mutex/mutex.dart';
 
 class JsonFileAccess<T extends Cacheable> implements FileIOService<T> {

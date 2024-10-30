@@ -1,10 +1,9 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/file_IO_service.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
+import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/user.dart';
@@ -13,7 +12,7 @@ import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:shared/app_strings.dart';
 
 class ChangeManager {
   final DataConnectionService<Worksite> _worksiteDataConnectionService;
@@ -94,7 +93,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           case HttpResponse.ServiceUnavailable:
-            List<Worksite> localWorksites = (await _worksiteFileIOService
+            worksites = (await _worksiteFileIOService
                         .readDataFile(Dir_WorksiteFileString))
                     ?.where((e) => e.ownerId == user.id)
                     .toList() ??

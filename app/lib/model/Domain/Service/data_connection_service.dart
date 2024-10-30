@@ -1,18 +1,16 @@
 import 'dart:core';
-import 'dart:collection';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/cache_service.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:shared/entity.dart';
 
-abstract class DataConnectionService<T extends CacheableInterface> {
+abstract class DataConnectionService<T extends Entity> {
   Future<String> get(String path, List<String> keys);
   Future<String> post(String path, T value);
   Future<String> put(String path, T value);
   Future<void> delete(String path, String key);
 }
 
-class DataConnection<T extends CacheableInterface>
-    implements DataConnectionService<T> {
+class DataConnection<T extends Cacheable> implements DataConnectionService<T> {
   @override
   Future<void> delete(String path, String key) {
     // TODO: implement delete

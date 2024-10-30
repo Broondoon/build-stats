@@ -1,5 +1,5 @@
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
-import 'package:build_stats_flutter/resources/app_strings.dart';
+import 'package:build_stats_flutter/model/entity/cachable.dart';
+import 'package:shared/app_strings.dart';
 
 class Worksite extends Cacheable {
   String? ownerId;
@@ -27,7 +27,7 @@ class Worksite extends Cacheable {
   }
 
   @override
-  toJsonNoTempIds() {
+  toJsonTransfer() {
     return {
       'id': id,
       'ownerId': ownerId,

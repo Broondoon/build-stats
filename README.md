@@ -24,3 +24,6 @@ Once everything is set, just open the project in VS Code or any editor, navigate
 **Licensing**
 
 All rights reserved. This code may not be copied, modified, or distributed without permission.
+
+Server files altered from https://github.com/dart-lang/samples/tree/main/server/simple by Dart DevRel
+
