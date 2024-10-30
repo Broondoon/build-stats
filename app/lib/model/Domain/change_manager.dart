@@ -52,67 +52,8 @@ class ChangeManager {
   );
 
   //No automatic detection for deleting desynced entities currently exists. Will implment in Milestone 3
-
-  bool _haveLoadedUserWorksites = false;
-  Future<List<Worksite>?> LoadAllUserWorksites(User user) async {
-    List<Worksite> worksites = <Worksite>[];
-    try {
-      String? entitiesJsonRemote = await _worksiteDataConnectionService
-          .get("$API_WorksiteUserVisiblePath${user.companyId}//${user.id}");
-      List<Worksite> localWorksites =
-          (await _worksiteFileIOService.readDataFile(Dir_WorksiteFileString))
-                  ?.where((e) => e.ownerId == user.id)
-                  .toList() ??
-              <Worksite>[];
-      List<Worksite> remoteWorksites = jsonDecode(entitiesJsonRemote)
-          .map<Worksite>((e) => _worksiteFactory.fromJson(e))
-          .toList();
-      //TEMP IMPELMENTATION: If we have conflciting versions of the same worksite, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
-      List<String> worksiteIds = localWorksites.map((e) => e.id).toList();
-      worksiteIds.insertAll(0, remoteWorksites.map((e) => e.id));
-      worksiteIds.toSet().toList().forEach((id) async {
-        int localIndex = localWorksites.indexWhere((e) => e.id == id);
-        if (localIndex == -1) {
-          worksites.add(remoteWorksites.firstWhere((e) => e.id == id));
-        } else {
-          int remoteIndex = remoteWorksites.indexWhere((e) => e.id == id);
-          if (remoteIndex == -1) {
-            worksites.add(localWorksites[localIndex]);
-          } else {
-            if (localWorksites[localIndex]
-                .dateUpdated
-                .isAfter(remoteWorksites[remoteIndex].dateUpdated)) {
-              worksites.add(localWorksites[localIndex]);
-            } else {
-              worksites.add(remoteWorksites[remoteIndex]);
-            }
-          }
-        }
-      });
-    } on HttpException catch (e) {
-      switch (e.response) {
-        case HttpResponse.ServiceUnavailable:
-          worksites = (await _worksiteFileIOService
-                      .readDataFile(Dir_WorksiteFileString))
-                  ?.where((e) => e.ownerId == user.id)
-                  .toList() ??
-              <Worksite>[];
-        default:
-          rethrow;
-      }
-    }
-    _haveLoadedUserWorksites = true;
-    return await _worksiteCache.storeBulk(worksites);
-  }
-
   Future<List<Worksite>?> getUserWorksites(User user) async {
-    if (!_haveLoadedUserWorksites) {
-      return await LoadAllUserWorksites(user);
-      //Skipping checking saved file for deleting worksites on server. Push to Milestone 3
-    } else {
-      return await _worksiteCache
-          .getAll((x) async => await LoadAllUserWorksites(user));
-    }
+    return _worksiteCache.getUserWorksites(user);
   }
 
   Future<Worksite?> getWorksiteById(String id) async {

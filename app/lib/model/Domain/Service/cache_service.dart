@@ -78,4 +78,51 @@ class CacheService<T extends Entity> extends Cache<T> {
       return entities;
     });
   }
+
+  Future<List<T>?> LoadBulk(String apiPath, Function(T) comparer) async {
+    List<T> entities = <T>[];
+    try {
+      String? entitiesJsonRemote = await _dataConnectionService.get(apiPath);
+      List<T> localEntities = (await _fileIOService.readDataFile(_filePath))
+              ?.where((e) => comparer(e))
+              .toList() ??
+          <T>[];
+      List<T> remoteEntities = jsonDecode(entitiesJsonRemote)
+          .map<T>((e) => _parser.fromJson(e))
+          .toList();
+      //TEMP IMPELMENTATION: If we have conflciting versions of the same entities, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
+      List<String> ids = localEntities.map((e) => e.id).toList();
+      ids.insertAll(0, remoteEntities.map((e) => e.id));
+      ids.toSet().toList().forEach((id) async {
+        int localIndex = localEntities.indexWhere((e) => e.id == id);
+        if (localIndex == -1) {
+          entities.add(remoteEntities.firstWhere((e) => e.id == id));
+        } else {
+          int remoteIndex = remoteEntities.indexWhere((e) => e.id == id);
+          if (remoteIndex == -1) {
+            entities.add(localEntities[localIndex]);
+          } else {
+            if (localEntities[localIndex]
+                .dateUpdated
+                .isAfter(remoteEntities[remoteIndex].dateUpdated)) {
+              entities.add(localEntities[localIndex]);
+            } else {
+              entities.add(remoteEntities[remoteIndex]);
+            }
+          }
+        }
+      });
+    } on HttpException catch (e) {
+      switch (e.response) {
+        case HttpResponse.ServiceUnavailable:
+          entities = (await _fileIOService.readDataFile(_filePath))
+                  ?.where((e) => comparer(e))
+                  .toList() ??
+              <T>[];
+        default:
+          rethrow;
+      }
+    }
+    return await storeBulk(entities);
+  }
 }
