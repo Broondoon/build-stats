@@ -16,4 +16,19 @@ class MyAppColours {
   static const mainBlack = Color(0x251e32 + fullOpac);
 
   static const linGradColours = [mainOrange, Colors.white];
+
+  // New colours:
+  static const primary = Color(0x87CEEB + fullOpac);
+  static const secondary = Color(0xA7C7E7 + fullOpac); // 0xF0FFFF + fullOpac);
+  static const accent1 = (0xFFFAA0 + fullOpac);
+  static const accent2 = (0xC0C0C0 + fullOpac);
+
+  // Gradient Palette:
+  // Generated using: https://pinetools.com/monochromatic-colors-generator
+  static const g1 = Color(0x000000 + fullOpac);
+  static const g2 = Color(0x153350 + fullOpac);
+  static const g3 = Color(0x2a66a1 + fullOpac);
+  static const g4 = Color(0x5d99d4 + fullOpac);
+  static const g5 = Color(0xaecce9 + fullOpac);
+  static const g6 = Color(0xfffffe + fullOpac);
 }

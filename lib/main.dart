@@ -14,10 +14,16 @@ import 'package:build_stats_flutter/model/entity/worksite.dart';
 
 // Resource Imports:
 import 'package:build_stats_flutter/resources/app_colours.dart';
+import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
+import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 
 // External Imports:
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+// BUNK scratch import
+// import 'package:build_stats_flutter/views/scratch.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -68,7 +74,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         ),
-        home: MyLandingPage(), //MyChecklistPage(),
+        // home: MyLandingPage(), //MyChecklistPage(),
+        home: MyLandingPage(), //MyScratchPage(),
       ),
     );
   }
@@ -86,6 +93,7 @@ class MyAppState extends ChangeNotifier {
     currChecklist = checklist;
   }
 
+  // About to be deprecated
   void newItem(List<Widget> currItems) {
     currItems.add(RowItem());
     notifyListeners();
@@ -98,51 +106,150 @@ class MyLandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Build Stats"),
-      ),
       body: Center(
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context, MaterialPageRoute(
-                builder: (context) {
-                  return const MyWorksitesPage();
-                }
-              )
-            );
-          },
-          child: const Text("Next"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context, MaterialPageRoute(
+                    builder: (context) {
+                      return const MyWorksitesPage();
+                    }
+                  )
+                );
+              },
+              child: const Text("Project Manager"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context, MaterialPageRoute(
+                    builder: (context) {
+                      return const MyChecklistPage();
+                    }
+                  )
+                );
+              },
+              child: const Text("Foreman"),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class MyWorksitesPage extends StatelessWidget {
+class MyWorksitesPage extends StatefulWidget {
   const MyWorksitesPage({super.key});
+
+  @override
+  State<MyWorksitesPage> createState() => _MyWorksitesPageState();
+}
+
+class _MyWorksitesPageState extends State<MyWorksitesPage> {
+  List<Widget> worksiteList = [];
+  var numWorksites = 0;
+  
+  void addWorksite() {
+    setState(() {
+        numWorksites++;
+        worksiteList.add(
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context, MaterialPageRoute(
+                  builder: (context) {
+                    return const MyChecklistPage();
+                  }
+                )
+              );
+            },
+            child: SizedBox(
+              height: 80,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Worksite $numWorksites",
+                          style: MyAppStyle.regularFont,
+                        ),
+                        Text(
+                          "Start Date: 20XX-01-01",
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(),
+                ],
+              )
+            ),
+          ),
+        );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Worksites"),
-        automaticallyImplyLeading: false,
+      appBar: TopBar(
+        appBarText: "Worksites",
+        isWorksite: false,
       ),
-      body: Center(
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context, MaterialPageRoute(
-                builder: (context) {
-                  return const MyChecklistPage();
-                }
-              )
-            );
-          },
-          child: const Text("Next"),
+      body: Material(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
+          child: Column(
+            children: [
+              // SizedBox(
+              //   height: 80,
+              //   child: Text("Howdy", style: MyAppStyle.regularFont,)
+              // ),
+              ListView.builder(
+                shrinkWrap: true,
+                // physics: NeverScrollableScrollPhysics(),
+                itemCount: worksiteList.length,
+                itemBuilder: (context, index) {
+                  return worksiteList[index];
+                },
+              ),
+              Spacer(),
+              TextButton(
+                onPressed: () {
+                  addWorksite();
+                },
+                child: Text(
+                  "Create New Worksite",
+                  style: MyAppStyle.regularFont,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      )
+      
+      // TextButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context, MaterialPageRoute(
+      //         builder: (context) {
+      //           return const MyChecklistPage();
+      //         }
+      //       ),
+      //     );
+      //   },
+      //   child: const Text("Next"),
+      // ),
     );
   }
 }
@@ -157,6 +264,7 @@ class MyChecklistPage extends StatefulWidget {
 class _MyChecklistPageState extends State<MyChecklistPage> {
   Checklist? currChecklist;
   List<Item>? currItems = [];
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -164,6 +272,88 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // _loadItems();
   }
 
+  // TODO: Untangle this mess so that we can actually refactor it into a view
+  void showCommentOverlay(BuildContext context) {
+    _overlayEntry = OverlayEntry (
+      builder: (context) => Stack(
+        children: [
+          GestureDetector(
+            onTap: _removeOverlay,
+            child: Container(
+              color: Colors.black54,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          
+          Positioned( // needed to have overlay from bottom
+            bottom: 0,
+            child: Material(  // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
+              child: Container(  // ignoring the VS Code suggestion
+                width: MediaQuery.of(context).size.width, // * 0.6,
+                height: MediaQuery.of(context).size.height * 0.86,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.,
+                    children: [
+                      Container(
+                        color: MyAppColours.g4,
+                        child: SizedBox(
+                          height: 40,
+                          child: Center(
+                            child: Text(
+                              "Comments",
+                              style: MyAppStyle.regularFont,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: MyAppColours.g5,
+                              width: 2.0,
+                            )
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+                            child: TextField(
+                              maxLines: null,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Start writing something..."
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    
+
+    //// This piece of code closes the overlay once 2 seconds have passed!
+    // Future.delayed(const Duration(seconds: 2), () {
+    //   overlayEntry?.remove();
+    // });
+  }
+
+  void _removeOverlay() {
+      _overlayEntry?.remove();
+  }
+
+  // TODO: Re-enable loading!
   // Future<void> _loadItems() async {
   //   // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
   //   currChecklist = await ChecklistCache.GetChecklistById("Checklist1");
@@ -177,50 +367,73 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // var appState = context.watch<MyAppState>();
     return Scaffold(
       // backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text("Checklist A"),
-        // automaticallyImplyLeading: false, // <--- Uncomment this to remove app bar back button
-        // See: https://stackoverflow.com/questions/44978216/flutter-remove-back-button-on-appbar
+      appBar: TopBar(
+        appBarText: "Worksite A",
+        isWorksite: true,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: MyAppColours.linGradColours,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Center(
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(1),
-                side: BorderSide(
-                  color: Colors.transparent, // Colors.black,
-                  width: 2,
-                )
-              ),
+
+      bottomNavigationBar: NavBottomBar(),
+
+      body: Column(
+        children: [
+          DateRow(currChecklist: currChecklist),
+          
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  DateRow(currChecklist: currChecklist),
-              
-                  Text("Solid Foundations Landscaping"),
-              
-                  Text("Categories:"),
-              
                   CategoryExpansionTile(catTitle: Text("Labour")),
-              
+                    
                   CategoryExpansionTile(catTitle: Text("Equipment")),
-              
+                    
                   CategoryExpansionTile(catTitle: Text("Materials")),
-              
-                  CommentCard(),
                 ],
               ),
             ),
           ),
-        ),
+          
+          // CommentCard(),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 100,
+                height: 40,
+                child: TextButton(
+                  // style: MyAppStyle.buttonStyle,
+                  child: Text("Edit", style: MyAppStyle.regularFont,),
+                  onPressed: () {},
+                ),
+              ),
+
+              SizedBox(
+                width: 100,
+                height: 40,
+                child: TextButton(
+                  // style: MyAppStyle.buttonStyle,
+                  child: Text("Submit", style: MyAppStyle.regularFont,),
+                  onPressed: () {},
+                ),
+              ),
+
+              SizedBox(
+                width: 120,
+                height: 40,
+                child: TextButton(
+                  // style: MyAppStyle.buttonStyle,
+                  child: Text("Comments", style: MyAppStyle.regularFont,),
+                  onPressed: () {
+                    showCommentOverlay(context);
+                  },
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 20,),
+        ],
       ),
     );
   }

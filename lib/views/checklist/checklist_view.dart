@@ -1,7 +1,10 @@
+import 'package:build_stats_flutter/resources/app_colours.dart';
+import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:build_stats_flutter/main.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:build_stats_flutter/views/item/item_view.dart';
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -18,12 +21,19 @@ class CategoryExpansionTile extends StatefulWidget {
 }
 
 class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
-  List<Widget> elemList = [];
+  List<Widget> _elemList = [];
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     
+    // TODO: ...why is this in build(), and not in the class itself???
+    void _addRowItem() {
+      setState(() {
+        _elemList.add(RowItem());
+      });
+    }
+
     return ExpansionTile(
       title: widget.catTitle,
       maintainState: true, // bug fix! Nice; easy one liner
@@ -33,7 +43,8 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: (){
-              appState.newItem(elemList);
+              // appState.newItem(elemList);
+              _addRowItem();
             },
           ),
           // IconButton(
@@ -42,7 +53,20 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
           // ),
         ],
       ),
-      children: elemList + [CatCommentCard()],
+      children: [ // elemList, // + [CatCommentCard()],
+        Container(
+          height: 120,
+          child: ListView.builder(
+            shrinkWrap: true,
+            // physics: NeverScrollableScrollPhysics(),
+            itemCount: _elemList.length,
+            itemBuilder: (context, index) {
+              return _elemList[index];
+              // return ListTile(title: Text("Item @ $index"));
+            },
+          ),
+        )
+      ]
     );
   }
 }
@@ -59,25 +83,28 @@ class DateRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          iconSize: 10,
-          onPressed: () {},
-        ),
-
-        // Text(
-            // "Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
-        Text("Date: 2024-10-11"),
-
-        IconButton(
-          icon: Icon(Icons.arrow_forward_ios),
-          iconSize: 10,
-          onPressed: () {},
-        ),
-      ],
+    return Container(
+      color: MyAppColours.g5,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            iconSize: 10,
+            onPressed: () {},
+          ),
+      
+          // Text(
+              // "Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
+          Text("2024-08-09", style: MyAppStyle.regularFont,),
+      
+          IconButton(
+            icon: Icon(Icons.arrow_forward_ios),
+            iconSize: 10,
+            onPressed: () {},
+          ),
+        ],
+      ),
     );
   }
 }
@@ -133,7 +160,7 @@ class CommentCard extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
             child: TextFormField(
               decoration: const InputDecoration(
                 border: InputBorder.none,
