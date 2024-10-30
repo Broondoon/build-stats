@@ -13,29 +13,6 @@ class Checklist extends BaseChecklist {
 
   Checklist.fromBaseChecklist({required super.checklist})
       : super.fromBaseChecklist();
-
-  (bool, String?) getChecklistDayID(DateTime date) {
-    if (checklistIdsByDate.isEmpty) {
-      return (false, ID_DefaultBlankChecklistDayID);
-    } else if (checklistIdsByDate.containsKey(date.toIso8601String())) {
-      return (true, checklistIdsByDate[date.toIso8601String()]);
-    } else {
-      List<String> keys = checklistIdsByDate.keys.toList();
-      keys.sort();
-      for (String key in keys.reversed) {
-        if (DateTime.parse(key).isBefore(date)) {
-          return (
-            checklistIdsByDate[key] == ID_DefaultBlankChecklistDayID,
-            checklistIdsByDate[key]
-          );
-        }
-      }
-      return (
-        checklistIdsByDate[keys.last] == ID_DefaultBlankChecklistDayID,
-        checklistIdsByDate[keys.last]
-      );
-    }
-  }
 }
 
 class ChecklistFactory extends BaseChecklistFactory<Checklist> {
