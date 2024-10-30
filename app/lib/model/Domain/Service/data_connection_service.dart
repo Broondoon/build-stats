@@ -1,6 +1,5 @@
 import 'dart:core';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:build_stats_flutter/model/entity/cachable.dart';
 import 'package:shared/entity.dart';
 
 abstract class DataConnectionService<T extends Entity> {
@@ -10,7 +9,7 @@ abstract class DataConnectionService<T extends Entity> {
   Future<void> delete(String path, String key);
 }
 
-class DataConnection<T extends Cacheable> implements DataConnectionService<T> {
+class DataConnection<T extends Entity> implements DataConnectionService<T> {
   @override
   Future<void> delete(String path, String key) {
     // TODO: implement delete
@@ -38,8 +37,7 @@ class DataConnection<T extends Cacheable> implements DataConnectionService<T> {
   }
 }
 
-class EntityReturnDataConnection<T extends Cacheable>
-    extends DataConnection<T> {
+class EntityReturnDataConnection<T extends Entity> extends DataConnection<T> {
   Future<Iterable<T>> getEntity(String path, List<String> keys) async {
     String data = await get(path, keys);
     throw UnimplementedError();

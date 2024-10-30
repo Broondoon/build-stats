@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:build_stats_flutter/model/entity/cachable.dart';
 import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
 import 'package:mutex/mutex.dart';
+import 'package:shared/entity.dart';
 
-class JsonFileAccess<T extends Cacheable> implements FileIOService<T> {
-  final CacheableFactory<T> _parser;
+class JsonFileAccess<T extends Entity> implements FileIOService<T> {
+  final EntityFactory<T> _parser;
   JsonFileAccess(this._parser);
 
   final m = ReadWriteMutex();

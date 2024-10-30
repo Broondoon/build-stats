@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:build_stats_flutter/model/entity/cachable.dart';
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
@@ -13,6 +12,7 @@ import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:shared/app_strings.dart';
+import 'package:shared/entity.dart';
 
 class ChangeManager {
   final DataConnectionService<Worksite> _worksiteDataConnectionService;
@@ -27,10 +27,10 @@ class ChangeManager {
   final FileIOService<Checklist> _checklistFileIOService;
   final FileIOService<ChecklistDay> _checklistDayFileIOService;
   final FileIOService<Item> _itemFileIOService;
-  final CacheableFactory<Worksite> _worksiteFactory;
-  final CacheableFactory<Checklist> _checklistFactory;
-  final CacheableFactory<ChecklistDay> _checklistDayFactory;
-  final CacheableFactory<Item> _itemFactory;
+  final EntityFactory<Worksite> _worksiteFactory;
+  final EntityFactory<Checklist> _checklistFactory;
+  final EntityFactory<ChecklistDay> _checklistDayFactory;
+  final EntityFactory<Item> _itemFactory;
 
   ChangeManager(
     this._worksiteDataConnectionService,

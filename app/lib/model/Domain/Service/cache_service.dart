@@ -4,7 +4,6 @@ import 'dart:core';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:meta/meta.dart';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:build_stats_flutter/model/entity/cachable.dart';
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
 import 'package:localstorage/localstorage.dart';
@@ -13,17 +12,19 @@ import 'package:shared/app_strings.dart';
 import 'package:shared/cache.dart';
 import 'package:shared/entity.dart';
 
-class CacheService<T extends Cacheable> extends Cache<T> {
+class CacheService<T extends Entity> extends Cache<T> {
   final DataConnectionService<T> _dataConnectionService;
   final FileIOService<T> _fileIOService;
-  final CacheableFactory<T> _parser;
+  final EntityFactory<T> _parser;
   final String _apiPath;
   final String _filePath;
   final HashMap<String, String> _cacheCheckSums = HashMap<String, String>();
   @visibleForTesting
+  @override
   HashMap<String, String> get cacheCheckSums => _cacheCheckSums;
   final HashMap<String, bool> _cacheSyncFlags = HashMap<String, bool>();
   @visibleForTesting
+  @override
   HashMap<String, bool> get cacheSyncFlags => _cacheSyncFlags;
   final ReadWriteMutex _m; // = ReadWriteMutex();
   final LocalStorage _cacheLocalStorage;

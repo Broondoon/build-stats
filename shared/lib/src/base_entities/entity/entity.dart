@@ -52,5 +52,6 @@ class Entity implements EntityInterface {
 
 abstract class EntityFactory<T extends Entity>
     implements EntityFactoryInterface<T> {
-  T fromJson(Map<String, dynamic> json) => throw UnimplementedError();
+  @override
+  dynamic fromJson(Map<String, dynamic> json) => throw UnimplementedError();
 }

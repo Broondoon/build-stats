@@ -1,8 +1,7 @@
 import 'dart:core';
+import 'package:shared/entity.dart';
 
-import 'package:build_stats_flutter/model/entity/cachable.dart';
-
-abstract class FileIOService<T extends Cacheable> {
+abstract class FileIOService<T extends Entity> {
   Future<List<T>?> readDataFile(String path);
   Future<T?> readDataFileByKey(String path, String key);
   Future<bool> saveDataFile(String path, List<T> data);
