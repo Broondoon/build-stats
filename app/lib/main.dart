@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Build Stats',
+        title: 'SiteReady',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
@@ -106,37 +106,67 @@ class MyLandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context, MaterialPageRoute(
-                    builder: (context) {
-                      return const MyWorksitesPage();
-                    }
-                  )
-                );
-              },
-              child: const Text("Project Manager"),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: MyAppColours.g5,
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context, MaterialPageRoute(
-                    builder: (context) {
-                      return const MyChecklistPage();
-                    }
-                  )
-                );
-              },
-              child: const Text("Foreman"),
+          ),
+
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox( // A sneaky hack! Forces spaceBetween to put things where we want them
+                  height: 0.0,
+                  width: 0.0,
+                ),
+                Text(
+                  "SiteReady",
+                  style: MyAppStyle.titleFont,
+                ),
+                // SizedBox(
+                //   height: 0.0,
+                //   width: 0.0,
+                // ),
+                Column(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context, MaterialPageRoute(
+                            builder: (context) {
+                              return const MyWorksitesPage();
+                            }
+                          )
+                        );
+                      },
+                      child: const Text("Project Manager"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context, MaterialPageRoute(
+                            builder: (context) {
+                              return const MyChecklistPage();
+                            }
+                          )
+                        );
+                      },
+                      child: const Text("Foreman"),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 0.0,
+                  width: 0.0,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -150,6 +180,7 @@ class MyWorksitesPage extends StatefulWidget {
 }
 
 class _MyWorksitesPageState extends State<MyWorksitesPage> {
+  // TODO: LOAD FROM DB ON CONSTRUCTION
   List<Widget> worksiteList = [];
   var numWorksites = 0;
   
@@ -157,11 +188,14 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
     setState(() {
         numWorksites++;
         worksiteList.add(
+          // TODO: TELL BACKEND TO CREATE NEW WORKSITE
           GestureDetector(
             onTap: () {
               Navigator.push(
                 context, MaterialPageRoute(
                   builder: (context) {
+                    // TODO: GET SELECTED CHECKLIST INFO
+                    // AND PASS IT TO THE CHECKLIST PAGE?
                     return const MyChecklistPage();
                   }
                 )
@@ -180,6 +214,7 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // TODO: READ FROM WORKSITE
                         Text(
                           "Worksite $numWorksites",
                           style: MyAppStyle.regularFont,
@@ -211,10 +246,6 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
           padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
           child: Column(
             children: [
-              // SizedBox(
-              //   height: 80,
-              //   child: Text("Howdy", style: MyAppStyle.regularFont,)
-              // ),
               ListView.builder(
                 shrinkWrap: true,
                 // physics: NeverScrollableScrollPhysics(),
@@ -237,19 +268,6 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
           ),
         ),
       )
-      
-      // TextButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context, MaterialPageRoute(
-      //         builder: (context) {
-      //           return const MyChecklistPage();
-      //         }
-      //       ),
-      //     );
-      //   },
-      //   child: const Text("Next"),
-      // ),
     );
   }
 }
@@ -262,6 +280,7 @@ class MyChecklistPage extends StatefulWidget {
 }
 
 class _MyChecklistPageState extends State<MyChecklistPage> {
+  // TODO: LOAD THIS FROM DB ON CONSTRUCTION
   Checklist? currChecklist;
   List<Item>? currItems = [];
   OverlayEntry? _overlayEntry;
@@ -274,6 +293,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
   // TODO: Untangle this mess so that we can actually refactor it into a view
   void showCommentOverlay(BuildContext context) {
+    // TODO: LOAD COMMENTS WHEN RAN
+
     _overlayEntry = OverlayEntry (
       builder: (context) => Stack(
         children: [
@@ -319,6 +340,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+                            // TODO: REFACTOR FOR LOADING AND CODE MANIPULATION OF TEXT CONTENT
                             child: TextField(
                               maxLines: null,
                               decoration: const InputDecoration(
@@ -340,8 +362,6 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     );
 
     Overlay.of(context).insert(_overlayEntry!);
-
-    
 
     //// This piece of code closes the overlay once 2 seconds have passed!
     // Future.delayed(const Duration(seconds: 2), () {
@@ -368,7 +388,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     return Scaffold(
       // backgroundColor: Colors.transparent,
       appBar: TopBar(
-        appBarText: "Worksite A",
+        // TODO: USE LOADED NAME
+        appBarText: "Worksite 1",
         isWorksite: true,
       ),
 

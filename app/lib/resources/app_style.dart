@@ -16,6 +16,12 @@ class MyAppStyle {
       fontWeight: FontWeight.bold
   );
 
+  static const TextStyle titleFont = TextStyle(
+      fontSize: 48,
+      color: Colors.black,
+      fontWeight: FontWeight.bold
+  );
+
   // Buttons
   static const stdButtomSize = 42.0;
 
