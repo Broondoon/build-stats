@@ -1,5 +1,5 @@
-# build-stats
-SENG 480A Startup Programming project repository. Build Stats - bridging the construction communication gap with better data.
+# SiteReady
+SENG 480A Startup Programming project repository. SiteReady - bridging the construction communication gap between office and worksite.
 
 The **Project Page** can be found [here](https://buildstatscommunication.wordpress.com/).
 
