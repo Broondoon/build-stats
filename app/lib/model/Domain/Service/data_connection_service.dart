@@ -3,7 +3,7 @@ import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
 import 'package:shared/entity.dart';
 
 abstract class DataConnectionService<T extends Entity> {
-  Future<String> get(String path, List<String> keys);
+  Future<String> get(String path);
   Future<String> post(String path, T value);
   Future<String> put(String path, T value);
   Future<void> delete(String path, String key);
@@ -17,7 +17,7 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   }
 
   @override
-  Future<String> get(String path, List<String> keys) {
+  Future<String> get(String path) {
     //implement throwing 404 error.
     //throw NotFoundException(body)
     // TODO: implement get
@@ -38,8 +38,8 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
 }
 
 class EntityReturnDataConnection<T extends Entity> extends DataConnection<T> {
-  Future<Iterable<T>> getEntity(String path, List<String> keys) async {
-    String data = await get(path, keys);
+  Future<Iterable<T>> getEntity(String path) async {
+    String data = await get(path);
     throw UnimplementedError();
   }
 

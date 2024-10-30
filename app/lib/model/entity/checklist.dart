@@ -1,3 +1,4 @@
+import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:shared/checklist.dart';
 import 'package:shared/app_strings.dart';
 

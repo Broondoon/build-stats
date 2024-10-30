@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:meta/meta.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
+import 'package:shared/app_strings.dart';
 import 'package:shared/src/base_entities/entity/entity.dart';
 import 'package:shared/src/base_services/cache/cache_interface.dart';
 
@@ -17,39 +18,49 @@ class Cache<T extends Entity> implements CacheInterface<T> {
   Cache(this._parser, this._cacheLocalStorage, this._m);
 
   @override
-  Future<T?> getById(String key) async {
-    String? entityJson = await _m.protectRead(() async {
-      return (cacheSyncFlags[key] ?? false)
-          ? _cacheLocalStorage.getItem(key)
-          : null;
-    });
-    return (entityJson != null)
-        ? _parser.fromJson(jsonDecode(entityJson))
-        : await this.loadById(key);
-  }
-
-  @override
-  Future<List<T>?> getAll() async {
-    List<T> entities = [];
-    List<String> keys = cacheSyncFlags.keys.toList();
-    for (String key in keys) {
-      T? entity = await getById(key);
-      if (entity != null) {
-        entities.add(entity);
+  Future<List<T>?> get(
+      List<String> keys, Function(List<String>?) onCacheMiss) async {
+    List<String> entitiesJson = [];
+    List<String> missingKeys = [];
+    (entitiesJson, missingKeys) = await _m.protectRead(() async {
+      List<String> entitiesCached = [];
+      List<String> missingKeysFound = [];
+      for (String key in keys) {
+        String? entityJson;
+        if (cacheSyncFlags[key] ?? false) {
+          entityJson = _cacheLocalStorage.getItem(key);
+        }
+        if (entityJson == null) {
+          missingKeysFound.add(key);
+        } else {
+          entitiesCached.add(entityJson);
+        }
       }
+      return (entitiesCached, missingKeysFound);
+    });
+
+    List<T> entities = entitiesJson
+        .map((entityJson) => _parser.fromJson(jsonDecode(entityJson!)))
+        .toList()
+        .cast<T>();
+
+    if (missingKeys.isNotEmpty) {
+      entities.addAll(await storeBulk(await onCacheMiss(missingKeys)));
     }
     return entities;
   }
 
   @override
-  Future<T?> loadById(String key) => throw UnimplementedError();
+  Future<List<T>?> getAll(Function(List<String>?) onCacheMiss) async {
+    return await get(cacheSyncFlags.keys.toList(), onCacheMiss);
+  }
 
   @override
   Future<List<T>> storeBulk(List<T> entities) async {
     return await _m.protectWrite(() async {
       List<T> storedEntities = [];
       for (T entity in entities) {
-        T storedEntity = await _store(entity.id, entity);
+        T storedEntity = await storeUnprotected(entity.id, entity);
         storedEntities.add(storedEntity);
       }
       return storedEntities;
@@ -59,22 +70,47 @@ class Cache<T extends Entity> implements CacheInterface<T> {
   @override
   Future<T> store(String key, T entityValue) async {
     return await _m.protectWrite(() async {
-      return await _store(key, entityValue);
+      return await storeUnprotected(key, entityValue);
     });
   }
 
   //should never be called outside a mutex.
-  Future<T> _store(String key, T value) => throw UnimplementedError();
+  Future<T> storeUnprotected(String key, T value) async {
+    if (_m.isWriteLocked) {
+      if (key != value.id) {
+        await deleteUnprotected(key);
+        key = value.id;
+      }
+      if (!(key.startsWith(ID_TempIDPrefix))) {
+        cacheCheckSums[key] = value.getChecksum();
+      }
+      cacheSyncFlags[key] = true;
+      _cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
+      return value;
+    } else {
+      throw Exception("Store must be called within a write lock");
+    }
+  }
 
   @override
   Future<void> delete(String key) async {
     await _m.protectWrite(() async {
-      await _delete(key);
+      await deleteUnprotected(key);
     });
   }
 
   //should never be called outside a mutex.
-  Future<void> _delete(String key) => throw UnimplementedError();
+  Future<void> deleteUnprotected(String key) async {
+    if (_m.isWriteLocked) {
+      if (!(key.startsWith(ID_TempIDPrefix))) {
+        cacheCheckSums[key] = EntityState.deleted.toString();
+      }
+      cacheSyncFlags.remove(key);
+      _cacheLocalStorage.removeItem(key);
+    } else {
+      throw Exception("Store must be called within a write lock");
+    }
+  }
 
   @override
   Future<void> setCacheSyncFlags(
@@ -84,7 +120,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         if (cacheCheckSums[key] != value) {
           cacheSyncFlags[key] = false;
         } else if (serverCheckSums[key] == EntityState.deleted.toString()) {
-          await _delete(key);
+          await deleteUnprotected(key);
           cacheCheckSums.remove(key);
         }
       });

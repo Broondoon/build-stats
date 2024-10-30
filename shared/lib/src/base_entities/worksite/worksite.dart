@@ -3,11 +3,13 @@ import 'package:shared/src/base_entities/entity/entity.dart';
 
 class BaseWorksite extends Entity {
   late String? ownerId;
+  late String? companyId;
   late List<String>? checklistIds;
 
   BaseWorksite({
     required super.id,
     this.ownerId,
+    this.companyId,
     this.checklistIds,
     required super.dateCreated,
     required super.dateUpdated,
@@ -22,6 +24,7 @@ class BaseWorksite extends Entity {
           flagForDeletion: worksite.flagForDeletion,
         ) {
     ownerId = worksite.ownerId;
+    companyId = worksite.companyId;
     checklistIds = worksite.checklistIds;
   }
 
@@ -30,6 +33,7 @@ class BaseWorksite extends Entity {
     return {
       'id': id,
       'ownerId': ownerId,
+      'companyId': companyId,
       'checklistIds': checklistIds,
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
@@ -42,6 +46,7 @@ class BaseWorksite extends Entity {
     return {
       'id': id,
       'ownerId': ownerId,
+      'companyId': companyId,
       'checklistIds': checklistIds
           ?.where((x) => !x.startsWith(ID_TempIDPrefix))
           .toList()
@@ -56,6 +61,7 @@ class BaseWorksite extends Entity {
     return [
       id,
       ownerId ?? '',
+      companyId ?? '',
       checklistIds
               ?.where((element) => !element.startsWith(ID_TempIDPrefix))
               .join(',') ??
@@ -72,6 +78,7 @@ class BaseWorksiteFactory<T extends BaseWorksite> extends EntityFactory<T> {
     BaseWorksite worksite = BaseWorksite(
       id: json['id'],
       ownerId: json['ownerId'],
+      companyId: json['companyId'],
       checklistIds: List<String>.from(json['checklistIds'] ?? <String>[]),
       dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
