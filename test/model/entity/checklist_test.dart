@@ -1,7 +1,6 @@
 import 'package:build_stats_flutter/resources/app_strings.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
-import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
 import 'dart:collection';
 
 void main() {
@@ -55,7 +54,7 @@ void main() {
 
     test('Get checklist day ID for empty checklist', () {
       var result = checklist.getChecklistDayID(DateTime(2023, 1, 1));
-      expect(result, (false, DefaultBlankChecklistDayID));
+      expect(result, (false, ID_DefaultBlankChecklistDayID));
     });
   });
 

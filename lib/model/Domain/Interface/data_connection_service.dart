@@ -8,13 +8,13 @@ abstract class DataConnectionService<T extends CacheableInterface> {
   Future<String> get(String path, List<String> keys);
   Future<String> post(String path, T value);
   Future<String> put(String path, T value);
-  Future<bool> delete(String path, String key);
+  Future<void> delete(String path, String key);
 }
 
 class DataConnection<T extends CacheableInterface>
     implements DataConnectionService<T> {
   @override
-  Future<bool> delete(String path, String key) {
+  Future<void> delete(String path, String key) {
     // TODO: implement delete
     throw UnimplementedError();
   }

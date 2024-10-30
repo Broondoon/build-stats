@@ -7,25 +7,42 @@ class Item extends Cacheable {
   String? desc;
   String? result;
   String? comment;
-  int? creatorId;
+  String? creatorId;
   bool? verified;
-  DateTime dateCreated;
-  DateTime dateUpdated;
 
-  Item(
-      {required super.id,
-      required this.checklistDayId,
-      this.unit,
-      this.desc,
-      this.result,
-      this.comment,
-      this.creatorId,
-      this.verified,
-      required this.dateCreated,
-      required this.dateUpdated});
+  Item({
+    required super.id,
+    required this.checklistDayId,
+    this.unit,
+    this.desc,
+    this.result,
+    this.comment,
+    this.creatorId,
+    this.verified,
+    required super.dateCreated,
+    required super.dateUpdated,
+    super.flagForDeletion = false,
+  });
 
   @override
   toJson() {
+    return {
+      'id': id,
+      'checklistDayId': checklistDayId,
+      'unit': unit,
+      'desc': desc,
+      'result': result,
+      'comment': comment,
+      'creatorId': creatorId,
+      'verified': verified,
+      'dateCreated': dateCreated.toIso8601String(),
+      'dateUpdated': dateUpdated.toIso8601String(),
+      'flagForDeletion': flagForDeletion,
+    };
+  }
+
+  @override
+  toJsonNoTempIds() {
     return {
       'id': id,
       'checklistDayId': checklistDayId,
@@ -69,7 +86,10 @@ class ItemFactory extends CacheableFactory<Item> {
         comment: json['comment'],
         creatorId: json['creatorId'],
         verified: json['verified'],
-        dateCreated: DateTime.parse(json['dateCreated'] ?? FallbackDate),
-        dateUpdated: DateTime.parse(json['dateUpdated'] ?? FallbackDate));
+        dateCreated:
+            DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
+        dateUpdated:
+            DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
+        flagForDeletion: json['flagForDeletion'] ?? false);
   }
 }

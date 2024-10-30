@@ -1,16 +1,22 @@
-abstract class HttpException implements Exception {
-  final String message;
-  final int statusCode;
-  final String? body;
+import 'package:build_stats_flutter/resources/app_enums.dart';
 
-  HttpException(this.message, this.statusCode, this.body);
+abstract class HttpException implements Exception {
+  late final HttpResponse response;
+  final String? body;
+  String get message => response.message;
+  int get statusCode => response.code;
+
+  HttpException(statusCode, this.body) {
+    response = HttpResponse.values.firstWhere(
+        (element) => element.code == statusCode,
+        orElse: () => throw Exception("Invalid status code"));
+  }
 
   @override
   String toString() {
-    return 'HttpException: $message, statusCode: $statusCode, body: $body';
+    return 'HttpException: $response, statusCode: $statusCode, body: $body';
   }
-}
 
-class NotFoundException extends HttpException {
-  NotFoundException(String? body) : super("Not Found", 404, body);
+  @override
+  int compareTo(HttpException other) => statusCode.compareTo(other.statusCode);
 }

@@ -7,7 +7,7 @@ import 'package:localstorage/localstorage.dart';
 
 class ItemCache extends CacheService<Item> {
   ItemCache(DataConnectionService<Item> dataConnectionService,
-      JsonFileAccess fileIOService)
-      : super(dataConnectionService, fileIOService, ItemFactory(),
-            API_WorksitePath, WorksiteFileString, localStorage);
+      JsonFileAccess<Item> fileIOService)
+      : super(dataConnectionService, fileIOService, ItemFactory(), API_ItemPath,
+            Dir_ItemFileString, localStorage);
 }

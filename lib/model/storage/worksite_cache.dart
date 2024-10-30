@@ -7,7 +7,7 @@ import 'package:localstorage/localstorage.dart';
 
 class WorksiteCache extends CacheService<Worksite> {
   WorksiteCache(DataConnectionService<Worksite> dataConnectionService,
-      JsonFileAccess fileIOService)
+      JsonFileAccess<Worksite> fileIOService)
       : super(dataConnectionService, fileIOService, WorksiteFactory(),
-            API_WorksitePath, WorksiteFileString, localStorage);
+            API_WorksitePath, Dir_WorksiteFileString, localStorage);
 }

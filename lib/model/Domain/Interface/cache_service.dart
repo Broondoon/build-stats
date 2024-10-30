@@ -13,7 +13,9 @@ import 'package:mutex/mutex.dart';
 
 abstract class CacheInterface<T extends Cacheable> {
   Future<T?> getById(String key);
-  Future<void> store(String key, T value);
+  Future<List<T>?> getAll();
+  Future<List<T>> storeBulk(List<T> entities);
+  Future<T> store(String key, T value);
   Future<void> delete(String key);
   Future<T?> loadById(String key);
   Future<HashMap<String, String>> getCacheCheckStates();
@@ -22,7 +24,7 @@ abstract class CacheInterface<T extends Cacheable> {
 
 class CacheService<T extends Cacheable> implements CacheInterface<T> {
   final DataConnectionService<T> _dataConnectionService;
-  final FileIOService _fileIOService;
+  final FileIOService<T> _fileIOService;
   final CacheableFactory<T> _parser;
   final String _apiPath;
   final String _filePath;
@@ -32,7 +34,7 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
   final HashMap<String, bool> _cacheSyncFlags = HashMap<String, bool>();
   @visibleForTesting
   HashMap<String, bool> get cacheSyncFlags => _cacheSyncFlags;
-  final m = ReadWriteMutex();
+  final _m = ReadWriteMutex();
   final LocalStorage cacheLocalStorage;
 
   CacheService(this._dataConnectionService, this._fileIOService, this._parser,
@@ -40,7 +42,7 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
 
   @override
   Future<T?> getById(String key) async {
-    String? entityJson = await m.protectRead(() async {
+    String? entityJson = await _m.protectRead(() async {
       return (_cacheSyncFlags[key] ?? false)
           ? cacheLocalStorage.getItem(key)
           : null;
@@ -51,46 +53,77 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
   }
 
   @override
+  Future<List<T>?> getAll() async {
+    List<T> entities = [];
+    List<String> keys = _cacheSyncFlags.keys.toList();
+    for (String key in keys) {
+      T? entity = await getById(key);
+      if (entity != null) {
+        entities.add(entity);
+      }
+    }
+    return entities;
+  }
+
+  @override
   Future<T?> loadById(String key) async {
-    return await m.protectWrite(() async {
-      String? entitiesJson;
+    return await _m.protectWrite(() async {
       T? entity;
       try {
-        entitiesJson = (!(key.startsWith(ID_TempIDPrefix)))
-            ? (await _dataConnectionService.get(_apiPath, [key]))
-            : await _fileIOService.readDataFile(_filePath);
+        //Ensure we have the most recently edited version of the entity.
+        //This is a temp fix for noow, as we should let the user determine if they want to overwrite the local version.
+        T? entityServer = (!(key.startsWith(ID_TempIDPrefix)))
+            ? _parser.fromJson(
+                jsonDecode(await _dataConnectionService.get(_apiPath, [key]))
+                    .first)
+            : null;
+        T? entityLocal = await _fileIOService.readDataFileByKey(_filePath, key);
+
+        if (entityLocal != null && entityServer != null) {
+          entity = (entityLocal.dateUpdated.isAfter(entityServer.dateUpdated))
+              ? entityLocal
+              : entityServer;
+        } else {
+          entity = entityLocal ?? entityServer;
+        }
       } on HttpException catch (e) {
-        switch (e.statusCode) {
-          case 410:
+        switch (e.response) {
+          case HttpResponse.NotFound:
             await _delete(key);
             return null;
           default:
-            entitiesJson = await _fileIOService.readDataFile(_filePath);
+            entity = await _fileIOService.readDataFileByKey(_filePath, key);
         }
       }
-      if (entitiesJson.isNotEmpty) {
-        entity = jsonDecode(entitiesJson)
-            .map((json) => _parser.fromJson(json))
-            .toList()
-            .where((entity) => entity.id == key);
-        if (entity != null) {
-          await _store(key, entity);
-        }
+      if (entity != null) {
+        await _store(key, entity);
       }
       return entity;
     });
   }
 
   @override
-  Future<void> store(String key, T value) async {
-    await m.protectWrite(() async {
-      await _store(key, value);
+  Future<List<T>> storeBulk(List<T> entities) async {
+    return await _m.protectWrite(() async {
+      List<T> storedEntities = [];
+      for (T entity in entities) {
+        T storedEntity = await _store(entity.id, entity);
+        storedEntities.add(storedEntity);
+      }
+      return storedEntities;
+    });
+  }
+
+  @override
+  Future<T> store(String key, T entityValue) async {
+    return await _m.protectWrite(() async {
+      return await _store(key, entityValue);
     });
   }
 
   //should never be called outside a mutex.
-  Future<void> _store(String key, T value) async {
-    if (m.isWriteLocked) {
+  Future<T> _store(String key, T value) async {
+    if (_m.isWriteLocked) {
       if (key != value.id) {
         await _delete(key);
         key = value.id;
@@ -100,6 +133,7 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
       }
       _cacheSyncFlags[key] = true;
       cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
+      return value;
     } else {
       throw Exception("Store must be called within a write lock");
     }
@@ -107,14 +141,14 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
 
   @override
   Future<void> delete(String key) async {
-    await m.protectWrite(() async {
+    await _m.protectWrite(() async {
       await _delete(key);
     });
   }
 
   //should never be called outside a mutex.
   Future<void> _delete(String key) async {
-    if (m.isWriteLocked) {
+    if (_m.isWriteLocked) {
       if (!(key.startsWith(ID_TempIDPrefix))) {
         _cacheCheckSums[key] = EntityState.deleted.toString();
       }
@@ -128,7 +162,7 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
   @override
   Future<void> setCacheSyncFlags(
       HashMap<String, String> serverCheckSums) async {
-    return await m.protectWrite(() async {
+    return await _m.protectWrite(() async {
       serverCheckSums.forEach((key, value) async {
         if (_cacheCheckSums[key] != value) {
           _cacheSyncFlags[key] = false;
@@ -142,8 +176,6 @@ class CacheService<T extends Cacheable> implements CacheInterface<T> {
 
   @override
   Future<HashMap<String, String>> getCacheCheckStates() async {
-    return await m.protectRead(() async {
-      return _cacheCheckSums;
-    });
+    return _cacheCheckSums;
   }
 }

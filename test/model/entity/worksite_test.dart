@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
@@ -24,7 +23,6 @@ void main() {
         checklistIds: ['checklist1', 'checklist2'],
         dateCreated: DateTime.parse('2023-01-01T00:00:00.000Z'),
         dateUpdated: DateTime.parse('2023-01-02T00:00:00.000Z'),
-        currentChecklist: mockChecklist,
       );
     });
 
@@ -32,6 +30,8 @@ void main() {
       final json = worksite.toJson();
       print(json);
       expect(json['id'], 'worksite1');
+      expect(json['dateCreated'], '2023-01-01T00:00:00.000Z');
+      expect(json['dateUpdated'], '2023-01-02T00:00:00.000Z');
       expect(json['ownerId'], 'owner1');
       expect(json['checklistIds'], ['checklist1', 'checklist2']);
       //expect(json['tempChecklistDayIds'], mockChecklist.TESTING_GetChecklistIdsByDate().toString());
@@ -72,8 +72,6 @@ void main() {
       expect(worksite.checklistIds, ['checklist1', 'checklist2']);
       expect(worksite.dateCreated, DateTime.parse('2023-01-01T00:00:00.000Z'));
       expect(worksite.dateUpdated, DateTime.parse('2023-01-02T00:00:00.000Z'));
-      expect(worksite.currentChecklist?.id, 'tempworksite1');
-      expect(worksite.currentChecklist?.worksiteId, 'worksite1');
     });
   });
 }

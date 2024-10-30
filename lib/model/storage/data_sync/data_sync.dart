@@ -1,31 +1,55 @@
-import 'dart:collection';
-
-import 'package:build_stats_flutter/model/Domain/Interface/cache_service.dart';
+import 'package:build_stats_flutter/model/Domain/Interface/data_connection_service.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
+import 'package:build_stats_flutter/resources/app_strings.dart';
 
 class DataSync {
   final WorksiteCache _worksiteCache;
   final ChecklistCache _checklistCache;
+  final ChecklistDayCache _checklistDayCache;
   final ItemCache _itemCache;
 
-  DataSync(this._worksiteCache, this._checklistCache, this._itemCache);
+  DataSync(this._worksiteCache, this._checklistCache, this._checklistDayCache,
+      this._itemCache);
 
   //default expect that if we send an ID to the server, and the server doesnt have that ID in Cache, we're immediatly flagging that ID for refresh, as it implies that the server went down, and we need to ensure that the server cache is up to date.
 
   //on server side, we're pretty much just gonna have copies of our cache setups.
   Future<void> checkCacheSync() async {
-    //Get server checksums
+    try {
+      dynamic serverSendObject = {
+        API_DataObject_ChecklistStateList:
+            (await _checklistCache.getCacheCheckStates()).keys.toList(),
+        API_DataObject_ChecklistDayStateList:
+            (await _checklistDayCache.getCacheCheckStates()).keys.toList(),
+        API_DataObject_ItemStateList:
+            (await _itemCache.getCacheCheckStates()).keys.toList()
+      };
 
-    //compare server Checksums to our current caches.
+      //get Server responses
+      //Temp implementation until the proper Server is setup.
+      dynamic serverResponseJson = {
+        API_DataObject_WorksiteStateList:
+            await _worksiteCache.getCacheCheckStates(),
+        API_DataObject_ChecklistStateList:
+            await _checklistCache.getCacheCheckStates(),
+        API_DataObject_ChecklistDayStateList:
+            await _checklistDayCache.getCacheCheckStates(),
+        API_DataObject_ItemStateList: await _itemCache.getCacheCheckStates()
+      };
 
-    //Check for data sync.
-    //just go through all values in the cache, get checksums for each, compare checksums, and then flag the stuff that should be changed.
-    //right now, set up a really nasty version that overwrites everything. We'll add proper merging functionality when we add the database.
-    //THe idea here is that we don't have a database really. So whatever version is currently in server cache is the most up to date version.
-    //So we just overwrite everything with the server cache.
-
-    throw UnimplementedError();
+      //update our cache flags
+      await _worksiteCache.setCacheSyncFlags(
+          serverResponseJson[API_DataObject_WorksiteStateList]);
+      await _checklistCache.setCacheSyncFlags(
+          serverResponseJson[API_DataObject_ChecklistStateList]);
+      await _checklistDayCache.setCacheSyncFlags(
+          serverResponseJson[API_DataObject_ChecklistDayStateList]);
+      await _itemCache
+          .setCacheSyncFlags(serverResponseJson[API_DataObject_ItemStateList]);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
