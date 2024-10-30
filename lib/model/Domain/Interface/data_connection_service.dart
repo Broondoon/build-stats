@@ -16,7 +16,7 @@ class DataConnection<T extends CacheableInterface>
   @override
   Future<void> delete(String path, String key) {
     // TODO: implement delete
-    throw UnimplementedError();
+    throw HttpException(503, "Service Unavailable");
   }
 
   @override
@@ -24,19 +24,19 @@ class DataConnection<T extends CacheableInterface>
     //implement throwing 404 error.
     //throw NotFoundException(body)
     // TODO: implement get
-    throw UnimplementedError();
+    throw HttpException(503, "Service Unavailable");
   }
 
   @override
   Future<String> post(String path, T value) {
     // TODO: implement post
-    throw UnimplementedError();
+    throw HttpException(503, "Service Unavailable");
   }
 
   @override
   Future<String> put(String path, T value) {
     // TODO: implement put
-    throw UnimplementedError();
+    throw HttpException(503, "Service Unavailable");
   }
 }
 

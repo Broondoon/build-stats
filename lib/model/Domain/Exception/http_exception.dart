@@ -1,6 +1,6 @@
 import 'package:build_stats_flutter/resources/app_enums.dart';
 
-abstract class HttpException implements Exception {
+class HttpException implements Exception {
   late final HttpResponse response;
   final String? body;
   String get message => response.message;

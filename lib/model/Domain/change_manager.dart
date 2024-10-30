@@ -149,7 +149,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           default:
-            rethrow;
+            break;
         }
       } finally {
         _worksiteFileIOService.saveDataFile(Dir_WorksiteFileString, [worksite]);
@@ -165,7 +165,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           default:
-            rethrow;
+            break;
         }
       } finally {
         _worksiteFileIOService.saveDataFile(Dir_WorksiteFileString, [worksite]);
@@ -268,7 +268,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           default:
-            rethrow;
+            break;
         }
       } finally {
         _checklistFileIOService
@@ -285,7 +285,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           default:
-            rethrow;
+            break;
         }
       } finally {
         _checklistFileIOService
@@ -452,7 +452,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           default:
-            rethrow;
+            break;
         }
       } finally {
         _checklistDayFileIOService
@@ -548,7 +548,7 @@ class ChangeManager {
         } on HttpException catch (e) {
           switch (e.response) {
             default:
-              rethrow;
+              break;
           }
         } finally {
           _itemFileIOService.saveDataFile(Dir_ItemFileString, [item]);
@@ -564,7 +564,7 @@ class ChangeManager {
       } on HttpException catch (e) {
         switch (e.response) {
           default:
-            rethrow;
+            break;
         }
       } finally {
         _itemFileIOService.saveDataFile(Dir_ItemFileString, [item]);
