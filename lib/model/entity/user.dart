@@ -1,14 +1,15 @@
+import 'dart:collection';
+
 import 'package:build_stats_flutter/model/Domain/Interface/cachable.dart';
+import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_strings.dart';
 
-class Worksite extends Cacheable {
-  String? ownerId;
-  List<String>? checklistIds;
+class User extends Cacheable {
+  String companyId;
 
-  Worksite({
+  User({
     required super.id,
-    this.ownerId,
-    this.checklistIds,
+    required this.companyId,
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
@@ -18,8 +19,7 @@ class Worksite extends Cacheable {
   toJson() {
     return {
       'id': id,
-      'ownerId': ownerId,
-      'checklistIds': checklistIds,
+      'companyId': companyId,
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
       'flagForDeletion': flagForDeletion,
@@ -30,11 +30,7 @@ class Worksite extends Cacheable {
   toJsonNoTempIds() {
     return {
       'id': id,
-      'ownerId': ownerId,
-      'checklistIds': checklistIds
-          ?.where((x) => !x.startsWith(ID_TempIDPrefix))
-          .toList()
-          .toString(),
+      'companyId': companyId,
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
     };
@@ -44,28 +40,24 @@ class Worksite extends Cacheable {
   joinData() {
     return [
       id,
-      ownerId ?? '',
-      checklistIds
-              ?.where((element) => !element.startsWith(ID_TempIDPrefix))
-              .join(',') ??
-          '',
+      companyId,
       dateCreated.toIso8601String(),
       dateUpdated.toIso8601String(),
     ].join('|');
   }
 }
 
-class WorksiteFactory extends CacheableFactory<Worksite> {
+class UserFactory extends CacheableFactory<User> {
   @override
-  Worksite fromJson(Map<String, dynamic> json) {
-    Worksite worksite = Worksite(
+  User fromJson(Map<String, dynamic> json) {
+    User user = User(
       id: json['id'],
-      ownerId: json['ownerId'],
-      checklistIds: List<String>.from(json['checklistIds'] ?? <String>[]),
+      companyId: json['companyId'],
       dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
       flagForDeletion: json['flagForDeletion'] ?? false,
     );
-    return worksite;
+
+    return user;
   }
 }

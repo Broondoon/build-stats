@@ -16,3 +16,11 @@ Requirements:
 Follow [these instructions](https://docs.flutter.dev/get-started/install) to download and install the Flutter SDK, and follow the `flutter doctor` to ensure your environment has everything it needs.
 
 Once everything is set, just open the project in VS Code or any editor, navigate to `main.dart` and run the file. Alternatively, run the command `flutter run` in CMD.
+
+
+
+---
+
+**Licensing**
+
+All rights reserved. This code may not be copied, modified, or distributed without permission.
