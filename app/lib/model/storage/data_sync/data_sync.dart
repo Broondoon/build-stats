@@ -1,3 +1,4 @@
+import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
@@ -15,9 +16,11 @@ class DataSync {
   //default expect that if we send an ID to the server, and the server doesnt have that ID in Cache, we're immediatly flagging that ID for refresh, as it implies that the server went down, and we need to ensure that the server cache is up to date.
 
   //on server side, we're pretty much just gonna have copies of our cache setups.
-  Future<void> checkCacheSync() async {
+  Future<void> checkCacheSync(User user) async {
     try {
       dynamic serverSendObject = {
+        API_DataObject_UserId: user.id,
+        API_DataObject_CompanyId: user.companyId,
         API_DataObject_ChecklistStateList:
             (await _checklistCache.getCacheCheckStates()).keys.toList(),
         API_DataObject_ChecklistDayStateList:

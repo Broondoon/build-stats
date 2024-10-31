@@ -139,6 +139,10 @@ class BaseChecklistDay extends Entity {
     itemsByCatagory = checklistDay.itemsByCatagory;
   }
 
+  getCategories() {
+    return itemsByCatagory.keys.toList();
+  }
+
   addCategory(String category) {
     itemsByCatagory[category] = [];
   }

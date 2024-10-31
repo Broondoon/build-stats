@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:Server/storage/checklist_cache.dart';
@@ -15,52 +16,48 @@ class DataSync {
   DataSync(this._worksiteCache, this._checklistCache, this._checklistDayCache,
       this._itemCache);
 
+  final jsonHeaders = {
+    'content-type': 'application/json',
+  };
   //default expect that if we send an ID to the server, and the server doesnt have that ID in Cache, we're immediatly flagging that ID for refresh, as it implies that the server went down, and we need to ensure that the server cache is up to date.
 
   //on server side, we're pretty much just gonna have copies of our cache setups.
   Future<Response> handleCheckCacheSync(Response response) async {
-    throw UnimplementedError();
-    //   try {
-    //     dynamic json = jsonDecode(await response.readAsString());
-    //     List<String> jsonChecklistIds = json[API_DataObject_ChecklistStateList];
-    //     List<String> jsonChecklistDayIds =
-    //         json[API_DataObject_ChecklistDayStateList];
-    //     List<String> jsonItemIds = json[API_DataObject_ItemStateList];
-    //     dynamic returnData = {
-    //       API_DataObject_WorksiteStateList:
-    //           (await _checklistCache.getCacheCheckStates()).toList(),
-    //       API_DataObject_ChecklistStateList:
-    //           (await _checklistCache.getCacheCheckStates()).keys.toList(),
-    //       API_DataObject_ChecklistDayStateList:
-    //           (await _checklistDayCache.getCacheCheckStates()).keys.toList(),
-    //       API_DataObject_ItemStateList:
-    //           (await _itemCache.getCacheCheckStates()).keys.toList()
-    //     };
+    try {
+      dynamic json = jsonDecode(await response.readAsString());
+      List<String> jsonChecklistIds = json[API_DataObject_ChecklistStateList];
+      List<String> jsonChecklistDayIds =
+          json[API_DataObject_ChecklistDayStateList];
+      List<String> jsonItemIds = json[API_DataObject_ItemStateList];
+      String userId = json[API_DataObject_UserId];
+      String companyId = json[API_DataObject_CompanyId];
 
-    //     //get Server responses
-    //     //Temp implementation until the proper Server is setup.
-    //     dynamic serverResponseJson = {
-    //       API_DataObject_WorksiteStateList:
-    //           await _worksiteCache.getCacheCheckStates(),
-    //       API_DataObject_ChecklistStateList:
-    //           await _checklistCache.getCacheCheckStates(),
-    //       API_DataObject_ChecklistDayStateList:
-    //           await _checklistDayCache.getCacheCheckStates(),
-    //       API_DataObject_ItemStateList: await _itemCache.getCacheCheckStates()
-    //     };
+      HashMap<String, String> worksiteCheckSums =
+          await _worksiteCache.getCacheCheckStates();
+      worksiteCheckSums.removeWhere((key, value) => !jsonChecklistIds.contains(
+          key)); //This doesnot filter for worksties the user SHOULDn't have.
+      HashMap<String, String> checklistCheckSums =
+          await _checklistCache.getCacheCheckStates();
+      checklistCheckSums
+          .removeWhere((key, value) => !jsonChecklistIds.contains(key));
+      HashMap<String, String> checklistDayCheckSums =
+          await _checklistDayCache.getCacheCheckStates();
+      checklistDayCheckSums
+          .removeWhere((key, value) => !jsonChecklistDayIds.contains(key));
+      HashMap<String, String> itemCheckSums =
+          await _itemCache.getCacheCheckStates();
+      itemCheckSums.removeWhere((key, value) => !jsonItemIds.contains(key));
 
-    //     //update our cache flags
-    //     await _worksiteCache.setCacheSyncFlags(
-    //         serverResponseJson[API_DataObject_WorksiteStateList]);
-    //     await _checklistCache.setCacheSyncFlags(
-    //         serverResponseJson[API_DataObject_ChecklistStateList]);
-    //     await _checklistDayCache.setCacheSyncFlags(
-    //         serverResponseJson[API_DataObject_ChecklistDayStateList]);
-    //     await _itemCache
-    //         .setCacheSyncFlags(serverResponseJson[API_DataObject_ItemStateList]);
-    //   } catch (e) {
-    //     rethrow;
-    //   }
-    // }
+      dynamic returnData = {
+        API_DataObject_WorksiteStateList: worksiteCheckSums,
+        API_DataObject_ChecklistStateList: checklistCheckSums,
+        API_DataObject_ChecklistDayStateList: checklistDayCheckSums,
+        API_DataObject_ItemStateList: itemCheckSums
+      };
+
+      return Response.ok(jsonEncode(returnData), headers: {...jsonHeaders});
+    } catch (e) {
+      rethrow;
+    }
   }
 }
