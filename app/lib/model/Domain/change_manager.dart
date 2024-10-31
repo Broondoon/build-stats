@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
@@ -157,8 +158,19 @@ class ChangeManager {
   }
 
   //TEMP IMPELMENTATION
+  //dirty implementation to preload checklist days and Items. I Fing hate this.
+  HashSet<String> _checklistIds = HashSet<String>();
   Future<Checklist?> getChecklistById(String id) async {
-    return await _checklistCache.getById(id);
+    Checklist? checklist = await _checklistCache.getById(id);
+    if (_checklistIds.contains(id)) {
+      return checklist;
+    }
+    _checklistIds.add(id);
+    if (checklist != null) {
+      await _checklistDayCache.getChecklistDaysForChecklist(checklist);
+      await _itemCache.loadChecklistItemsForChecklist(checklist);
+    }
+    return checklist;
   }
 
   Future<Checklist> createChecklist(Worksite worksite) async {
