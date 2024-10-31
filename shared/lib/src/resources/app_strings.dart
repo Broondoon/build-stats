@@ -42,7 +42,8 @@ String API_DataObject_WorksiteStateList = "worksiteStates";
 String API_DataObject_ChecklistStateList = "checklistStates";
 String API_DataObject_ChecklistDayStateList = "checklistDayStates";
 String API_DataObject_ItemStateList = "itemStates";
-
+String API_DataObject_UserId = "userId";
+String API_DataObject_CompanyId = 'companyId';
 //ID Markers
 String ID_TempIDPrefix = "temp_";
 String ID_WorksitePrefix = "worksite_";

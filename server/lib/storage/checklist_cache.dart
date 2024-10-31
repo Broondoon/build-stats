@@ -1,9 +1,9 @@
 import 'package:Server/entity/checklist.dart';
 import 'package:Server/services/cache_service.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:injector/injector.dart';
 import 'package:shared/app_strings.dart';
+import 'package:shared/cache.dart';
 
 class ChecklistDayCache extends CacheService<ChecklistDay> {
   final ChecklistDayFactory _parser;

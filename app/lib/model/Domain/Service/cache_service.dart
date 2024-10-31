@@ -6,7 +6,6 @@ import 'package:meta/meta.dart';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shared/cache.dart';

@@ -7,8 +7,8 @@ import 'package:build_stats_flutter/model/Domain/Service/cache_service.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
 import 'package:mutex/mutex.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:shared/app_strings.dart';
+import 'package:shared/cache.dart';
 
 class ItemCache extends CacheService<Item> {
   ItemCache(

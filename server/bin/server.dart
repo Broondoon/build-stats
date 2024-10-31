@@ -17,9 +17,9 @@ import 'package:Server/storage/checklist_cache.dart';
 import 'package:Server/storage/item_cache.dart';
 import 'package:Server/storage/worksite_cache.dart';
 import 'package:injector/injector.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
+import 'package:shared/cache.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
@@ -27,6 +27,8 @@ import 'package:shelf_static/shelf_static.dart' as shelf_static;
 
 Future<void> main() async {
   final injector = Injector.appInstance;
+  injector
+      .registerSingleton<LocalStorage>(() => LocalStorage(ReadWriteMutex()));
   injector.registerDependency<WorksiteFactory>(() => WorksiteFactory());
   injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
   injector.registerDependency<ChecklistDayFactory>(() => ChecklistDayFactory());
@@ -34,7 +36,7 @@ Future<void> main() async {
 
   injector.registerSingleton<WorksiteCache>(() {
     final parser = injector.get<WorksiteFactory>();
-    final storage = localStorage;
+    final storage = injector.get<LocalStorage>();
     final m = ReadWriteMutex();
     return WorksiteCache(parser, storage, m);
   });
@@ -47,7 +49,7 @@ Future<void> main() async {
 
   injector.registerSingleton<ChecklistCache>(() {
     final parser = injector.get<ChecklistFactory>();
-    final storage = localStorage;
+    final storage = injector.get<LocalStorage>();
     final m = ReadWriteMutex();
     return ChecklistCache(parser, storage, m);
   });
@@ -60,7 +62,7 @@ Future<void> main() async {
 
   injector.registerSingleton<ChecklistDayCache>(() {
     final parser = injector.get<ChecklistDayFactory>();
-    final storage = localStorage;
+    final storage = injector.get<LocalStorage>();
     final m = ReadWriteMutex();
     return ChecklistDayCache(parser, storage, m);
   });
@@ -73,7 +75,7 @@ Future<void> main() async {
 
   injector.registerSingleton<ItemCache>(() {
     final parser = injector.get<ItemFactory>();
-    final storage = localStorage;
+    final storage = injector.get<LocalStorage>();
     final m = ReadWriteMutex();
     return ItemCache(parser, storage, m);
   });
