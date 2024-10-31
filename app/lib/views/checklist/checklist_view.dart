@@ -21,18 +21,18 @@ class CategoryExpansionTile extends StatefulWidget {
 }
 
 class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
+  // TODO: LOAD THIS DYNAMICALLY
   List<Widget> _elemList = [];
+
+  void _addRowItem() {
+    setState(() {
+      _elemList.add(RowItem());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    
-    // TODO: ...why is this in build(), and not in the class itself???
-    void _addRowItem() {
-      setState(() {
-        _elemList.add(RowItem());
-      });
-    }
 
     return ExpansionTile(
       title: widget.catTitle,

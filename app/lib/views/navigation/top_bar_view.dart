@@ -27,6 +27,7 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
             // Weird thing but the actions text was 1 pixel lower than the title.
             padding: const EdgeInsets.fromLTRB(0, 0, 16.0, 1.0), //EdgeInsets.only(right: 8.0),
             child: Text(
+              // TODO: THIS NEEDS TO BE DYNAMIC
               "Start Date: 2024-08-09",
               style: MyAppStyle.largeFont,
             ),
