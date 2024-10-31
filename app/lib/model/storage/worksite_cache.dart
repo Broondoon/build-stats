@@ -3,9 +3,9 @@ import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/model/Domain/Service/cache_service.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
+import 'package:shared/cache.dart';
 
 class WorksiteCache extends CacheService<Worksite> {
   WorksiteCache(

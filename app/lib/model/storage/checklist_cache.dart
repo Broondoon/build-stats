@@ -3,9 +3,9 @@ import 'package:build_stats_flutter/model/Domain/Service/data_connection_service
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
+import 'package:shared/cache.dart';
 
 class ChecklistDayCache extends CacheService<ChecklistDay> {
   ChecklistDayCache(

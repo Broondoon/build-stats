@@ -249,7 +249,7 @@ packages:
     source: hosted
     version: "4.0.0"
   localstorage:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: localstorage
       sha256: "6340acefdd3a969cceb044a69cde2dc5877c5b861b2e02d0803930ed483dbe91"
