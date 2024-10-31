@@ -123,7 +123,9 @@ class BaseChecklistDay extends Entity {
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
-  });
+  }) {
+    itemsByCatagory = HashMap<String, List<String>>();
+  }
 
   BaseChecklistDay.fromBaseChecklistDay(
       {required BaseChecklistDay checklistDay})

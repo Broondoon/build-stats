@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/item.dart';
 import 'package:Server/services/cache_service.dart';
 import 'package:mutex/mutex.dart';
@@ -22,6 +24,6 @@ class ItemCache extends CacheService<Item> {
         verified: true,
         dateCreated: DateTime.now(),
         dateUpdated: DateTime.now());
-    testDeepCache[test.id] = test.toJson();
+    testDeepCache[test.id] = jsonEncode(test.toJson());
   }
 }

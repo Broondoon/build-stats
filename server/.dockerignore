@@ -1,0 +1,9 @@
+# Exclude all pubspec.lock files
+**/pubspec.lock
+
+# Exclude all .dart_tool directories
+**/.dart_tool
+
+# Exclude Git metadata and build artifacts
+**/.git
+**/build

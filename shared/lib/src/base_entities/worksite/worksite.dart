@@ -14,7 +14,9 @@ class BaseWorksite extends Entity {
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
-  });
+  }) {
+    checklistIds ??= <String>[];
+  }
 
   BaseWorksite.fromBaseWorksite({required BaseWorksite worksite})
       : super(
