@@ -7,13 +7,35 @@ String Dir_ChecklistDayFileString =
     Dir_DataDirectoryPath + "\\checklistDays.json";
 String Dir_WorksiteFileString = Dir_DataDirectoryPath + "\\worksites.json";
 
+//For testing only.
+String Server_Port = "8080";
 //API Path Strings
-String API_Path = "http://localhost:3000/api";
-String API_WorksitePath = API_Path + "/worksite";
-String API_ChecklistPath = API_Path + "/checklist";
-String API_ChecklistDayPath = API_Path + "/checklistDay";
-String API_ItemPath = API_Path + "/item";
-String API_WorksiteUserVisiblePath = API_WorksitePath + "/userWorksites";
+String API_Path = "http://localhost:${Server_Port}";
+String API_Inidcator = "/api";
+
+String API_Worksite = API_Inidcator + "/worksite";
+String API_WorksitePath = API_Path + API_Worksite;
+String API_WorksiteUserVisible = API_Worksite + "/userWorksites";
+String API_WorksiteUserVisiblePath = API_Path + API_WorksiteUserVisible;
+
+String API_Checklist = API_Inidcator + "/checklist";
+String API_ChecklistPath = API_Path + API_Checklist;
+String API_ChecklistOnWorksite = API_Checklist + "/onWorksite";
+String API_ChecklistOnWorksitePath = API_Path + API_ChecklistOnWorksite;
+
+String API_ChecklistDay = API_Inidcator + "/checklistDay";
+String API_ChecklistDayPath = API_Path + API_ChecklistDay;
+String API_DaysOnChecklist = API_ChecklistDay + "/daysOnChecklist";
+String API_DaysOnChecklistPath = API_Path + API_DaysOnChecklist;
+
+String API_Item = API_Inidcator + "/item";
+String API_ItemPath = API_Path + API_Item;
+String API_ItemOnChecklistDay = API_Item + "/onChecklistDay";
+String API_ItemOnChecklistDayPath = API_Path + API_ItemOnChecklistDay;
+String API_ItemOnChecklist = API_Item + "/onChecklist";
+String API_ItemOnChecklistPath = API_Path + API_ItemOnChecklist;
+
+String API_DataSync = API_Inidcator + "/dataSync";
 
 //API DataOject Strings
 String API_DataObject_WorksiteStateList = "worksiteStates";
@@ -27,6 +49,8 @@ String ID_WorksitePrefix = "worksite_";
 String ID_ChecklistPrefix = "checklist_";
 String ID_ChecklistDayPrefix = "checklistDay_";
 String ID_ItemPrefix = "item_";
+String ID_UserPrefix = "user_";
+String ID_CompanyPrefix = "company_";
 String ID_DefaultBlankChecklistDayID =
     ID_TempIDPrefix + ID_ChecklistDayPrefix + "-1";
 

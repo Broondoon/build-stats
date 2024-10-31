@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
@@ -52,63 +53,8 @@ class ChangeManager {
   );
 
   //No automatic detection for deleting desynced entities currently exists. Will implment in Milestone 3
-
-  bool _haveLoadedUserWorksites = false;
   Future<List<Worksite>?> getUserWorksites(User user) async {
-    if (!_haveLoadedUserWorksites) {
-      List<Worksite> worksites = <Worksite>[];
-      try {
-        String? entitiesJsonRemote = await _worksiteDataConnectionService
-            .get(API_WorksiteUserVisiblePath, ["${user.companyId}-${user.id}"]);
-        List<Worksite> localWorksites =
-            (await _worksiteFileIOService.readDataFile(Dir_WorksiteFileString))
-                    ?.where((e) => e.ownerId == user.id)
-                    .toList() ??
-                <Worksite>[];
-        List<Worksite> remoteWorksites = jsonDecode(entitiesJsonRemote)
-            .map<Worksite>((e) => _worksiteFactory.fromJson(e))
-            .toList();
-        //TEMP IMPELMENTATION: If we have conflciting versions of the same worksite, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
-        List<String> worksiteIds = localWorksites.map((e) => e.id).toList();
-        worksiteIds.insertAll(0, remoteWorksites.map((e) => e.id));
-        worksiteIds.toSet().toList().forEach((id) async {
-          int localIndex = localWorksites.indexWhere((e) => e.id == id);
-          if (localIndex == -1) {
-            worksites.add(remoteWorksites.firstWhere((e) => e.id == id));
-          } else {
-            int remoteIndex = remoteWorksites.indexWhere((e) => e.id == id);
-            if (remoteIndex == -1) {
-              worksites.add(localWorksites[localIndex]);
-            } else {
-              if (localWorksites[localIndex]
-                  .dateUpdated
-                  .isAfter(remoteWorksites[remoteIndex].dateUpdated)) {
-                worksites.add(localWorksites[localIndex]);
-              } else {
-                worksites.add(remoteWorksites[remoteIndex]);
-              }
-            }
-          }
-        });
-      } on HttpException catch (e) {
-        switch (e.response) {
-          case HttpResponse.ServiceUnavailable:
-            worksites = (await _worksiteFileIOService
-                        .readDataFile(Dir_WorksiteFileString))
-                    ?.where((e) => e.ownerId == user.id)
-                    .toList() ??
-                <Worksite>[];
-          default:
-            rethrow;
-        }
-      }
-      worksites = await _worksiteCache.storeBulk(worksites);
-      _haveLoadedUserWorksites = true;
-      return worksites;
-      //Skipping checking saved file for deleting worksites on server. Push to Milestone 3
-    } else {
-      return await _worksiteCache.getAll();
-    }
+    return _worksiteCache.getUserWorksites(user);
   }
 
   Future<Worksite?> getWorksiteById(String id) async {
@@ -176,8 +122,8 @@ class ChangeManager {
   Future<bool> deleteWorksite(Worksite worksite) async {
     try {
       if (!worksite.id.startsWith(ID_TempIDPrefix)) {
-        await _worksiteDataConnectionService.delete(
-            API_WorksitePath, worksite.id);
+        await _worksiteDataConnectionService
+            .delete(API_WorksitePath, [worksite.id]);
       }
       List<String> itemIds = [];
       List<String> checklistDayIds = [];
@@ -212,8 +158,19 @@ class ChangeManager {
   }
 
   //TEMP IMPELMENTATION
+  //dirty implementation to preload checklist days and Items. I Fing hate this.
+  HashSet<String> _checklistIds = HashSet<String>();
   Future<Checklist?> getChecklistById(String id) async {
-    return await _checklistCache.getById(id);
+    Checklist? checklist = await _checklistCache.getById(id);
+    if (_checklistIds.contains(id)) {
+      return checklist;
+    }
+    _checklistIds.add(id);
+    if (checklist != null) {
+      await _checklistDayCache.getChecklistDaysForChecklist(checklist);
+      await _itemCache.loadChecklistItemsForChecklist(checklist);
+    }
+    return checklist;
   }
 
   Future<Checklist> createChecklist(Worksite worksite) async {
@@ -298,8 +255,8 @@ class ChangeManager {
       Worksite worksite, Checklist checklist) async {
     try {
       if (!checklist.id.startsWith(ID_TempIDPrefix)) {
-        await _checklistDataConnectionService.delete(
-            API_ChecklistPath, checklist.id);
+        await _checklistDataConnectionService
+            .delete(API_ChecklistPath, [checklist.id]);
       }
       List<String> itemIds = [];
       List<String> checklistDayIds = [];
@@ -576,7 +533,7 @@ class ChangeManager {
     try {
       if (item.checklistDayId == checklistDay.id) {
         if (!item.id.startsWith(ID_TempIDPrefix)) {
-          await _itemDataConnectionService.delete(API_ItemPath, item.id);
+          await _itemDataConnectionService.delete(API_ItemPath, [item.id]);
         }
         await _removeItem(item.id);
         await _itemFileIOService

@@ -36,7 +36,8 @@ class BaseChecklist extends Entity {
     if (day == null && date == null && id == null) {
       throw Exception('All arguments cannot be null');
     }
-    checklistIdsByDate[(day?.date ?? date)!.toIso8601String()] =
+    DateTime dateKey = day?.date ?? date!;
+    checklistIdsByDate['${dateKey.year}-${dateKey.month}-${dateKey.day}'] =
         (day?.id ?? id)!;
   }
 

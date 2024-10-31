@@ -33,8 +33,15 @@ class CacheService<T extends Entity> extends Cache<T> {
       this._apiPath, this._filePath, this._cacheLocalStorage, this._m)
       : super(_parser, _cacheLocalStorage, _m);
 
-  @override
-  Future<T?> loadById(String key) async {
+  Future<T?> getById(String key) async {
+    return (await super.get([key], (x) async => await loadById(x?.first)))
+        ?.first;
+  }
+
+  Future<T?> loadById(String? key) async {
+    if (key == null) {
+      return null;
+    }
     return await _m.protectWrite(() async {
       T? entity;
       try {
@@ -42,7 +49,7 @@ class CacheService<T extends Entity> extends Cache<T> {
         //This is a temp fix for noow, as we should let the user determine if they want to overwrite the local version.
         T? entityServer = (!(key.startsWith(ID_TempIDPrefix)))
             ? _parser.fromJson(
-                jsonDecode(await _dataConnectionService.get(_apiPath, [key]))
+                jsonDecode(await _dataConnectionService.get("$_apiPath//$key"))
                     .first)
             : null;
         T? entityLocal = await _fileIOService.readDataFileByKey(_filePath, key);
@@ -57,47 +64,63 @@ class CacheService<T extends Entity> extends Cache<T> {
       } on HttpException catch (e) {
         switch (e.response) {
           case HttpResponse.NotFound:
-            await _delete(key);
+            await deleteUnprotected(key);
             return null;
           default:
             entity = await _fileIOService.readDataFileByKey(_filePath, key);
         }
       }
       if (entity != null) {
-        await _store(key, entity);
+        entity = await storeUnprotected(key, entity);
       }
       return entity;
     });
   }
 
-  //should never be called outside a mutex.
-  Future<T> _store(String key, T value) async {
-    if (_m.isWriteLocked) {
-      if (key != value.id) {
-        await _delete(key);
-        key = value.id;
+  Future<List<T>?> LoadBulk(String apiPath, Function(T) comparer) async {
+    List<T> entities = <T>[];
+    try {
+      String? entitiesJsonRemote = await _dataConnectionService.get(apiPath);
+      List<T> localEntities = (await _fileIOService.readDataFile(_filePath))
+              ?.where((e) => comparer(e))
+              .toList() ??
+          <T>[];
+      List<T> remoteEntities = jsonDecode(entitiesJsonRemote)
+          .map<T>((e) => _parser.fromJson(e))
+          .toList();
+      //TEMP IMPELMENTATION: If we have conflciting versions of the same entities, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
+      List<String> ids = localEntities.map((e) => e.id).toList();
+      ids.insertAll(0, remoteEntities.map((e) => e.id));
+      ids.toSet().toList().forEach((id) async {
+        int localIndex = localEntities.indexWhere((e) => e.id == id);
+        if (localIndex == -1) {
+          entities.add(remoteEntities.firstWhere((e) => e.id == id));
+        } else {
+          int remoteIndex = remoteEntities.indexWhere((e) => e.id == id);
+          if (remoteIndex == -1) {
+            entities.add(localEntities[localIndex]);
+          } else {
+            if (localEntities[localIndex]
+                .dateUpdated
+                .isAfter(remoteEntities[remoteIndex].dateUpdated)) {
+              entities.add(localEntities[localIndex]);
+            } else {
+              entities.add(remoteEntities[remoteIndex]);
+            }
+          }
+        }
+      });
+    } on HttpException catch (e) {
+      switch (e.response) {
+        case HttpResponse.ServiceUnavailable:
+          entities = (await _fileIOService.readDataFile(_filePath))
+                  ?.where((e) => comparer(e))
+                  .toList() ??
+              <T>[];
+        default:
+          rethrow;
       }
-      if (!(key.startsWith(ID_TempIDPrefix))) {
-        _cacheCheckSums[key] = value.getChecksum();
-      }
-      _cacheSyncFlags[key] = true;
-      _cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
-      return value;
-    } else {
-      throw Exception("Store must be called within a write lock");
     }
-  }
-
-  //should never be called outside a mutex.
-  Future<void> _delete(String key) async {
-    if (_m.isWriteLocked) {
-      if (!(key.startsWith(ID_TempIDPrefix))) {
-        _cacheCheckSums[key] = EntityState.deleted.toString();
-      }
-      _cacheSyncFlags.remove(key);
-      _cacheLocalStorage.removeItem(key);
-    } else {
-      throw Exception("Store must be called within a write lock");
-    }
+    return await storeBulk(entities);
   }
 }
