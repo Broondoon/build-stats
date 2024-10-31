@@ -22,7 +22,7 @@ class ChecklistDayCache extends CacheService<ChecklistDay> {
       await get(
           checklist.checklistIdsByDate.values.toList(),
           (x) async => await LoadBulk(
-              "$API_DaysOnChecklistPath//${checklist.id}",
+              "$API_DaysOnChecklistPath/${checklist.id}",
               (ChecklistDay x) => x.checklistId == checklist.id));
 }
 
@@ -40,6 +40,6 @@ class ChecklistCache extends CacheService<Checklist> {
       await get(
           worksite.checklistIds ?? [],
           (x) async => await LoadBulk(
-              "$API_ChecklistOnWorksitePath//${worksite.id}",
+              "$API_ChecklistOnWorksitePath/${worksite.id}",
               (Checklist x) => x.worksiteId == worksite.id));
 }

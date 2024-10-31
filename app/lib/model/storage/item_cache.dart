@@ -24,7 +24,7 @@ class ItemCache extends CacheService<Item> {
   Future<List<Item>?> loadChecklistItemsForChecklist(
           Checklist checklist) async =>
       await LoadBulk(
-          "$API_ItemOnChecklistPath//${checklist.id}",
+          "$API_ItemOnChecklistPath/${checklist.id}",
           (Item x) =>
               checklist.checklistIdsByDate.values.contains(x.checklistDayId));
 
@@ -35,7 +35,7 @@ class ItemCache extends CacheService<Item> {
     List<Item> unsortedItems = await get(
             keys,
             (x) async => await LoadBulk(
-                "$API_ItemOnChecklistDayPath//${checklistDay.id}",
+                "$API_ItemOnChecklistDayPath/${checklistDay.id}",
                 (Item x) => x.checklistDayId == checklistDay.id)) ??
         [];
 

@@ -22,12 +22,12 @@ class WorksiteCache extends CacheService<Worksite> {
     if (!_haveLoadedUserWorksites) {
       _haveLoadedUserWorksites = true;
       return await LoadBulk(
-          "$API_WorksiteUserVisiblePath//${user.companyId}//${user.id}",
+          "$API_WorksiteUserVisiblePath/${user.companyId}/${user.id}",
           (Worksite x) => x.ownerId == user.id);
       //Skipping checking saved file for deleting worksites on server. Push to Milestone 3
     } else {
       return await getAll((x) async => await LoadBulk(
-          "$API_WorksiteUserVisiblePath//${user.companyId}//${user.id}",
+          "$API_WorksiteUserVisiblePath/${user.companyId}/${user.id}",
           (Worksite x) => x.ownerId == user.id));
     }
   }
