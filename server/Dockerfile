@@ -4,7 +4,7 @@ FROM dart:stable AS build
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy only the pubspec.yaml and other necessary files, excluding pubspec.lock
+# Copy only the pubspec.yaml files for server and shared
 COPY server/pubspec.yaml server/
 COPY shared/pubspec.yaml shared/
 

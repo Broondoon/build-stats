@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/checklist.dart';
 import 'package:Server/services/cache_service.dart';
 import 'package:mutex/mutex.dart';
@@ -18,7 +20,7 @@ class ChecklistDayCache extends CacheService<ChecklistDay> {
         dateCreated: DateTime.now(),
         dateUpdated: DateTime.now());
     test.addChecklistDay(null, DateTime.now(), ID_ChecklistDayPrefix + "1");
-    testDeepCache[test.id] = test.toJson();
+    testDeepCache[test.id] = jsonEncode(test.toJson());
   }
 }
 
@@ -36,6 +38,6 @@ class ChecklistCache extends CacheService<Checklist> {
         dateCreated: DateTime.now(),
         dateUpdated: DateTime.now());
     test.addItemId('Test', ID_ItemPrefix + "1");
-    testDeepCache[test.id] = test.toJson();
+    testDeepCache[test.id] = jsonEncode(test.toJson());
   }
 }

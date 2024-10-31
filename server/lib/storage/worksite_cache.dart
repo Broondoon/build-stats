@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/worksite.dart';
 import 'package:Server/services/cache_service.dart';
 import 'package:mutex/mutex.dart';
@@ -19,6 +21,6 @@ class WorksiteCache extends CacheService<Worksite> {
         dateCreated: DateTime.now(),
         dateUpdated: DateTime.now());
     test.checklistIds = [ID_ChecklistPrefix + "1"];
-    testDeepCache[test.id] = test.toJson();
+    testDeepCache[test.id] = jsonEncode(test.toJson());
   }
 }

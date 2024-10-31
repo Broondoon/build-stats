@@ -129,7 +129,7 @@ final _staticHandler =
 // Router instance to handler requests.
 final _router = shelf_router.Router()
   ..get(API_Worksite + '/<id>',
-      Injector.appInstance.get<WorksiteHandler>().handleGet)
+      (Injector.appInstance.get<WorksiteHandler>()).handleGet)
   ..get(API_WorksiteUserVisible + '/<companyId>/<userId>',
       Injector.appInstance.get<WorksiteHandler>().handleGetUserVisibleWorksites)
   ..post(API_Worksite, Injector.appInstance.get<WorksiteHandler>().handlePost)
