@@ -3,14 +3,16 @@ import 'package:build_stats_flutter/views/item/item_view.dart';
 import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
 
 // Model Imports:
+import 'package:build_stats_flutter/model/entity/user.dart';
+import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
-import 'package:build_stats_flutter/model/entity/worksite.dart';
-// import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
-// import 'package:build_stats_flutter/model/storage/item_cache.dart';
-// import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
-// import 'package:build_stats_flutter/tutorial_main.dart';
-// import 'package:localstorage/localstorage.dart';
+import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
+import 'package:build_stats_flutter/model/storage/item_cache.dart';
+import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
+import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
+import 'package:build_stats_flutter/model/Domain/change_manager.dart';
+import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 
 // Resource Imports:
 import 'package:build_stats_flutter/resources/app_colours.dart';
@@ -18,9 +20,15 @@ import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 
+// ??? Imports:
+import 'package:shared/cache.dart';
+
 // External Imports:
 import 'package:flutter/material.dart';
+// import 'package:localstorage/localstorage.dart';
+import 'package:mutex/mutex.dart';
 import 'package:provider/provider.dart';
+import 'package:injector/injector.dart';
 
 // BUNK scratch import
 // import 'package:build_stats_flutter/views/scratch.dart';
@@ -29,6 +37,120 @@ void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
   // await initLocalStorage();
   // await initTestStorage();
+
+  final injector = Injector.appInstance;
+
+  injector.registerSingleton<LocalStorage>(() => LocalStorage(ReadWriteMutex()));
+
+  injector.registerDependency<WorksiteFactory>(() => WorksiteFactory());
+  injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
+  injector.registerDependency<ChecklistDayFactory>(() => ChecklistDayFactory());
+  injector.registerDependency<ItemFactory>(() => ItemFactory());
+
+  injector.registerDependency<DataConnection<Worksite>>(
+      () => DataConnection<Worksite>());
+  injector.registerDependency<DataConnection<Checklist>>(
+      () => DataConnection<Checklist>());
+  // TODO: ERRR
+  injector.registerDependency<DataConnection<ChecklistDay>>(
+      () => DataConnection<ChecklistDay>());
+  injector.registerDependency<DataConnection<Item>>(
+      () => DataConnection<Item>());
+
+  injector.registerSingleton<JsonFileAccess<Worksite>>(() {
+    final parser = injector.get<WorksiteFactory>();
+    return JsonFileAccess<Worksite>(parser);
+  });
+
+  injector.registerSingleton<JsonFileAccess<Checklist>>(() {
+    final parser = injector.get<ChecklistFactory>();
+    return JsonFileAccess<Checklist>(parser);
+  });
+
+  injector.registerSingleton<JsonFileAccess<ChecklistDay>>(() {
+    final parser = injector.get<ChecklistDayFactory>();
+    return JsonFileAccess<ChecklistDay>(parser);
+  });
+
+  injector.registerSingleton<JsonFileAccess<Item>>(() {
+    final parser = injector.get<ItemFactory>();
+    return JsonFileAccess<Item>(parser);
+  });
+
+  injector.registerSingleton<WorksiteCache>(() {
+    final dataConnection = injector.get<DataConnection<Worksite>>();
+    final fileIOService = injector.get<JsonFileAccess<Worksite>>();
+    final parser = injector.get<WorksiteFactory>();
+    final storage = injector.get<LocalStorage>();
+    final m = ReadWriteMutex();
+    return WorksiteCache(dataConnection, fileIOService, parser, storage, m); // storage, m);
+  });
+
+  injector.registerSingleton<ChecklistCache>(() {
+    final dataConnection = injector.get<DataConnection<Checklist>>();
+    final fileIOService = injector.get<JsonFileAccess<Checklist>>();
+    final parser = injector.get<ChecklistFactory>();
+    final storage = injector.get<LocalStorage>();
+    final m = ReadWriteMutex();
+    return ChecklistCache(dataConnection, fileIOService, parser, storage, m);
+  });
+
+  injector.registerSingleton<ChecklistDayCache>(() {
+    final dataConnection = injector.get<DataConnection<ChecklistDay>>();
+    final fileIOService = injector.get<JsonFileAccess<ChecklistDay>>();
+    final parser = injector.get<ChecklistDayFactory>();
+    final storage = injector.get<LocalStorage>();
+    final m = ReadWriteMutex();
+    return ChecklistDayCache(dataConnection, fileIOService, parser, storage, m);
+  });
+
+  injector.registerSingleton<ItemCache>(() {
+    final dataConnection = injector.get<DataConnection<Item>>();
+    final fileIOService = injector.get<JsonFileAccess<Item>>();
+    final parser = injector.get<ItemFactory>();
+    final storage = injector.get<LocalStorage>();
+    final m = ReadWriteMutex();
+    return ItemCache(dataConnection, fileIOService, parser, storage, m);
+  });
+
+  injector.registerDependency<ChangeManager>(() {
+    final _worksiteDataConnection = injector.get<DataConnection<Worksite>>();
+    final _checklistDataConnection = injector.get<DataConnection<Checklist>>();
+    final _checklistDayDataConnection = injector.get<DataConnection<ChecklistDay>>();
+    final _itemDataConnection = injector.get<DataConnection<Item>>();
+    final _worksiteCache = injector.get<WorksiteCache>(); // <-- err
+    final _checklistCache = injector.get<ChecklistCache>();
+    final _checklistDayCache = injector.get<ChecklistDayCache>();
+    final _itemCache = injector.get<ItemCache>();
+    final _worksiteFileIOS = injector.get<JsonFileAccess<Worksite>>();
+    final _checklistFileIOS = injector.get<JsonFileAccess<Checklist>>();
+    final _checklistDayFileIOS = injector.get<JsonFileAccess<ChecklistDay>>();
+    final _itemFileIOS = injector.get<JsonFileAccess<Item>>();
+    final _worksiteParser = injector.get<WorksiteFactory>();
+    final _checklistParser = injector.get<ChecklistFactory>();
+    final _checklistDayParser = injector.get<ChecklistDayFactory>();
+    final _itemParser = injector.get<ItemFactory>();
+    return ChangeManager(
+      _worksiteDataConnection,
+      _checklistDataConnection,
+      _checklistDayDataConnection,
+      _itemDataConnection,
+      _worksiteCache,
+      _checklistCache,
+      _checklistDayCache,
+      _itemCache,
+      _worksiteFileIOS,
+      _checklistFileIOS,
+      _checklistDayFileIOS,
+      _itemFileIOS,
+      _worksiteParser,
+      _checklistParser,
+      _checklistDayParser,
+      _itemParser,
+    );
+  });
+
+
   runApp(const MyApp());
 }
 
@@ -280,15 +402,63 @@ class MyChecklistPage extends StatefulWidget {
 }
 
 class _MyChecklistPageState extends State<MyChecklistPage> {
-  // TODO: LOAD THIS FROM DB ON CONSTRUCTION
+  ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+
+  User? currUser;
+  Worksite? currWorksite;
   Checklist? currChecklist;
+  ChecklistDay? currChecklistDay;
   List<Item>? currItems = [];
+
+  DateTime pageDay = DateTime.now();
+
   OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
     super.initState();
-    // _loadItems();
+    _loadItems();
+  }
+
+  Future<void> _loadItems() async {
+    currUser = User(
+      id: 'user_1',
+      companyId: 'company_1',
+      dateCreated: DateTime.now(),
+      dateUpdated: DateTime.now()
+    );
+
+    currWorksite = (await changeManager.getUserWorksites(currUser!))!.first;
+
+    currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds![0]);
+
+    currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+
+    setState(() {
+      // getItemsByCategory() gives ids
+      // getItemById() gives the item I want
+
+      // List<String> categories = currChecklistDay.getCategories();
+      // List<List<String>> idsByCategory = [];
+
+      // categories.forEach((cat) {
+      //   List<String> catIds = currChecklistDay.getItemsByCategory(cat);
+
+      //   List<String>
+      // });
+
+      // currItems = currChecklistDay?.items;
+    });
+  }
+
+  Future _saveChanges() async {
+
+    // Save when you've added checklistIds to this day
+    currChecklistDay = await changeManager.updateChecklistDay(currChecklistDay!, currChecklistDay!.date);
+
+    
+
+
   }
 
   // TODO: Untangle this mess so that we can actually refactor it into a view
@@ -370,17 +540,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   }
 
   void _removeOverlay() {
-      _overlayEntry?.remove();
+    // TODO: SAVE COMMENT
+    _overlayEntry?.remove();
   }
-
-  // TODO: Re-enable loading!
-  // Future<void> _loadItems() async {
-  //   // final Checklist? checklist = await Checklistcache.GetChecklistById("1");
-  //   currChecklist = await ChecklistCache.GetChecklistById("Checklist1");
-  //   setState(() {
-  //     currItems = currChecklist?.items;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -388,8 +550,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     return Scaffold(
       // backgroundColor: Colors.transparent,
       appBar: TopBar(
-        // TODO: USE LOADED NAME
-        appBarText: "Worksite 1",
+        //TODO: TEST THIS WORKS
+        appBarText: currChecklist?.name ?? "N/A",
         isWorksite: true,
       ),
 
@@ -397,7 +559,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
       body: Column(
         children: [
-          DateRow(currChecklist: currChecklist),
+          DateRow(
+            pageDay: pageDay,
+          ),
           
           Expanded(
             child: Padding(

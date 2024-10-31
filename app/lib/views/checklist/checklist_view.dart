@@ -73,14 +73,29 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
 
 /////////////////////////////////////////////////////////////////////////////
 
-class DateRow extends StatelessWidget {
+class DateRow extends StatefulWidget {
   const DateRow({
     super.key,
-    required this.currChecklist,
+    required this.pageDay,
   });
 
-  final Checklist? currChecklist;
+  // final Checklist? currChecklist;
+  final DateTime pageDay;
 
+  @override
+  State<DateRow> createState() => _DateRowState();
+}
+
+class _DateRowState extends State<DateRow> {
+
+  late DateTime _currDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _currDay = widget.pageDay;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -91,17 +106,23 @@ class DateRow extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.arrow_back_ios),
             iconSize: 10,
-            onPressed: () {},
+            onPressed: () {
+              _currDay = _currDay.subtract(Duration(days: 1));
+            },
           ),
       
-          // Text(
-              // "Date: ${currChecklist?.date?.year}-${currChecklist?.date?.month}-${currChecklist?.date?.day}"), // ?? "No date"),
-          Text("2024-08-09", style: MyAppStyle.regularFont,),
+          Text(
+            "Date: ${_currDay.year}-${_currDay.month}-${_currDay.day}",
+            style: MyAppStyle.regularFont,
+          ), // ?? "No date"),
+          // Text("2024-08-09", style: MyAppStyle.regularFont,),
       
           IconButton(
             icon: Icon(Icons.arrow_forward_ios),
             iconSize: 10,
-            onPressed: () {},
+            onPressed: () {
+              _currDay = _currDay.add(Duration(days: 1));
+            },
           ),
         ],
       ),
