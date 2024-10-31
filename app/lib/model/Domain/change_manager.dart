@@ -122,8 +122,8 @@ class ChangeManager {
   Future<bool> deleteWorksite(Worksite worksite) async {
     try {
       if (!worksite.id.startsWith(ID_TempIDPrefix)) {
-        await _worksiteDataConnectionService.delete(
-            API_WorksitePath, worksite.id);
+        await _worksiteDataConnectionService
+            .delete(API_WorksitePath, [worksite.id]);
       }
       List<String> itemIds = [];
       List<String> checklistDayIds = [];
@@ -255,8 +255,8 @@ class ChangeManager {
       Worksite worksite, Checklist checklist) async {
     try {
       if (!checklist.id.startsWith(ID_TempIDPrefix)) {
-        await _checklistDataConnectionService.delete(
-            API_ChecklistPath, checklist.id);
+        await _checklistDataConnectionService
+            .delete(API_ChecklistPath, [checklist.id]);
       }
       List<String> itemIds = [];
       List<String> checklistDayIds = [];
@@ -533,7 +533,7 @@ class ChangeManager {
     try {
       if (item.checklistDayId == checklistDay.id) {
         if (!item.id.startsWith(ID_TempIDPrefix)) {
-          await _itemDataConnectionService.delete(API_ItemPath, item.id);
+          await _itemDataConnectionService.delete(API_ItemPath, [item.id]);
         }
         await _removeItem(item.id);
         await _itemFileIOService

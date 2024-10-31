@@ -12,6 +12,7 @@ dependencies:
     path: ../shared
   localstorage: ^5.0.0
   mutex: ^3.1.0
+  injector: ^4.0.0
 
 dev_dependencies:
   http: ^1.2.2

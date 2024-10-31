@@ -16,15 +16,16 @@ class Checklist extends BaseChecklist {
       : super.fromBaseChecklist();
 
   (bool, String?) getChecklistDayID(DateTime date) {
+    String dateKey = '${date.year}-${date.month}-${date.day}';
     if (checklistIdsByDate.isEmpty) {
       return (false, ID_DefaultBlankChecklistDayID);
-    } else if (checklistIdsByDate.containsKey(date.toIso8601String())) {
-      return (true, checklistIdsByDate[date.toIso8601String()]);
+    } else if (checklistIdsByDate.containsKey(dateKey)) {
+      return (true, checklistIdsByDate[dateKey]);
     } else {
       List<String> keys = checklistIdsByDate.keys.toList();
       keys.sort();
       for (String key in keys.reversed) {
-        if (DateTime.parse(key).isBefore(date)) {
+        if (DateTime.parse(key).isBefore(DateTime.parse(dateKey))) {
           return (
             checklistIdsByDate[key] == ID_DefaultBlankChecklistDayID,
             checklistIdsByDate[key]

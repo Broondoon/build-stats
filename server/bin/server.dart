@@ -5,15 +5,97 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Server/entity/checklist.dart';
+import 'package:Server/entity/item.dart';
+import 'package:Server/entity/worksite.dart';
+import 'package:Server/handlers/checklistDay_handler.dart';
+import 'package:Server/handlers/checklist_handler.dart';
+import 'package:Server/handlers/data_sync_handler.dart';
+import 'package:Server/handlers/item_handler.dart';
+import 'package:Server/handlers/worksite_handler.dart';
+import 'package:Server/storage/checklist_cache.dart';
+import 'package:Server/storage/item_cache.dart';
+import 'package:Server/storage/worksite_cache.dart';
+import 'package:injector/injector.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:mutex/mutex.dart';
+import 'package:shared/app_strings.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import 'package:shelf_static/shelf_static.dart' as shelf_static;
 
 Future<void> main() async {
+  final injector = Injector.appInstance;
+  injector.registerDependency<WorksiteFactory>(() => WorksiteFactory());
+  injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
+  injector.registerDependency<ChecklistDayFactory>(() => ChecklistDayFactory());
+  injector.registerDependency<ItemFactory>(() => ItemFactory());
+
+  injector.registerSingleton<WorksiteCache>(() {
+    final parser = injector.get<WorksiteFactory>();
+    final storage = localStorage;
+    final m = ReadWriteMutex();
+    return WorksiteCache(parser, storage, m);
+  });
+
+  injector.registerDependency<WorksiteHandler>(() {
+    final worksiteCache = injector.get<WorksiteCache>();
+    final parser = injector.get<WorksiteFactory>();
+    return WorksiteHandler(worksiteCache, parser);
+  });
+
+  injector.registerSingleton<ChecklistCache>(() {
+    final parser = injector.get<ChecklistFactory>();
+    final storage = localStorage;
+    final m = ReadWriteMutex();
+    return ChecklistCache(parser, storage, m);
+  });
+
+  injector.registerDependency<ChecklistHandler>(() {
+    final checklistCache = injector.get<ChecklistCache>();
+    final parser = injector.get<ChecklistFactory>();
+    return ChecklistHandler(checklistCache, parser);
+  });
+
+  injector.registerSingleton<ChecklistDayCache>(() {
+    final parser = injector.get<ChecklistDayFactory>();
+    final storage = localStorage;
+    final m = ReadWriteMutex();
+    return ChecklistDayCache(parser, storage, m);
+  });
+
+  injector.registerDependency<ChecklistDayHandler>(() {
+    final checklistDayCache = injector.get<ChecklistDayCache>();
+    final parser = injector.get<ChecklistDayFactory>();
+    return ChecklistDayHandler(checklistDayCache, parser);
+  });
+
+  injector.registerSingleton<ItemCache>(() {
+    final parser = injector.get<ItemFactory>();
+    final storage = localStorage;
+    final m = ReadWriteMutex();
+    return ItemCache(parser, storage, m);
+  });
+
+  injector.registerDependency<ItemHandler>(() {
+    final itemCache = injector.get<ItemCache>();
+    final parser = injector.get<ItemFactory>();
+    return ItemHandler(itemCache, parser);
+  });
+
+  injector.registerDependency<DataSync>(() {
+    final worksiteCache = injector.get<WorksiteCache>();
+    final checklistCache = injector.get<ChecklistCache>();
+    final checklistDayCache = injector.get<ChecklistDayCache>();
+    final itemCache = injector.get<ItemCache>();
+    return DataSync(
+        worksiteCache, checklistCache, checklistDayCache, itemCache);
+  });
+
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
-  final port = int.parse(Platform.environment['PORT'] ?? '8080');
+  final port = int.parse(Platform.environment['PORT'] ?? Server_Port);
 
   // See https://pub.dev/documentation/shelf/latest/shelf/Cascade-class.html
   final cascade = Cascade()
@@ -35,7 +117,7 @@ Future<void> main() async {
   print('Serving at http://${server.address.host}:${server.port}');
 
   // Used for tracking uptime of the demo server.
-  _watch.start();
+  //_watch.start();
 }
 
 // Serve files from the file system.
@@ -44,55 +126,76 @@ final _staticHandler =
 
 // Router instance to handler requests.
 final _router = shelf_router.Router()
-  ..get('/helloworld', _helloWorldHandler)
+  ..get(API_Worksite + '/<id>',
+      Injector.appInstance.get<WorksiteHandler>().handleGet)
+  ..get(API_WorksiteUserVisible + '/<companyId>/<userId>',
+      Injector.appInstance.get<WorksiteHandler>().handleGetUserVisibleWorksites)
+  ..post(API_Worksite, Injector.appInstance.get<WorksiteHandler>().handlePost)
+  ..put(API_Worksite, Injector.appInstance.get<WorksiteHandler>().handlePut)
+  ..delete(
+      API_Worksite, Injector.appInstance.get<WorksiteHandler>().handleDelete)
+  ..get(API_Checklist + '/<id>',
+      Injector.appInstance.get<ChecklistHandler>().handleGet)
   ..get(
-    '/time',
-    (request) => Response.ok(DateTime.now().toUtc().toIso8601String()),
+      API_ChecklistOnWorksite + '/<worksiteId>',
+      Injector.appInstance
+          .get<ChecklistHandler>()
+          .handleGetChecklistsOnWorksite)
+  ..post(
+    API_Checklist,
+    Injector.appInstance.get<ChecklistHandler>().handlePost,
   )
-  ..get('/info.json', _infoHandler)
-  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', _sumHandler);
-
-Response _helloWorldHandler(Request request) => Response.ok('Hello, World!');
-
-String _jsonEncode(Object? data) =>
-    const JsonEncoder.withIndent(' ').convert(data);
-
-const _jsonHeaders = {
-  'content-type': 'application/json',
-};
-
-Response _sumHandler(Request request, String a, String b) {
-  final aNum = int.parse(a);
-  final bNum = int.parse(b);
-  return Response.ok(
-    _jsonEncode({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
-    headers: {
-      ..._jsonHeaders,
-      'Cache-Control': 'public, max-age=604800, immutable',
-    },
-  );
-}
-
-final _watch = Stopwatch();
-
-int _requestCount = 0;
-
-final _dartVersion = () {
-  final version = Platform.version;
-  return version.substring(0, version.indexOf(' '));
-}();
-
-Response _infoHandler(Request request) => Response(
-      200,
-      headers: {
-        ..._jsonHeaders,
-        'Cache-Control': 'no-store',
-      },
-      body: _jsonEncode(
-        {
-          'Dart version': _dartVersion,
-          'uptime': _watch.elapsed.toString(),
-          'requestCount': ++_requestCount,
-        },
-      ),
-    );
+  ..put(
+    API_Checklist,
+    Injector.appInstance.get<ChecklistHandler>().handlePut,
+  )
+  ..delete(
+    API_Checklist,
+    Injector.appInstance.get<ChecklistHandler>().handleDelete,
+  )
+  ..get(
+    API_ChecklistDay + '/<id>',
+    Injector.appInstance.get<ChecklistDayHandler>().handleGet,
+  )
+  ..get(
+    API_DaysOnChecklist + '/<checklistId>',
+    Injector.appInstance.get<ChecklistDayHandler>().handleGetDaysOnChecklist,
+  )
+  ..post(
+    API_ChecklistDay,
+    Injector.appInstance.get<ChecklistDayHandler>().handlePost,
+  )
+  ..put(
+    API_ChecklistDay,
+    Injector.appInstance.get<ChecklistDayHandler>().handlePut,
+  )
+  ..delete(
+    API_ChecklistDay,
+    Injector.appInstance.get<ChecklistDayHandler>().handleDelete,
+  )
+  ..get(
+    API_Item + '/<id>',
+    Injector.appInstance.get<ItemHandler>().handleGet,
+  )
+  ..get(
+    API_ItemOnChecklist + '/<checklistId>',
+    Injector.appInstance.get<ItemHandler>().handleGetItemsOnChecklist,
+  )
+  ..get(
+    API_ItemOnChecklistDay + '/<checklistDayId>',
+    Injector.appInstance.get<ItemHandler>().handleGetItemsOnChecklistDay,
+  )
+  ..post(
+    API_Item,
+    Injector.appInstance.get<ItemHandler>().handlePost,
+  )
+  ..put(
+    API_Item,
+    Injector.appInstance.get<ItemHandler>().handlePut,
+  )
+  ..delete(
+    API_Item,
+    Injector.appInstance.get<ItemHandler>().handleDelete,
+  )
+  ..post(
+      API_DataSync, Injector.appInstance.get<DataSync>().handleCheckCacheSync);

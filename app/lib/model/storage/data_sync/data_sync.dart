@@ -28,6 +28,8 @@ class DataSync {
 
       //get Server responses
       //Temp implementation until the proper Server is setup.
+      //post to server
+
       dynamic serverResponseJson = {
         API_DataObject_WorksiteStateList:
             await _worksiteCache.getCacheCheckStates(),

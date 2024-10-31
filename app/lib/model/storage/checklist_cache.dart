@@ -8,16 +8,14 @@ import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 
 class ChecklistDayCache extends CacheService<ChecklistDay> {
-  ChecklistDayCache(DataConnectionService<ChecklistDay> dataConnectionService,
-      JsonFileAccess<ChecklistDay> fileIOService)
-      : super(
-            dataConnectionService,
-            fileIOService,
-            ChecklistDayFactory(),
-            API_WorksitePath,
-            Dir_ChecklistDayFileString,
-            localStorage,
-            ReadWriteMutex());
+  ChecklistDayCache(
+      DataConnectionService<ChecklistDay> dataConnectionService,
+      JsonFileAccess<ChecklistDay> fileIOService,
+      ChecklistDayFactory parser,
+      LocalStorage localStorage,
+      ReadWriteMutex m)
+      : super(dataConnectionService, fileIOService, parser, API_WorksitePath,
+            Dir_ChecklistDayFileString, localStorage, m);
 
   Future<List<ChecklistDay>?> getChecklistDaysForChecklist(
           Checklist checklist) async =>
@@ -29,16 +27,14 @@ class ChecklistDayCache extends CacheService<ChecklistDay> {
 }
 
 class ChecklistCache extends CacheService<Checklist> {
-  ChecklistCache(DataConnectionService<Checklist> dataConnectionService,
-      JsonFileAccess<Checklist> fileIOService)
-      : super(
-            dataConnectionService,
-            fileIOService,
-            ChecklistFactory(),
-            API_ChecklistDayPath,
-            Dir_ChecklistFileString,
-            localStorage,
-            ReadWriteMutex());
+  ChecklistCache(
+      DataConnectionService<Checklist> dataConnectionService,
+      JsonFileAccess<Checklist> fileIOService,
+      ChecklistFactory parser,
+      LocalStorage localStorage,
+      ReadWriteMutex m)
+      : super(dataConnectionService, fileIOService, parser,
+            API_ChecklistDayPath, Dir_ChecklistFileString, localStorage, m);
 
   Future<List<Checklist>?> getChecklistForWorksite(Worksite worksite) async =>
       await get(

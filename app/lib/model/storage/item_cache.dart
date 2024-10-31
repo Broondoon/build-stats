@@ -11,10 +11,14 @@ import 'package:localstorage/localstorage.dart';
 import 'package:shared/app_strings.dart';
 
 class ItemCache extends CacheService<Item> {
-  ItemCache(DataConnectionService<Item> dataConnectionService,
-      JsonFileAccess<Item> fileIOService)
-      : super(dataConnectionService, fileIOService, ItemFactory(), API_ItemPath,
-            Dir_ItemFileString, localStorage, ReadWriteMutex());
+  ItemCache(
+      DataConnectionService<Item> dataConnectionService,
+      JsonFileAccess<Item> fileIOService,
+      ItemFactory parser,
+      LocalStorage localStorage,
+      ReadWriteMutex m)
+      : super(dataConnectionService, fileIOService, parser, API_ItemPath,
+            Dir_ItemFileString, localStorage, m);
 
   //nasty solution. Need to refactor
   Future<List<Item>?> loadChecklistItemsForChecklist(

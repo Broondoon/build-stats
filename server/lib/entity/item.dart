@@ -20,7 +20,6 @@ class Item extends BaseItem {
 
 class ItemFactory extends BaseItemFactory<Item> {
   @override
-  Item fromJson(Map<String, dynamic> json) {
-    return Item.fromBaseItem(item: super.fromJson(json));
-  }
+  Item fromJson(Map<String, dynamic> json) =>
+      Item.fromBaseItem(item: super.fromJson(json));
 }

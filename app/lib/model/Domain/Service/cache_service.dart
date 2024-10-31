@@ -34,12 +34,11 @@ class CacheService<T extends Entity> extends Cache<T> {
       : super(_parser, _cacheLocalStorage, _m);
 
   Future<T?> getById(String key) async {
-    return (await super.get([key], loadById))?.first;
+    return (await super.get([key], (x) async => await loadById(x?.first)))
+        ?.first;
   }
 
-  @override
-  Future<List<T>?> loadById(List<String>? keys) async {
-    String? key = keys?.first;
+  Future<T?> loadById(String? key) async {
     if (key == null) {
       return null;
     }
@@ -74,8 +73,7 @@ class CacheService<T extends Entity> extends Cache<T> {
       if (entity != null) {
         entity = await storeUnprotected(key, entity);
       }
-      List<T>? entities = entity != null ? [entity] : [];
-      return entities;
+      return entity;
     });
   }
 

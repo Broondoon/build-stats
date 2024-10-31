@@ -4,6 +4,7 @@ class Worksite extends BaseWorksite {
   Worksite({
     required super.id,
     super.ownerId,
+    super.companyId,
     super.checklistIds,
     required super.dateCreated,
     required super.dateUpdated,

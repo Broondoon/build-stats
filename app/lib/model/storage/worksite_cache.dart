@@ -8,16 +8,14 @@ import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 
 class WorksiteCache extends CacheService<Worksite> {
-  WorksiteCache(DataConnectionService<Worksite> dataConnectionService,
-      JsonFileAccess<Worksite> fileIOService)
-      : super(
-            dataConnectionService,
-            fileIOService,
-            WorksiteFactory(),
-            API_WorksitePath,
-            Dir_WorksiteFileString,
-            localStorage,
-            ReadWriteMutex());
+  WorksiteCache(
+      DataConnectionService<Worksite> dataConnectionService,
+      JsonFileAccess<Worksite> fileIOService,
+      WorksiteFactory parser,
+      LocalStorage localStorage,
+      ReadWriteMutex m)
+      : super(dataConnectionService, fileIOService, parser, API_WorksitePath,
+            Dir_WorksiteFileString, localStorage, m);
   bool _haveLoadedUserWorksites = false;
 
   Future<List<Worksite>?> getUserWorksites(User user) async {

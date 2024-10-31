@@ -35,6 +35,8 @@ String API_ItemOnChecklistDayPath = API_Path + API_ItemOnChecklistDay;
 String API_ItemOnChecklist = API_Item + "/onChecklist";
 String API_ItemOnChecklistPath = API_Path + API_ItemOnChecklist;
 
+String API_DataSync = API_Inidcator + "/dataSync";
+
 //API DataOject Strings
 String API_DataObject_WorksiteStateList = "worksiteStates";
 String API_DataObject_ChecklistStateList = "checklistStates";
@@ -47,6 +49,8 @@ String ID_WorksitePrefix = "worksite_";
 String ID_ChecklistPrefix = "checklist_";
 String ID_ChecklistDayPrefix = "checklistDay_";
 String ID_ItemPrefix = "item_";
+String ID_UserPrefix = "user_";
+String ID_CompanyPrefix = "company_";
 String ID_DefaultBlankChecklistDayID =
     ID_TempIDPrefix + ID_ChecklistDayPrefix + "-1";
 
