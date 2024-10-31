@@ -2,11 +2,11 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 import 'package:meta/meta.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shared/src/base_entities/entity/entity.dart';
 import 'package:shared/src/base_services/cache/cache_interface.dart';
+import 'package:shared/src/base_services/cache/localStorage.dart';
 
 class Cache<T extends Entity> implements CacheInterface<T> {
   final EntityFactory<T> _parser;
@@ -28,7 +28,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
       for (String key in keys) {
         String? entityJson;
         if (cacheSyncFlags[key] ?? false) {
-          entityJson = _cacheLocalStorage.getItem(key);
+          entityJson = await _cacheLocalStorage.getItem(key);
         }
         if (entityJson == null) {
           missingKeysFound.add(key);
@@ -85,7 +85,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         cacheCheckSums[key] = value.getChecksum();
       }
       cacheSyncFlags[key] = true;
-      _cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
+      await _cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
       return value;
     } else {
       throw Exception("Store must be called within a write lock");
@@ -106,7 +106,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         cacheCheckSums[key] = EntityState.deleted.toString();
       }
       cacheSyncFlags.remove(key);
-      _cacheLocalStorage.removeItem(key);
+      await _cacheLocalStorage.removeItem(key);
     } else {
       throw Exception("Store must be called within a write lock");
     }

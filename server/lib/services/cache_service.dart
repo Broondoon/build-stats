@@ -2,7 +2,6 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 import 'package:meta/meta.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shared/cache.dart';
