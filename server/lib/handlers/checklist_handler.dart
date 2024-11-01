@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/checklist.dart';
 import 'package:Server/handlers/handler.dart';
 import 'package:Server/storage/checklist_cache.dart';
@@ -18,7 +20,13 @@ class ChecklistHandler extends RequestHandler<Checklist> {
                   (Checklist x) => x.worksiteId == worksiteId)))
           ?.where((x) => x.worksiteId == worksiteId)
           .toList();
-      return Response.ok(checklists, headers: {...jsonHeaders});
+      if (checklists == null) {
+        return Response.notFound("No checklists found");
+      } else {
+        return Response.ok(
+            jsonEncode(checklists.map((x) => x.toJsonTransfer())),
+            headers: {...jsonHeaders});
+      }
     } catch (e) {
       return Response.internalServerError(body: e.toString());
     }

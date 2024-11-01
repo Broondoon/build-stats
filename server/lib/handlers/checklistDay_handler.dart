@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/checklist.dart';
 import 'package:Server/handlers/handler.dart';
 import 'package:Server/storage/checklist_cache.dart';
@@ -18,7 +20,13 @@ class ChecklistDayHandler extends RequestHandler<ChecklistDay> {
                   (ChecklistDay x) => x.checklistId == checklistId)))
           ?.where((x) => x.checklistId == checklistId)
           .toList();
-      return Response.ok(checklistDays, headers: {...jsonHeaders});
+      if (checklistDays == null) {
+        return Response.notFound("No checklist days found");
+      } else {
+        return Response.ok(
+            jsonEncode(checklistDays.map((x) => x.toJsonTransfer())),
+            headers: {...jsonHeaders});
+      }
     } catch (e) {
       return Response.internalServerError(body: e.toString());
     }

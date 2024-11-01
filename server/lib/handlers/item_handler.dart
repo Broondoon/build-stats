@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/checklist.dart';
 import 'package:Server/entity/item.dart';
 import 'package:Server/handlers/handler.dart';
@@ -20,6 +22,12 @@ class ItemHandler extends RequestHandler<Item> {
                   (Item x) => x.checklistDayId == checklistDayId)))
           ?.where((x) => x.checklistDayId == checklistDayId)
           .toList();
+      if (items == null) {
+        return Response.notFound("No items found");
+      } else {
+        return Response.ok(jsonEncode(items.map((x) => x.toJsonTransfer())),
+            headers: {...jsonHeaders});
+      }
       return Response.ok(items, headers: {...jsonHeaders});
     } catch (e) {
       return Response.internalServerError(body: e.toString());
@@ -43,7 +51,12 @@ class ItemHandler extends RequestHandler<Item> {
                   checklistDayIds?.contains(x.checklistDayId) ?? false)))
           ?.where((x) => checklistDayIds?.contains(x.checklistDayId) ?? false)
           .toList();
-      return Response.ok(items, headers: {...jsonHeaders});
+      if (items == null) {
+        return Response.notFound("No items found");
+      } else {
+        return Response.ok(jsonEncode(items.map((x) => x.toJsonTransfer())),
+            headers: {...jsonHeaders});
+      }
     } catch (e) {
       return Response.internalServerError(body: e.toString());
     }

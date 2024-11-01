@@ -27,7 +27,9 @@ class Cache<T extends Entity> implements CacheInterface<T> {
       List<String> missingKeysFound = [];
       for (String key in keys) {
         String? entityJson;
-        if (cacheSyncFlags[key] ?? false) {
+        //TODO: Get Sync working in the background. Dirty work around to ignore the cache otherwise.
+        if ((key.startsWith(ID_TempIDPrefix)) &&
+            (cacheSyncFlags[key] ?? false)) {
           entityJson = await _cacheLocalStorage.getItem(key);
         }
         if (entityJson == null) {

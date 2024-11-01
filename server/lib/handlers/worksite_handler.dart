@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Server/entity/worksite.dart';
 import 'package:Server/handlers/handler.dart';
 import 'package:Server/storage/worksite_cache.dart';
@@ -19,7 +21,12 @@ class WorksiteHandler extends RequestHandler<Worksite> {
                   x.ownerId == userId && x.companyId == companyId)))
           ?.where((x) => x.ownerId == userId && x.companyId == companyId)
           .toList();
-      return Response.ok(worksites, headers: {...jsonHeaders});
+      if (worksites == null) {
+        return Response.notFound("No worksites found");
+      } else {
+        return Response.ok(jsonEncode(worksites.map((x) => x.toJsonTransfer())),
+            headers: {...jsonHeaders});
+      }
     } catch (e) {
       return Response.internalServerError(body: e.toString());
     }
