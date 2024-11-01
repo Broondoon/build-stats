@@ -84,9 +84,11 @@ class CacheService<T extends Entity> extends Cache<T> {
               ?.where((e) => comparer(e))
               .toList() ??
           <T>[];
-      List<T> remoteEntities = jsonDecode(entitiesJsonRemote)
-          .map<T>((e) => _parser.fromJson(e))
-          .toList();
+      List<T> remoteEntities = (entitiesJsonRemote?.isEmpty ?? true)
+          ? []
+          : jsonDecode(entitiesJsonRemote)
+              .map<T>((e) => _parser.fromJson(e))
+              .toList();
       //TEMP IMPELMENTATION: If we have conflciting versions of the same entities, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
       List<String> ids = localEntities.map((e) => e.id).toList();
       ids.insertAll(0, remoteEntities.map((e) => e.id));

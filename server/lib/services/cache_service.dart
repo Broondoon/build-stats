@@ -29,6 +29,19 @@ class CacheService<T extends Entity> extends Cache<T> {
   Future<T?> getById(String key) async =>
       (await super.get([key], (x) async => await loadById(x?.first)))?.first;
 
+  @override
+  Future<List<T>?> getAll(Function(List<String>?) onCacheMiss) async {
+    //HACKED. NEED TO FIX
+    if (_cacheLocalStorage.keys.isEmpty) {
+      testDeepCache.forEach((key, value) async {
+        print(value);
+        await _cacheLocalStorage.setItem(key, value);
+      });
+    }
+    print(_cacheLocalStorage.keys);
+    return await get(_cacheLocalStorage.keys.toList(), onCacheMiss);
+  }
+
   Future<T?> loadById(String? key) async {
     if (key == null) {
       return null;

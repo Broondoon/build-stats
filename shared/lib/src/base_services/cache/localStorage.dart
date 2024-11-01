@@ -11,28 +11,38 @@ abstract class LocalStorageInterface {
 class LocalStorage implements LocalStorageInterface {
   late final HashMap<String, String> _storage;
   late final ReadWriteMutex _m;
+  List<String> get keys => _storage.keys.toList();
+  List<String> get values => _storage.values.toList();
+  List<MapEntry<String, String>> get entries => _storage.entries.toList();
   LocalStorage(this._m) {
+    print("Generated Local Storage");
     _storage = HashMap<String, String>();
   }
 
   @override
   Future<String?> getItem(String key) async {
-    return await _m.protectRead(() async {
-      return _storage[key];
-    });
+    print("Getting item from Local Storage");
+    //return await _m.protectRead(() async {
+    print(_storage[key]);
+    return _storage[key];
+    //});
   }
 
   @override
   Future<void> setItem(String key, String value) async {
-    await _m.protectWrite(() async {
-      _storage[key] = value;
-    });
+    print("setting item in Local Storage");
+    //await _m.protectWrite(() async {
+    print("set item in Local Storage");
+    _storage[key] = value;
+    print("item set");
+    print(_storage.entries);
+    //});
   }
 
   @override
   Future<void> removeItem(String key) async {
-    await _m.protectWrite(() async {
-      _storage.remove(key);
-    });
+    //await _m.protectWrite(() async {
+    _storage.remove(key);
+    //});
   }
 }

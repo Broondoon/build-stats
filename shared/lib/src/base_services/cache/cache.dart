@@ -52,7 +52,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
 
   @override
   Future<List<T>?> getAll(Function(List<String>?) onCacheMiss) async {
-    return await get(cacheSyncFlags.keys.toList(), onCacheMiss);
+    return await get(_cacheLocalStorage.keys.toList(), onCacheMiss);
   }
 
   @override

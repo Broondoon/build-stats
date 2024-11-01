@@ -42,7 +42,8 @@
             "name": "all",
             "configurations": [
                 "app",
-                "server"
+                "server",
+                "shared"
             ]
         }
     ]
