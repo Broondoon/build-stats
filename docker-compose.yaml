@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  flutter_app:
+    build:
+      context: ./app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "8080:8080"

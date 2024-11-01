@@ -361,7 +361,7 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
     return Scaffold(
       appBar: TopBar(
         appBarText: "Worksites",
-        isWorksite: false,
+        worksiteDate: null,
       ),
       body: Material(
         child: Padding(
@@ -411,6 +411,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   List<Item>? currItems = [];
 
   DateTime pageDay = DateTime.now();
+  late DateTime startDay = pageDay;
 
   OverlayEntry? _overlayEntry;
 
@@ -438,32 +439,36 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       // getItemsByCategory() gives ids
       // getItemById() gives the item I want
 
-      // List<String> categories = currChecklistDay.getCategories();
-      // List<List<String>> idsByCategory = [];
+      List<String> categories = currChecklistDay!.getCategories();
+      List<List<String>> idsByCategory = [];
 
-      // categories.forEach((cat) {
-      //   List<String> catIds = currChecklistDay.getItemsByCategory(cat);
+      categories.forEach((cat) {
+        List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
+        
+        // catIds.forEach((id)) {
 
-      //   List<String>
-      // });
+        // }
+      });
 
-      // currItems = currChecklistDay?.items;
     });
   }
 
-  Future _saveChanges() async {
+  Future<void> _saveChanges() async {
 
     // Save when you've added checklistIds to this day
     currChecklistDay = await changeManager.updateChecklistDay(currChecklistDay!, currChecklistDay!.date);
 
-    
+    currChecklist = await changeManager.updateChecklist(currChecklist!);
 
+    // changeManager.updateItem(item, currChecklistDay!, pageDay);
 
+    changeManager.updateWorksite(currWorksite!);
   }
 
   // TODO: Untangle this mess so that we can actually refactor it into a view
   void showCommentOverlay(BuildContext context) {
     // TODO: LOAD COMMENTS WHEN RAN
+    String _comments;
 
     _overlayEntry = OverlayEntry (
       builder: (context) => Stack(
@@ -541,7 +546,17 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
   void _removeOverlay() {
     // TODO: SAVE COMMENT
+
     _overlayEntry?.remove();
+  }
+
+  void _updatePageDay(DateTime newDay) {
+    setState(() {
+      pageDay = newDay;
+      // It works! :)
+      // print("NEW DAY");
+      // print(pageDay);
+    });
   }
 
   @override
@@ -552,7 +567,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       appBar: TopBar(
         //TODO: TEST THIS WORKS
         appBarText: currChecklist?.name ?? "N/A",
-        isWorksite: true,
+        worksiteDate: startDay,
       ),
 
       bottomNavigationBar: NavBottomBar(),
@@ -561,6 +576,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
         children: [
           DateRow(
             pageDay: pageDay,
+            onDateChange: _updatePageDay,
           ),
           
           Expanded(

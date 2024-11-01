@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
   final String appBarText;
-  final bool isWorksite;
+  final DateTime? worksiteDate;
   
   const TopBar({
     super.key,
     required this.appBarText,
-    required this.isWorksite,
+    required this.worksiteDate,
   });
 
   @override
@@ -21,14 +21,14 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false, // <--- Uncomment this to remove app bar back button
       // See: https://stackoverflow.com/questions/44978216/flutter-remove-back-button-on-appbar
       backgroundColor: MyAppColours.g4,
-      actions: isWorksite 
+      actions: worksiteDate != null
         ? [
           Padding(
             // Weird thing but the actions text was 1 pixel lower than the title.
             padding: const EdgeInsets.fromLTRB(0, 0, 16.0, 1.0), //EdgeInsets.only(right: 8.0),
             child: Text(
               // TODO: THIS NEEDS TO BE DYNAMIC
-              "Start Date: 2024-08-09",
+              "Start Date: ${worksiteDate!.year}-${worksiteDate!.month}-${worksiteDate!.day}",
               style: MyAppStyle.largeFont,
             ),
           ),

@@ -77,10 +77,12 @@ class DateRow extends StatefulWidget {
   const DateRow({
     super.key,
     required this.pageDay,
+    required this.onDateChange,
   });
 
   // final Checklist? currChecklist;
   final DateTime pageDay;
+  final ValueChanged<DateTime> onDateChange;
 
   @override
   State<DateRow> createState() => _DateRowState();
@@ -95,6 +97,19 @@ class _DateRowState extends State<DateRow> {
     super.initState();
     _currDay = widget.pageDay;
   }
+
+  void changeDateTime(bool increment) {
+    setState(() {
+      if (increment) {
+        _currDay = _currDay.add(Duration(days: 1));
+      }
+      else {
+        _currDay = _currDay.subtract(Duration(days: 1));
+      }
+
+      widget.onDateChange(_currDay);
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -107,7 +122,7 @@ class _DateRowState extends State<DateRow> {
             icon: Icon(Icons.arrow_back_ios),
             iconSize: 10,
             onPressed: () {
-              _currDay = _currDay.subtract(Duration(days: 1));
+              changeDateTime(false);
             },
           ),
       
@@ -121,7 +136,7 @@ class _DateRowState extends State<DateRow> {
             icon: Icon(Icons.arrow_forward_ios),
             iconSize: 10,
             onPressed: () {
-              _currDay = _currDay.add(Duration(days: 1));
+              changeDateTime(true);
             },
           ),
         ],
