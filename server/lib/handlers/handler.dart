@@ -40,7 +40,7 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
       entity.id = entity.id.replaceAll(ID_TempIDPrefix, "");
       T? entityResponse = await _cache.store(entity.id, entity);
       return Response.ok(
-        jsonEncode(entityResponse.toJsonTransfer()),
+        jsonEncode(entityResponse),
         headers: {...jsonHeaders},
       );
     } catch (e) {
@@ -54,7 +54,7 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
       T entity = _parser.fromJson(jsonDecode((await request.readAsString())));
       T? entityResponse = await _cache.store(entity.id, entity);
       return Response.ok(
-        jsonEncode(entityResponse.toJsonTransfer()),
+        entityResponse.toJsonTransfer(),
         headers: {...jsonHeaders},
       );
     } catch (e) {

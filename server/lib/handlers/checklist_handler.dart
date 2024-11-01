@@ -23,9 +23,7 @@ class ChecklistHandler extends RequestHandler<Checklist> {
       if (checklists == null) {
         return Response.notFound("No checklists found");
       } else {
-        return Response.ok(
-            jsonEncode(checklists.map((x) => x.toJsonTransfer())),
-            headers: {...jsonHeaders});
+        return Response.ok(jsonEncode(checklists), headers: {...jsonHeaders});
       }
     } catch (e) {
       return Response.internalServerError(body: e.toString());

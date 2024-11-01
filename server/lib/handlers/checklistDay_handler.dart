@@ -23,8 +23,7 @@ class ChecklistDayHandler extends RequestHandler<ChecklistDay> {
       if (checklistDays == null) {
         return Response.notFound("No checklist days found");
       } else {
-        return Response.ok(
-            jsonEncode(checklistDays.map((x) => x.toJsonTransfer())),
+        return Response.ok(jsonEncode(checklistDays),
             headers: {...jsonHeaders});
       }
     } catch (e) {

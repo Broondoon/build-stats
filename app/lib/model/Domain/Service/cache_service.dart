@@ -48,8 +48,8 @@ class CacheService<T extends Entity> extends Cache<T> {
         //This is a temp fix for noow, as we should let the user determine if they want to overwrite the local version.
         T? entityServer = (!(key.startsWith(ID_TempIDPrefix)))
             ? _parser.fromJson(
-                jsonDecode(await _dataConnectionService.get("$_apiPath//$key"))
-                    .first)
+                jsonDecode(await _dataConnectionService.get("$_apiPath/$key"))
+                    as Map<String, dynamic>)
             : null;
         T? entityLocal = await _fileIOService.readDataFileByKey(_filePath, key);
 
@@ -68,6 +68,8 @@ class CacheService<T extends Entity> extends Cache<T> {
           default:
             entity = await _fileIOService.readDataFileByKey(_filePath, key);
         }
+      } catch (e) {
+        rethrow;
       }
       if (entity != null) {
         entity = await storeUnprotected(key, entity);
@@ -86,9 +88,11 @@ class CacheService<T extends Entity> extends Cache<T> {
           <T>[];
       List<T> remoteEntities = (entitiesJsonRemote?.isEmpty ?? true)
           ? []
-          : jsonDecode(entitiesJsonRemote)
-              .map<T>((e) => _parser.fromJson(e))
-              .toList();
+          : (jsonDecode(entitiesJsonRemote) as List<dynamic>)
+              .map<T>((dynamic e) =>
+                  _parser.fromJson(e as Map<String, dynamic>) as T)
+              .toList()
+              .cast<T>();
       //TEMP IMPELMENTATION: If we have conflciting versions of the same entities, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
       List<String> ids = localEntities.map((e) => e.id).toList();
       ids.insertAll(0, remoteEntities.map((e) => e.id));

@@ -24,7 +24,8 @@ class WorksiteHandler extends RequestHandler<Worksite> {
       if (worksites == null) {
         return Response.notFound("No worksites found");
       } else {
-        return Response.ok(jsonEncode(worksites.map((x) => x.toJsonTransfer())),
+        return Response.ok(
+            jsonEncode(worksites /*.map((x) => x.toJsonTransfer())*/),
             headers: {...jsonHeaders});
       }
     } catch (e) {

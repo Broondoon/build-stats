@@ -25,8 +25,7 @@ class ItemHandler extends RequestHandler<Item> {
       if (items == null) {
         return Response.notFound("No items found");
       } else {
-        return Response.ok(jsonEncode(items.map((x) => x.toJsonTransfer())),
-            headers: {...jsonHeaders});
+        return Response.ok(jsonEncode(items), headers: {...jsonHeaders});
       }
       return Response.ok(items, headers: {...jsonHeaders});
     } catch (e) {
@@ -54,8 +53,7 @@ class ItemHandler extends RequestHandler<Item> {
       if (items == null) {
         return Response.notFound("No items found");
       } else {
-        return Response.ok(jsonEncode(items.map((x) => x.toJsonTransfer())),
-            headers: {...jsonHeaders});
+        return Response.ok(jsonEncode(items), headers: {...jsonHeaders});
       }
     } catch (e) {
       return Response.internalServerError(body: e.toString());
