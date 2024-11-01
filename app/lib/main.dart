@@ -1,4 +1,6 @@
 // View Imports:
+import 'dart:io';
+
 import 'package:build_stats_flutter/views/item/item_view.dart';
 import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
 
@@ -40,7 +42,8 @@ void main() async {
 
   final injector = Injector.appInstance;
 
-  injector.registerSingleton<LocalStorage>(() => LocalStorage(ReadWriteMutex()));
+  injector
+      .registerSingleton<LocalStorage>(() => LocalStorage(ReadWriteMutex()));
 
   injector.registerDependency<WorksiteFactory>(() => WorksiteFactory());
   injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
@@ -54,8 +57,8 @@ void main() async {
   // TODO: ERRR
   injector.registerDependency<DataConnection<ChecklistDay>>(
       () => DataConnection<ChecklistDay>());
-  injector.registerDependency<DataConnection<Item>>(
-      () => DataConnection<Item>());
+  injector
+      .registerDependency<DataConnection<Item>>(() => DataConnection<Item>());
 
   injector.registerSingleton<JsonFileAccess<Worksite>>(() {
     final parser = injector.get<WorksiteFactory>();
@@ -83,7 +86,8 @@ void main() async {
     final parser = injector.get<WorksiteFactory>();
     final storage = injector.get<LocalStorage>();
     final m = ReadWriteMutex();
-    return WorksiteCache(dataConnection, fileIOService, parser, storage, m); // storage, m);
+    return WorksiteCache(
+        dataConnection, fileIOService, parser, storage, m); // storage, m);
   });
 
   injector.registerSingleton<ChecklistCache>(() {
@@ -116,7 +120,8 @@ void main() async {
   injector.registerDependency<ChangeManager>(() {
     final _worksiteDataConnection = injector.get<DataConnection<Worksite>>();
     final _checklistDataConnection = injector.get<DataConnection<Checklist>>();
-    final _checklistDayDataConnection = injector.get<DataConnection<ChecklistDay>>();
+    final _checklistDayDataConnection =
+        injector.get<DataConnection<ChecklistDay>>();
     final _itemDataConnection = injector.get<DataConnection<Item>>();
     final _worksiteCache = injector.get<WorksiteCache>(); // <-- err
     final _checklistCache = injector.get<ChecklistCache>();
@@ -149,9 +154,12 @@ void main() async {
       _itemParser,
     );
   });
-
-
-  runApp(const MyApp());
+  try {
+    runApp(const MyApp());
+  } catch (e) {
+    print(e);
+    exit(1);
+  }
 }
 
 // Future<void> initTestStorage() async {
@@ -174,7 +182,7 @@ void main() async {
 //       comment: "comment",
 //       creatorId: 1,
 //       verified: true);
-  
+
 //   await WorksiteCache.StoreWorksite(testWorksite);
 //   print("stored worksite");
 //   await ChecklistCache.StoreChecklist(testChecklist);
@@ -235,13 +243,14 @@ class MyLandingPage extends StatelessWidget {
               color: MyAppColours.g5,
             ),
           ),
-
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox( // A sneaky hack! Forces spaceBetween to put things where we want them
+                SizedBox(
+                  // A sneaky hack! Forces spaceBetween to put things where we want them
                   height: 0.0,
                   width: 0.0,
                 ),
@@ -257,25 +266,19 @@ class MyLandingPage extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(
-                            builder: (context) {
-                              return const MyWorksitesPage();
-                            }
-                          )
-                        );
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const MyWorksitesPage();
+                        }));
                       },
                       child: const Text("Project Manager"),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(
-                            builder: (context) {
-                              return const MyChecklistPage();
-                            }
-                          )
-                        );
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const MyChecklistPage();
+                        }));
                       },
                       child: const Text("Foreman"),
                     ),
@@ -305,25 +308,21 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
   // TODO: LOAD FROM DB ON CONSTRUCTION
   List<Widget> worksiteList = [];
   var numWorksites = 0;
-  
+
   void addWorksite() {
     setState(() {
-        numWorksites++;
-        worksiteList.add(
-          // TODO: TELL BACKEND TO CREATE NEW WORKSITE
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context, MaterialPageRoute(
-                  builder: (context) {
-                    // TODO: GET SELECTED CHECKLIST INFO
-                    // AND PASS IT TO THE CHECKLIST PAGE?
-                    return const MyChecklistPage();
-                  }
-                )
-              );
-            },
-            child: SizedBox(
+      numWorksites++;
+      worksiteList.add(
+        // TODO: TELL BACKEND TO CREATE NEW WORKSITE
+        GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              // TODO: GET SELECTED CHECKLIST INFO
+              // AND PASS IT TO THE CHECKLIST PAGE?
+              return const MyChecklistPage();
+            }));
+          },
+          child: SizedBox(
               height: 80,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -349,48 +348,46 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
                   ),
                   Divider(),
                 ],
-              )
-            ),
-          ),
-        );
+              )),
+        ),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopBar(
-        appBarText: "Worksites",
-        worksiteDate: null,
-      ),
-      body: Material(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
-          child: Column(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                // physics: NeverScrollableScrollPhysics(),
-                itemCount: worksiteList.length,
-                itemBuilder: (context, index) {
-                  return worksiteList[index];
-                },
-              ),
-              Spacer(),
-              TextButton(
-                onPressed: () {
-                  addWorksite();
-                },
-                child: Text(
-                  "Create New Worksite",
-                  style: MyAppStyle.regularFont,
-                ),
-              ),
-            ],
-          ),
+        appBar: TopBar(
+          appBarText: "Worksites",
+          worksiteDate: null,
         ),
-      )
-    );
+        body: Material(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemCount: worksiteList.length,
+                  itemBuilder: (context, index) {
+                    return worksiteList[index];
+                  },
+                ),
+                Spacer(),
+                TextButton(
+                  onPressed: () {
+                    addWorksite();
+                  },
+                  child: Text(
+                    "Create New Worksite",
+                    style: MyAppStyle.regularFont,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
 
@@ -423,17 +420,18 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
   Future<void> _loadItems() async {
     currUser = User(
-      id: 'user_1',
-      companyId: 'company_1',
-      dateCreated: DateTime.now(),
-      dateUpdated: DateTime.now()
-    );
+        id: 'user_1',
+        companyId: 'company_1',
+        dateCreated: DateTime.now(),
+        dateUpdated: DateTime.now());
 
     currWorksite = (await changeManager.getUserWorksites(currUser!))!.first;
 
-    currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds![0]);
+    currChecklist =
+        await changeManager.getChecklistById(currWorksite!.checklistIds![0]);
 
-    currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+    currChecklistDay =
+        await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
 
     setState(() {
       // getItemsByCategory() gives ids
@@ -444,19 +442,18 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
       categories.forEach((cat) {
         List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
-        
+
         // catIds.forEach((id)) {
 
         // }
       });
-
     });
   }
 
   Future<void> _saveChanges() async {
-
     // Save when you've added checklistIds to this day
-    currChecklistDay = await changeManager.updateChecklistDay(currChecklistDay!, currChecklistDay!.date);
+    currChecklistDay = await changeManager.updateChecklistDay(
+        currChecklistDay!, currChecklistDay!.date);
 
     currChecklist = await changeManager.updateChecklist(currChecklist!);
 
@@ -470,7 +467,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // TODO: LOAD COMMENTS WHEN RAN
     String _comments;
 
-    _overlayEntry = OverlayEntry (
+    _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
           GestureDetector(
@@ -481,11 +478,13 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
               height: double.infinity,
             ),
           ),
-          
-          Positioned( // needed to have overlay from bottom
+          Positioned(
+            // needed to have overlay from bottom
             bottom: 0,
-            child: Material(  // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
-              child: Container(  // ignoring the VS Code suggestion
+            child: Material(
+              // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
+              child: Container(
+                // ignoring the VS Code suggestion
                 width: MediaQuery.of(context).size.width, // * 0.6,
                 height: MediaQuery.of(context).size.height * 0.86,
                 child: Padding(
@@ -508,20 +507,19 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            border: Border.all(
-                              color: MyAppColours.g5,
-                              width: 2.0,
-                            )
-                          ),
+                              border: Border.all(
+                            color: MyAppColours.g5,
+                            width: 2.0,
+                          )),
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+                            padding:
+                                const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
                             // TODO: REFACTOR FOR LOADING AND CODE MANIPULATION OF TEXT CONTENT
                             child: TextField(
                               maxLines: null,
                               decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Start writing something..."
-                              ),
+                                  border: InputBorder.none,
+                                  hintText: "Start writing something..."),
                             ),
                           ),
                         ),
@@ -578,22 +576,20 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             pageDay: pageDay,
             onDateChange: _updatePageDay,
           ),
-          
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   CategoryExpansionTile(catTitle: Text("Labour")),
-                    
                   CategoryExpansionTile(catTitle: Text("Equipment")),
-                    
                   CategoryExpansionTile(catTitle: Text("Materials")),
                 ],
               ),
             ),
           ),
-          
+
           // CommentCard(),
 
           Row(
@@ -604,27 +600,34 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                 height: 40,
                 child: TextButton(
                   // style: MyAppStyle.buttonStyle,
-                  child: Text("Edit", style: MyAppStyle.regularFont,),
+                  child: Text(
+                    "Edit",
+                    style: MyAppStyle.regularFont,
+                  ),
                   onPressed: () {},
                 ),
               ),
-
               SizedBox(
                 width: 100,
                 height: 40,
                 child: TextButton(
                   // style: MyAppStyle.buttonStyle,
-                  child: Text("Submit", style: MyAppStyle.regularFont,),
+                  child: Text(
+                    "Submit",
+                    style: MyAppStyle.regularFont,
+                  ),
                   onPressed: () {},
                 ),
               ),
-
               SizedBox(
                 width: 120,
                 height: 40,
                 child: TextButton(
                   // style: MyAppStyle.buttonStyle,
-                  child: Text("Comments", style: MyAppStyle.regularFont,),
+                  child: Text(
+                    "Comments",
+                    style: MyAppStyle.regularFont,
+                  ),
                   onPressed: () {
                     showCommentOverlay(context);
                   },
@@ -633,7 +636,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             ],
           ),
 
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );

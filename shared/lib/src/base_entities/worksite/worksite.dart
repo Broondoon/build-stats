@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared/app_strings.dart';
 import 'package:shared/src/base_entities/entity/entity.dart';
 
@@ -49,10 +51,8 @@ class BaseWorksite extends Entity {
       'id': id,
       'ownerId': ownerId,
       'companyId': companyId,
-      'checklistIds': checklistIds
-          ?.where((x) => !x.startsWith(ID_TempIDPrefix))
-          .toList()
-          .toString(),
+      'checklistIds':
+          checklistIds?.where((x) => !x.startsWith(ID_TempIDPrefix)).toList(),
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
     };

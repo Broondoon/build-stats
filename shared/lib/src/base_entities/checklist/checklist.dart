@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:shared/app_strings.dart';
 import 'package:shared/src/base_entities/entity/entity.dart';
@@ -17,6 +18,7 @@ class BaseChecklist extends Entity {
     required super.dateUpdated,
     super.flagForDeletion = false,
   }) {
+    name ??= '';
     checklistIdsByDate = HashMap<String, String>();
   }
 
@@ -53,7 +55,7 @@ class BaseChecklist extends Entity {
       'id': id,
       'worksiteId': worksiteId,
       'name': name,
-      'checklistIdsByDate': checklistIdsByDate.toString(),
+      'checklistIdsByDate': checklistIdsByDate,
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
       'flagForDeletion': flagForDeletion,
@@ -68,7 +70,7 @@ class BaseChecklist extends Entity {
       'name': name,
       'checklistIdsByDate': HashMap.fromEntries(checklistIdsByDate.entries
           .where((e) => !e.value.startsWith(ID_TempIDPrefix))
-          .map((e) => MapEntry(e.key, e.value))).toString(),
+          .map((e) => MapEntry(e.key, e.value))),
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
     };
@@ -101,10 +103,10 @@ class BaseChecklistFactory<T extends BaseChecklist> extends EntityFactory<T> {
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
       flagForDeletion: json['flagForDeletion'] ?? false,
     );
-    for (String key in json['checklistIdsByDate'].keys) {
-      result.addChecklistDay(
-          null, DateTime.parse(key), json['checklistIdsByDate'][key]);
-    }
+
+    result.checklistIdsByDate = HashMap<String, String>.from(
+        json['checklistIdsByDate'] ?? <String, String>{});
+
     return result;
   }
 }
@@ -195,7 +197,7 @@ class BaseChecklistDay extends Entity {
       'checklistId': checklistId,
       'date': date.toIso8601String(),
       'comment': comment,
-      'itemsByCatagory': itemsByCatagory.toString(),
+      'itemsByCatagory': itemsByCatagory,
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
       'flagForDeletion': flagForDeletion,
@@ -210,11 +212,8 @@ class BaseChecklistDay extends Entity {
       'date': date.toIso8601String(),
       'comment': comment,
       'itemsByCatagory': HashMap.fromEntries(itemsByCatagory.entries.map((e) =>
-          MapEntry(
-              e.key,
-              e.value
-                  .where((x) => !x.startsWith(ID_TempIDPrefix))
-                  .toList()))).toString(),
+          MapEntry(e.key,
+              e.value.where((x) => !x.startsWith(ID_TempIDPrefix)).toList()))),
       'dateCreated': dateCreated.toIso8601String(),
       'dateUpdated': dateUpdated.toIso8601String(),
     };
@@ -251,7 +250,7 @@ class BaseChecklistDayFactory<T extends BaseChecklistDay>
       flagForDeletion: json['flagForDeletion'] ?? false,
     );
     result.itemsByCatagory = HashMap<String, List<String>>.from(
-        json['itemsByCatagory'] ?? <String, List<String>>{});
+        jsonDecode(json['itemsByCatagory']) ?? <String, List<String>>{});
 
     return result;
   }

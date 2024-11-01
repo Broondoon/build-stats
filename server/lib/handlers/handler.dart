@@ -27,6 +27,8 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
   Future<Response> handleGet(Request request, String id) async {
     try {
       T? entity = await _cache.getById(id);
+      dynamic test = entity?.toJsonTransfer();
+      print(test);
       return Response.ok(entity?.toJsonTransfer(), headers: {...jsonHeaders});
     } catch (e) {
       return Response.internalServerError(body: e.toString());
