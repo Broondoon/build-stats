@@ -203,6 +203,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// TODO: Actually implement the changenotifier
+// Because HOT DANG is it a pain to change things across views
 class MyAppState extends ChangeNotifier {
   Worksite? currWorksite;
   Checklist? currChecklist;
@@ -216,10 +218,10 @@ class MyAppState extends ChangeNotifier {
   }
 
   // About to be deprecated
-  void newItem(List<Widget> currItems) {
-    currItems.add(RowItem());
-    notifyListeners();
-  }
+  // void newItem(List<Widget> currItems) {
+  //   currItems.add(RowItem());
+  //   notifyListeners();
+  // }
 }
 
 class MyLandingPage extends StatelessWidget {
@@ -265,7 +267,7 @@ class MyLandingPage extends StatelessWidget {
                           )
                         );
                       },
-                      child: const Text("Project Manager"),
+                      child: const Text("Office"),
                     ),
                     TextButton(
                       onPressed: () {
@@ -277,7 +279,7 @@ class MyLandingPage extends StatelessWidget {
                           )
                         );
                       },
-                      child: const Text("Foreman"),
+                      child: const Text("Worksite"),
                     ),
                   ],
                 ),
@@ -408,7 +410,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   Worksite? currWorksite;
   Checklist? currChecklist;
   ChecklistDay? currChecklistDay;
-  List<Item>? currItems = [];
+  List<List<String>>? currItemsByCat;
 
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
@@ -418,10 +420,10 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    // _loadEverything();
   }
 
-  Future<void> _loadItems() async {
+  Future<void> _loadEverything() async {
     currUser = User(
       id: 'user_1',
       companyId: 'company_1',
@@ -429,27 +431,26 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       dateUpdated: DateTime.now()
     );
 
-    currWorksite = (await changeManager.getUserWorksites(currUser!))!.first;
+    currWorksite;// = (await changeManager.getUserWorksites(currUser!))!.first;
 
-    currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds![0]);
+    currChecklist;// = await changeManager.getChecklistById(currWorksite!.checklistIds!.first);
 
-    currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+    currChecklistDay;// = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
 
     setState(() {
       // getItemsByCategory() gives ids
       // getItemById() gives the item I want
 
-      List<String> categories = currChecklistDay!.getCategories();
-      List<List<String>> idsByCategory = [];
+      // List<String> categories = currChecklistDay!.getCategories();
+      // currItemsByCat = [];
 
-      categories.forEach((cat) {
-        List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
-        
-        // catIds.forEach((id)) {
+      // categories.forEach((cat) {
+      //   print("CETORGY:");
+      //   print(cat);
 
-        // }
-      });
-
+      //   List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
+      //   currItemsByCat!.add(catIds);
+      // });
     });
   }
 
@@ -559,6 +560,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     });
   }
 
+  // void _update
+
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
@@ -566,7 +569,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       // backgroundColor: Colors.transparent,
       appBar: TopBar(
         //TODO: TEST THIS WORKS
-        appBarText: currChecklist?.name ?? "N/A",
+        appBarText: currChecklist?.name ?? "Worksite 1",
         worksiteDate: startDay,
       ),
 
@@ -575,6 +578,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       body: Column(
         children: [
           DateRow(
+            startDay: startDay,
             pageDay: pageDay,
             onDateChange: _updatePageDay,
           ),
@@ -584,11 +588,29 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  CategoryExpansionTile(catTitle: Text("Labour")),
+                  CategoryExpansionTile(
+                    catTitle: Text("Labour"),
+                    catIds: [], // currItemsByCat![0],
+                    changeManager: changeManager,
+                    checklistDay: null, //currChecklistDay!,
+                    pageDay: pageDay,
+                  ),
                     
-                  CategoryExpansionTile(catTitle: Text("Equipment")),
+                  CategoryExpansionTile(
+                    catTitle: Text("Equipment"),
+                    catIds: [], // currItemsByCat![1],
+                    changeManager: changeManager,
+                    checklistDay: null, // currChecklistDay!,
+                    pageDay: pageDay,
+                  ),
                     
-                  CategoryExpansionTile(catTitle: Text("Materials")),
+                  CategoryExpansionTile(
+                    catTitle: Text("Materials"),
+                    catIds: [], // currItemsByCat![0],
+                    changeManager: changeManager,
+                    checklistDay: null, // currChecklistDay!,
+                    pageDay: pageDay,
+                  ),
                 ],
               ),
             ),
