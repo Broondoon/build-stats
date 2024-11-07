@@ -26,8 +26,16 @@ class CacheService<T extends Entity> extends Cache<T> {
   CacheService(this._parser, this._cacheLocalStorage, this._m)
       : super(_parser, _cacheLocalStorage, _m);
 
-  Future<T?> getById(String key) async =>
-      (await super.get([key], (x) async => await loadById(x?.first)))?.first;
+  Future<T?> getById(String key) async {
+    if (_cacheLocalStorage.keys.isEmpty) {
+      testDeepCache.forEach((key, value) async {
+        print(value);
+        await _cacheLocalStorage.setItem(key, value);
+      });
+    }
+    return (await super.get([key], (x) async => await loadById(x?.first)))
+        ?.first;
+  }
 
   @override
   Future<List<T>?> getAll(Function(List<String>?) onCacheMiss) async {
@@ -67,7 +75,11 @@ class CacheService<T extends Entity> extends Cache<T> {
         // }
 
         //Need to put test data in here for now.
-        entity = _parser.fromJson(jsonDecode(testDeepCache[key]!));
+        print(testDeepCache[key]);
+        print(jsonDecode(testDeepCache[key]!) as Map<String, dynamic>);
+
+        entity = _parser
+            .fromJson(jsonDecode(testDeepCache[key]!) as Map<String, dynamic>);
       } catch (e) {
         rethrow;
       }

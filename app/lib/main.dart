@@ -24,6 +24,7 @@ import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 import 'package:shared/cache.dart';
 
 // External Imports:
+import 'dart:io';
 import 'package:flutter/material.dart';
 // import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
@@ -150,8 +151,12 @@ void main() async {
     );
   });
 
-
-  runApp(const MyApp());
+  try {
+    runApp(const MyApp());
+  } catch (e) {
+    print(e);
+    exit(1);
+  }
 }
 
 // Future<void> initTestStorage() async {

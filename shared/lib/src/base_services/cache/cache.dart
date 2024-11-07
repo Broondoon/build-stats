@@ -47,8 +47,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         .cast<T>();
 
     if (missingKeys.isNotEmpty) {
-      List<T>? missingEntities =
-          await storeBulk(await onCacheMiss(missingKeys));
+      List<T>? missingEntities = await onCacheMiss(missingKeys);
       if (missingEntities != null) {
         entities.addAll(await storeBulk(missingEntities));
       }

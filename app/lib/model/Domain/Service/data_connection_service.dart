@@ -16,6 +16,7 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   @override
   Future<String> get(String path) async {
     try {
+      print("GET: " + path);
       Response response = await http.get(Uri.parse(path));
       if (response.statusCode == 200) {
         return response.body;
@@ -30,6 +31,7 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   @override
   Future<String> post(String path, T value) async {
     try {
+      print("POST: " + path);
       Response response =
           await http.post(Uri.parse(path), body: value.toJson());
       if (response.statusCode == 200) {
@@ -45,6 +47,8 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   @override
   Future<String> put(String path, T value) async {
     try {
+      print("PUT: " + path);
+
       Response response = await http.put(Uri.parse(path), body: value.toJson());
       if (response.statusCode == 200) {
         return response.body;
@@ -59,6 +63,8 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   @override
   Future<void> delete(String path, List<String> keys) async {
     try {
+      print("DEKETE: " + path);
+
       Response response =
           await http.delete(Uri.parse(path), body: jsonEncode(keys));
       if (response.statusCode == 200) {

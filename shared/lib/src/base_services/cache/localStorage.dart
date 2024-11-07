@@ -32,10 +32,7 @@ class LocalStorage implements LocalStorageInterface {
   Future<void> setItem(String key, String value) async {
     print("setting item in Local Storage");
     //await _m.protectWrite(() async {
-    print("set item in Local Storage");
     _storage[key] = value;
-    print("item set");
-    print(_storage.entries);
     //});
   }
 
