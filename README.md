@@ -3,6 +3,8 @@ SENG 480A Startup Programming project repository. SiteReady - bridging the const
 
 The **Project Page** can be found [here](https://sitereadycommunication.wordpress.com/).
 
+A **Live Demo** can be found [here](https://broondoon.github.io/siteready_demopage/).
+
 **Looking for deliverables?** Check out [the Wiki for this project](https://github.com/Broondoon/build-stats/wiki)
 
 ---
