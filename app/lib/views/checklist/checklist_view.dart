@@ -1,3 +1,5 @@
+import 'package:build_stats_flutter/model/Domain/change_manager.dart';
+import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +12,18 @@ import 'package:build_stats_flutter/views/item/item_view.dart';
 
 class CategoryExpansionTile extends StatefulWidget {
   final Text catTitle;
+  final List<String> catIds;
+  final ChangeManager changeManager;
+  final ChecklistDay? checklistDay;
+  final DateTime pageDay;
 
   CategoryExpansionTile({
     super.key,
     required this.catTitle,
+    required this.catIds,
+    required this.changeManager,
+    this.checklistDay,
+    required this.pageDay,
   });
 
   @override
@@ -22,11 +32,61 @@ class CategoryExpansionTile extends StatefulWidget {
 
 class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
   // TODO: LOAD THIS DYNAMICALLY
-  List<Widget> _elemList = [];
+  late List<Widget> _elemList;
+  late List<String> _idList;
+  late ChangeManager _changeManager;
 
-  void _addRowItem() {
+  @override
+  // TODO: declare this as async
+  void initState() {
+    super.initState();
+    _idList = widget.catIds;
+    _changeManager = widget.changeManager;
+    
+    // TODO: REMOVE THIS IT JUST PREVENTS AN ERROR
+    _elemList = [];
+
+    _loadItems();
+  }
+
+  Future<void> _loadItems() async {
+    _elemList = [];
+
+    for (String id in _idList) {
+      Item? item = await _changeManager.getItemById(id);
+      if (item != null) {
+        
+        _elemList.add(
+          RowItem(
+            item: item,
+            changeManager: _changeManager,
+            checklistDay: widget.checklistDay,
+            pageDay: widget.pageDay,
+          )
+        );
+      }
+    }
+  }
+
+  void _addRowItem() async {
+
+    Item? newItem;
+
+    // Item newItem = await _changeManager.createItem(
+    //   widget.checklistDay, 
+    //   widget.catTitle.data!,
+    // );
+
     setState(() {
-      _elemList.add(RowItem());
+      // _elemList.add(RowItem());
+      _elemList.add(
+        RowItem(
+          item: newItem,
+          changeManager: _changeManager,
+          checklistDay: widget.checklistDay,
+          pageDay: widget.pageDay,
+        )
+      );
     });
   }
 
@@ -76,11 +136,13 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
 class DateRow extends StatefulWidget {
   const DateRow({
     super.key,
+    required this.startDay,
     required this.pageDay,
     required this.onDateChange,
   });
 
   // final Checklist? currChecklist;
+  final DateTime startDay;
   final DateTime pageDay;
   final ValueChanged<DateTime> onDateChange;
 
@@ -89,12 +151,13 @@ class DateRow extends StatefulWidget {
 }
 
 class _DateRowState extends State<DateRow> {
-
+  late DateTime _startDay;
   late DateTime _currDay;
 
   @override
   void initState() {
     super.initState();
+    _startDay = widget.startDay;
     _currDay = widget.pageDay;
   }
 
@@ -104,7 +167,9 @@ class _DateRowState extends State<DateRow> {
         _currDay = _currDay.add(Duration(days: 1));
       }
       else {
-        _currDay = _currDay.subtract(Duration(days: 1));
+        if (_currDay.isAfter(_startDay)) {
+          _currDay = _currDay.subtract(Duration(days: 1));
+        }
       }
 
       widget.onDateChange(_currDay);
