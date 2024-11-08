@@ -1,7 +1,7 @@
 # SiteReady v0.9
 SENG 480A Startup Programming project repository. SiteReady - bridging the construction communication gap between office and worksite.
 
-The **Project Page** can be found [here](https://buildstatscommunication.wordpress.com/).
+The **Project Page** can be found [here](https://sitereadycommunication.wordpress.com/).
 
 **Looking for deliverables?** Check out [the Wiki for this project](https://github.com/Broondoon/build-stats/wiki)
 
