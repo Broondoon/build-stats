@@ -33,6 +33,7 @@ class CacheService<T extends Entity> extends Cache<T> {
         await _cacheLocalStorage.setItem(key, value);
       });
     }
+    var test = await super.get([key], (x) async => await loadById(x?.first));
     return (await super.get([key], (x) async => await loadById(x?.first)))
         ?.first;
   }

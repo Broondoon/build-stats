@@ -1,6 +1,4 @@
 // View Imports:
-import 'dart:io';
-
 import 'package:build_stats_flutter/views/item/item_view.dart';
 import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
 
@@ -21,6 +19,7 @@ import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
+import 'package:shared/app_strings.dart';
 
 // ??? Imports:
 import 'package:shared/cache.dart';
@@ -155,12 +154,36 @@ void main() async {
       _itemParser,
     );
   });
+
   try {
-    runApp(const MyApp());
+    User user = User(
+      id: ID_UserPrefix + "1",
+      companyId: ID_CompanyPrefix + "1",
+      dateCreated: DateTime.now(),
+      dateUpdated: DateTime.now(),
+    );
+
+    var worksites = await injector.get<ChangeManager>().getUserWorksites(user);
+    var worksite = await injector
+        .get<ChangeManager>()
+        .getWorksiteById(worksites!.first.id);
+    var newWorksite = await injector.get<ChangeManager>().createWorksite();
+    var newWorksiteById =
+        await injector.get<ChangeManager>().getWorksiteById(newWorksite.id);
+    var checklist = await injector
+        .get<ChangeManager>()
+        .getChecklistById(worksite!.checklistIds!.first);
   } catch (e) {
     print(e);
     exit(1);
   }
+
+  // try {
+  //   runApp(const MyApp());
+  // } catch (e) {
+  //   print(e);
+  //   exit(1);
+  // }
 }
 
 // Future<void> initTestStorage() async {
