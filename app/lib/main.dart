@@ -1,4 +1,7 @@
 // View Imports:
+import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
+import 'package:build_stats_flutter/views/checklist/old_category_view.dart';
+import 'package:build_stats_flutter/views/comments/comment_view.dart';
 import 'package:build_stats_flutter/views/item/item_view.dart';
 import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
 
@@ -19,6 +22,7 @@ import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
+import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
 
 // ??? Imports:
 import 'package:shared/cache.dart';
@@ -472,73 +476,14 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   }
 
   // TODO: Untangle this mess so that we can actually refactor it into a view
-  void showCommentOverlay(BuildContext context) {
+  void _showCommentOverlay(BuildContext context) {
     // TODO: LOAD COMMENTS WHEN RAN
     String _comments;
 
     _overlayEntry = OverlayEntry (
-      builder: (context) => Stack(
-        children: [
-          GestureDetector(
-            onTap: _removeOverlay,
-            child: Container(
-              color: Colors.black54,
-              width: double.infinity,
-              height: double.infinity,
-            ),
-          ),
-          
-          Positioned( // needed to have overlay from bottom
-            bottom: 0,
-            child: Material(  // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
-              child: Container(  // ignoring the VS Code suggestion
-                width: MediaQuery.of(context).size.width, // * 0.6,
-                height: MediaQuery.of(context).size.height * 0.86,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.,
-                    children: [
-                      Container(
-                        color: MyAppColours.g4,
-                        child: SizedBox(
-                          height: 40,
-                          child: Center(
-                            child: Text(
-                              "Comments",
-                              style: MyAppStyle.regularFont,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: MyAppColours.g5,
-                              width: 2.0,
-                            )
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
-                            // TODO: REFACTOR FOR LOADING AND CODE MANIPULATION OF TEXT CONTENT
-                            child: TextField(
-                              maxLines: null,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Start writing something..."
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+      builder: (context) => BaseOverlay(
+        closefunct: _removeOverlay,
+        overlay: Text("Placeholder"), //TODO: DONT
       ),
     );
 
@@ -565,8 +510,6 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     });
   }
 
-  // void _update
-
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
@@ -591,30 +534,12 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
+              // child: OldCategoryView(changeManager: changeManager, pageDay: pageDay),
               child: Column(
                 children: [
-                  CategoryExpansionTile(
-                    catTitle: Text("Labour"),
-                    catIds: [], // currItemsByCat![0],
-                    changeManager: changeManager,
-                    checklistDay: null, //currChecklistDay!,
-                    pageDay: pageDay,
-                  ),
-                    
-                  CategoryExpansionTile(
-                    catTitle: Text("Equipment"),
-                    catIds: [], // currItemsByCat![1],
-                    changeManager: changeManager,
-                    checklistDay: null, // currChecklistDay!,
-                    pageDay: pageDay,
-                  ),
-                    
-                  CategoryExpansionTile(
-                    catTitle: Text("Materials"),
-                    catIds: [], // currItemsByCat![0],
-                    changeManager: changeManager,
-                    checklistDay: null, // currChecklistDay!,
-                    pageDay: pageDay,
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.add),
                   ),
                 ],
               ),
@@ -623,41 +548,12 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
           
           // CommentCard(),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 100,
-                height: 40,
-                child: TextButton(
-                  // style: MyAppStyle.buttonStyle,
-                  child: Text("Edit", style: MyAppStyle.regularFont,),
-                  onPressed: () {},
-                ),
-              ),
-
-              SizedBox(
-                width: 100,
-                height: 40,
-                child: TextButton(
-                  // style: MyAppStyle.buttonStyle,
-                  child: Text("Submit", style: MyAppStyle.regularFont,),
-                  onPressed: () {},
-                ),
-              ),
-
-              SizedBox(
-                width: 120,
-                height: 40,
-                child: TextButton(
-                  // style: MyAppStyle.buttonStyle,
-                  child: Text("Comments", style: MyAppStyle.regularFont,),
-                  onPressed: () {
-                    showCommentOverlay(context);
-                  },
-                ),
-              ),
-            ],
+          ButtonRow(
+            editFunct: () {},
+            saveFunct: () {},
+            commentFunct: () {
+              _showCommentOverlay(context);
+            },
           ),
 
           SizedBox(height: 20,),
