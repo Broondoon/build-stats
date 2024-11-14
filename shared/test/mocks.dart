@@ -10,6 +10,7 @@ import 'package:mockito/src/dummies.dart' as _i4;
 import 'package:mutex/mutex.dart' as _i6;
 import 'package:shared/src/base_entities/entity/entity.dart' as _i3;
 import 'package:shared/src/base_services/cache/localStorage.dart' as _i5;
+import 'package:shared/src/base_services/cache/localStorage.dart';
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -157,14 +158,14 @@ class MockEntity extends _i1.Mock implements _i3.Entity {
           #toJson,
           [],
         ),
-        returnValue: _i4.dummyValue<String>(
+        returnValue: _i4.dummyValue<Map<String, String>>(
           this,
           Invocation.method(
             #toJson,
             [],
           ),
         ),
-      ) as String);
+      ) as Map<String, String>);
 }
 
 /// A class which mocks [LocalStorage].
@@ -351,4 +352,62 @@ class MockReadWriteMutex extends _i1.Mock implements _i6.ReadWriteMutex {
               ),
             ),
       ) as _i2.Future<T>);
+}
+
+class TestReadWriteMutex extends MockReadWriteMutex {
+  bool _isWriteLocked = false;
+
+  @override
+  bool get isWriteLocked => _isWriteLocked;
+
+  @override
+  Future<T> protectWrite<T>(Future<T> Function()? criticalSection) async {
+    _isWriteLocked = true;
+    try {
+      if (criticalSection != null) {
+        return await criticalSection();
+      } else {
+        throw ArgumentError('criticalSection cannot be null');
+      }
+    } finally {
+      _isWriteLocked = false;
+    }
+  }
+
+  @override
+  Future<T> protectRead<T>(Future<T> Function()? criticalSection) async {
+    if (criticalSection != null) {
+      return await criticalSection();
+    } else {
+      throw ArgumentError('criticalSection cannot be null');
+    }
+  }
+}
+
+class FakeLocalStorage implements LocalStorage {
+  final Map<String, String> _storage = {};
+
+  @override
+  Future<String?> getItem(String key) async {
+    return _storage[key];
+  }
+
+  @override
+  Future<void> setItem(String key, String value) async {
+    _storage[key] = value;
+  }
+
+  @override
+  Future<void> removeItem(String key) async {
+    _storage.remove(key);
+  }
+
+  @override
+  List<String> get keys => _storage.keys.toList();
+
+  @override
+  List<String> get values => _storage.values.toList();
+
+  @override
+  List<MapEntry<String, String>> get entries => _storage.entries.toList();
 }
