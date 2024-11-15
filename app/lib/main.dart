@@ -1,5 +1,7 @@
 // View Imports:
+import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
+import 'package:build_stats_flutter/views/checklist/cat_list_view.dart';
 import 'package:build_stats_flutter/views/checklist/old_category_view.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
 import 'package:build_stats_flutter/views/item/item_view.dart';
@@ -478,12 +480,13 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   // TODO: Untangle this mess so that we can actually refactor it into a view
   void _showCommentOverlay(BuildContext context) {
     // TODO: LOAD COMMENTS WHEN RAN
-    String _comments;
+    String _comments = "placeholder";
 
     _overlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
         closefunct: _removeOverlay,
-        overlay: Text("Placeholder"), //TODO: DONT
+        choice: overlayChoice.comments,
+        comments: _comments,
       ),
     );
 
@@ -531,20 +534,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             onDateChange: _updatePageDay,
           ),
           
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              // child: OldCategoryView(changeManager: changeManager, pageDay: pageDay),
-              child: Column(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          CategoryList(),
           
           // CommentCard(),
 

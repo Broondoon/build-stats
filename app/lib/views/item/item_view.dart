@@ -9,7 +9,8 @@ class RowItem extends StatefulWidget {
     this.item,
     required this.changeManager,
     this.checklistDay,
-    required this.pageDay,
+    // required this.pageDay,
+    this.pageDay, //TODO: tech debt, not sure effects of making not required but I did for bandaid
     // required this.unit,
     // required this.desc,
     // required this.result,
@@ -18,7 +19,7 @@ class RowItem extends StatefulWidget {
   final Item? item;
   final ChangeManager changeManager;
   final ChecklistDay? checklistDay;
-  final DateTime pageDay;
+  final DateTime? pageDay;
   // final String unit;
   // final String desc;
   // final String result;
