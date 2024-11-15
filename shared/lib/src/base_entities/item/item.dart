@@ -51,8 +51,8 @@ class BaseItem extends Entity {
       'comment': comment,
       'creatorId': creatorId,
       'verified': verified,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
       'flagForDeletion': flagForDeletion,
     };
   }
@@ -68,8 +68,8 @@ class BaseItem extends Entity {
       'comment': comment,
       'creatorId': creatorId,
       'verified': verified,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
     };
   }
 
@@ -84,8 +84,8 @@ class BaseItem extends Entity {
       comment ?? '',
       creatorId?.toString() ?? '',
       verified?.toString() ?? '',
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
+      dateCreated.toUtc().toIso8601String(),
+      dateUpdated.toUtc().toIso8601String(),
     ].join('|');
   }
 }

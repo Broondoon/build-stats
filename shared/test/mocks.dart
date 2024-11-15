@@ -3,14 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i2;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i4;
-import 'package:mutex/mutex.dart' as _i6;
+import 'dart:async' as _i2;
 import 'package:shared/src/base_entities/entity/entity.dart' as _i3;
+import 'package:mockito/src/dummies.dart' as _i4;
 import 'package:shared/src/base_services/cache/localStorage.dart' as _i5;
-import 'package:shared/src/base_services/cache/localStorage.dart';
+import 'package:mutex/mutex.dart' as _i6;
+import 'package:shared/src/base_entities/item/item.dart' as _i7;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -248,6 +248,186 @@ class MockEntityFactory<T extends _i3.Entity> extends _i1.Mock
       ));
 }
 
+/// A class which mocks [BaseItem].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockBaseItem extends _i1.Mock implements _i7.BaseItem {
+  MockBaseItem() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  String get checklistDayId => (super.noSuchMethod(
+        Invocation.getter(#checklistDayId),
+        returnValue: _i4.dummyValue<String>(
+          this,
+          Invocation.getter(#checklistDayId),
+        ),
+      ) as String);
+
+  @override
+  set checklistDayId(String? _checklistDayId) => super.noSuchMethod(
+        Invocation.setter(
+          #checklistDayId,
+          _checklistDayId,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set unit(String? _unit) => super.noSuchMethod(
+        Invocation.setter(
+          #unit,
+          _unit,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set desc(String? _desc) => super.noSuchMethod(
+        Invocation.setter(
+          #desc,
+          _desc,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set result(String? _result) => super.noSuchMethod(
+        Invocation.setter(
+          #result,
+          _result,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set comment(String? _comment) => super.noSuchMethod(
+        Invocation.setter(
+          #comment,
+          _comment,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set creatorId(String? _creatorId) => super.noSuchMethod(
+        Invocation.setter(
+          #creatorId,
+          _creatorId,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  set verified(bool? _verified) => super.noSuchMethod(
+        Invocation.setter(
+          #verified,
+          _verified,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  String get id => (super.noSuchMethod(
+        Invocation.getter(#id),
+        returnValue: _i4.dummyValue<String>(
+          this,
+          Invocation.getter(#id),
+        ),
+      ) as String);
+
+  @override
+  set id(String? _id) => super.noSuchMethod(
+        Invocation.setter(
+          #id,
+          _id,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  DateTime get dateCreated => (super.noSuchMethod(
+        Invocation.getter(#dateCreated),
+        returnValue: _FakeDateTime_0(
+          this,
+          Invocation.getter(#dateCreated),
+        ),
+      ) as DateTime);
+
+  @override
+  set dateCreated(DateTime? _dateCreated) => super.noSuchMethod(
+        Invocation.setter(
+          #dateCreated,
+          _dateCreated,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  DateTime get dateUpdated => (super.noSuchMethod(
+        Invocation.getter(#dateUpdated),
+        returnValue: _FakeDateTime_0(
+          this,
+          Invocation.getter(#dateUpdated),
+        ),
+      ) as DateTime);
+
+  @override
+  set dateUpdated(DateTime? _dateUpdated) => super.noSuchMethod(
+        Invocation.setter(
+          #dateUpdated,
+          _dateUpdated,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  bool get flagForDeletion => (super.noSuchMethod(
+        Invocation.getter(#flagForDeletion),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  set flagForDeletion(bool? _flagForDeletion) => super.noSuchMethod(
+        Invocation.setter(
+          #flagForDeletion,
+          _flagForDeletion,
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  String joinData() => (super.noSuchMethod(
+        Invocation.method(
+          #joinData,
+          [],
+        ),
+        returnValue: _i4.dummyValue<String>(
+          this,
+          Invocation.method(
+            #joinData,
+            [],
+          ),
+        ),
+      ) as String);
+
+  @override
+  String getChecksum() => (super.noSuchMethod(
+        Invocation.method(
+          #getChecksum,
+          [],
+        ),
+        returnValue: _i4.dummyValue<String>(
+          this,
+          Invocation.method(
+            #getChecksum,
+            [],
+          ),
+        ),
+      ) as String);
+}
+
 /// A class which mocks [ReadWriteMutex].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -384,7 +564,7 @@ class TestReadWriteMutex extends MockReadWriteMutex {
   }
 }
 
-class FakeLocalStorage implements LocalStorage {
+class FakeLocalStorage implements _i5.LocalStorage {
   final Map<String, String> _storage = {};
 
   @override

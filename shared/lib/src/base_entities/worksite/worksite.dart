@@ -39,8 +39,8 @@ class BaseWorksite extends Entity {
       'ownerId': ownerId,
       'companyId': companyId,
       'checklistIds': checklistIds,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
       'flagForDeletion': flagForDeletion,
     };
   }
@@ -53,8 +53,8 @@ class BaseWorksite extends Entity {
       'companyId': companyId,
       'checklistIds':
           checklistIds?.where((x) => !x.startsWith(ID_TempIDPrefix)).toList(),
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
     };
   }
 
@@ -68,8 +68,8 @@ class BaseWorksite extends Entity {
               ?.where((element) => !element.startsWith(ID_TempIDPrefix))
               .join(',') ??
           '',
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
+      dateCreated.toUtc().toIso8601String(),
+      dateUpdated.toUtc().toIso8601String(),
     ].join('|');
   }
 }

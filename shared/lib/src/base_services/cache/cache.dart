@@ -46,8 +46,8 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         .cast<T>();
 
     if (missingKeys.isNotEmpty) {
-      List<T>? missingEntities = (await onCacheMiss(missingKeys))!
-          .map((x) => _parser.fromJson(jsonDecode(x)))
+      List<T>? missingEntities = (await onCacheMiss(missingKeys))
+          ?.map((x) => _parser.fromJson(jsonDecode(x)))
           .cast<T>()
           .toList();
       if (missingEntities != null) {
@@ -125,11 +125,11 @@ class Cache<T extends Entity> implements CacheInterface<T> {
       HashMap<String, String> serverCheckSums) async {
     return await _m.protectWrite(() async {
       serverCheckSums.forEach((key, value) async {
-        if (cacheCheckSums[key] != value) {
-          cacheSyncFlags[key] = false;
-        } else if (serverCheckSums[key] == EntityState.deleted.toString()) {
+        if (value == EntityState.deleted.toString()) {
           await deleteUnprotected(key);
           cacheCheckSums.remove(key);
+        } else if (cacheCheckSums[key] != value) {
+          cacheSyncFlags[key] = false;
         }
       });
     });
