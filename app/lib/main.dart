@@ -1,8 +1,8 @@
 // View Imports:
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
-import 'package:build_stats_flutter/views/checklist/cat_list_view.dart';
-import 'package:build_stats_flutter/views/checklist/old_category_view.dart';
+import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
+import 'package:build_stats_flutter/views/categories/old_category_view.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
 import 'package:build_stats_flutter/views/item/item_view.dart';
 import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
@@ -25,6 +25,7 @@ import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ??? Imports:
 import 'package:shared/cache.dart';
@@ -158,7 +159,10 @@ void main() async {
   });
 
   try {
-    runApp(const MyApp());
+    runApp(
+      const MyApp()
+      // const ProviderScope(child: MyApp()),
+    );
   } catch (e) {
     print(e);
     exit(1);
@@ -321,29 +325,31 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
   
   void addWorksite() {
     setState(() {
-        numWorksites++;
-        worksiteList.add(
-          // TODO: TELL BACKEND TO CREATE NEW WORKSITE
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context, MaterialPageRoute(
-                  builder: (context) {
-                    // TODO: GET SELECTED CHECKLIST INFO
-                    // AND PASS IT TO THE CHECKLIST PAGE?
-                    return const MyChecklistPage();
-                  }
-                )
-              );
-            },
-            child: SizedBox(
-              height: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Divider(),
-                  Padding(
+      numWorksites++;
+      worksiteList.add(
+        // TODO: TELL BACKEND TO CREATE NEW WORKSITE
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context, MaterialPageRoute(
+                builder: (context) {
+                  // TODO: GET SELECTED CHECKLIST INFO
+                  // AND PASS IT TO THE CHECKLIST PAGE?
+                  return const MyChecklistPage();
+                },
+              ),
+            );
+          },
+          child: SizedBox(
+            height: 80,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Divider(),
+                InkWell(
+                    
+                  child: Padding(
                     padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -360,12 +366,17 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
                       ],
                     ),
                   ),
-                  Divider(),
-                ],
-              )
+                ),
+                // Divider(),
+              ],
             ),
           ),
-        );
+        ),
+      );
+
+      worksiteList.add(
+        Divider(),
+      );
     });
   }
 
@@ -484,7 +495,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
     _overlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
-        closefunct: _removeOverlay,
+        // closefunct: _removeOverlay,
+        overlayRef: _overlayEntry!,
         choice: overlayChoice.comments,
         comments: _comments,
       ),
@@ -498,18 +510,15 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // });
   }
 
-  void _removeOverlay() {
-    // TODO: SAVE COMMENT
+  // void _removeOverlay() {
+  //   // TODO: SAVE COMMENT
 
-    _overlayEntry?.remove();
-  }
+  //   _overlayEntry?.remove();
+  // }
 
   void _updatePageDay(DateTime newDay) {
     setState(() {
       pageDay = newDay;
-      // It works! :)
-      // print("NEW DAY");
-      // print(pageDay);
     });
   }
 

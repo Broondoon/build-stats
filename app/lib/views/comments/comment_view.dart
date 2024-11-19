@@ -2,13 +2,25 @@
 
 import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
 import 'package:flutter/material.dart';
 
-class CommentSection extends StatelessWidget {
+class CommentSection extends StatefulWidget implements OverlayImpInterface {
   const CommentSection({
     super.key,
   });
 
+  @override
+  void timeToClose() {
+    // ...suposedly implemented by the State class?
+    print("STATED POORLY");
+  }
+
+  @override
+  State<CommentSection> createState() => _CommentSectionState();
+}
+
+class _CommentSectionState extends State<CommentSection> {
   @override
   Widget build(BuildContext context) {
     return Column(

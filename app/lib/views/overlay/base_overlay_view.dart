@@ -1,41 +1,31 @@
 // View Imports:
-
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
 import 'package:build_stats_flutter/views/overlay/new_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/new_worksite_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/old_cat_overlay_view.dart';
+import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
 import 'package:flutter/material.dart';
 
 class BaseOverlay extends StatelessWidget {
   const BaseOverlay({
     super.key,
+    required this.overlayRef,
     required this.choice,
-    this.closefunct = _cursedWorkaround,
-    this.returnfunct = _doublyCursedWorkaround,
+    // required this.closefunct,
     this.comments = "",
   });
 
-  // Lol this is cursed
-  // Aparrently voidcallbacks don't accept params
-  // So TODO I will have to convert closefunct into a Function
-  // and combine both back into one
-  // and then fix the error that'll cause for the comment overlay
-  static void _cursedWorkaround() {}
-  static void _doublyCursedWorkaround() {}
-  // See, onTaps only accept VoidCallbacks
-  // But void func(string) is NOT a voidCallback
-  // So I CANT USE IT? AND WILL NEED A WRAPPER
-
+  final OverlayEntry overlayRef;
   final overlayChoice choice; 
-  final VoidCallback closefunct;
-  final Function returnfunct;
+  // final VoidCallback closefunct;
   final String comments;
+  // final OverlayImpInterface overlay = getOverlay(choice);
 
   // This feels a little silly, and against OOP principles
   // Some kind of inheritance could serve me better, possibly
   // BUT I already made this, and need to move on to other things
-  Widget getOverlay(overlayChoice yourChoice) {
+  OverlayImpInterface getOverlay(overlayChoice yourChoice) {
     switch (yourChoice) {
       case overlayChoice.comments:
         return CommentSection();
@@ -50,13 +40,16 @@ class BaseOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    Widget overlay = getOverlay(choice);
+    OverlayImpInterface overlay = getOverlay(choice);
 
     return Stack(
       children: [
         GestureDetector(
-          onTap: closefunct, //== _cursedWorkaround ? returnfunct : closefunct,
+          // onTap: closefunct, //== _cursedWorkaround ? returnfunct : closefunct,
+          onTap: () {
+            overlay.timeToClose();
+            _removeOverlay();
+          },
           child: Container(
             color: Colors.black54,
             width: double.infinity,
@@ -82,4 +75,9 @@ class BaseOverlay extends StatelessWidget {
       ],
     );
   }
+
+  // Close the overlay
+  void _removeOverlay() {
+    overlayRef.remove();
+  } 
 }

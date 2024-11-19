@@ -3,7 +3,7 @@
 // import 'package:build_stats_flutter/main.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
-import 'package:build_stats_flutter/views/checklist/cat_view.dart';
+import 'package:build_stats_flutter/views/categories/cat_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,8 @@ class _CategoryListState extends State<CategoryList> {
   void showNewCatOverlay() {
     _catOverlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
-        closefunct: _removeNewCatOverlay,
+        overlayRef: _catOverlayEntry!,
+        // closefunct: _removeNewCatOverlay,
         // returnfunct: _removeOverlay,
         choice: overlayChoice.newcategory,
       ),
@@ -57,7 +58,8 @@ class _CategoryListState extends State<CategoryList> {
   void showOldCatOverlay() {
     _catOverlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
-        closefunct: _removeOldCatOverlay,
+        overlayRef: _catOverlayEntry!,
+        // closefunct: _removeOldCatOverlay,
         // returnfunct: _removeOverlay,
         choice: overlayChoice.category,
       ),

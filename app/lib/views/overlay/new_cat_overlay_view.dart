@@ -1,19 +1,29 @@
-// View Imports:
-
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewCat extends StatefulWidget {
+class NewCat extends StatefulWidget implements OverlayImpInterface {
   const NewCat({
     super.key,
+    // required this.ref
   });
+
+  // final WidgetRef ref;
+
+  // late final Function closer = timeToClose;
+
+  // TODO: fix this so that it actually does somthing, because as now it's BROKEN
+  @override
+  void timeToClose() {
+    
+  }
 
   @override
   State<NewCat> createState() => _NewCatState();
 }
 
-class _NewCatState extends State<NewCat> {
-  
+class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
   late String catName = "";
   TextEditingController catNameEdit = TextEditingController();
 
