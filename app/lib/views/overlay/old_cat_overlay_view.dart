@@ -12,10 +12,11 @@ class OldCat extends StatefulWidget implements OverlayImpInterface {
     super.key,
   });
 
+  // TODO: make this work
   @override
   void timeToClose() {
     // ...suposedly implemented by the State class?
-    print("STATED POORLY");
+    // print("STATED POORLY");
   }
 
   @override

@@ -39,7 +39,7 @@ class _CategoryListState extends State<CategoryList> {
     _catOverlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
         overlayRef: _catOverlayEntry!,
-        // closefunct: _removeNewCatOverlay,
+        closefunct: _removeNewCatOverlay,
         // returnfunct: _removeOverlay,
         choice: overlayChoice.newcategory,
       ),
@@ -51,7 +51,7 @@ class _CategoryListState extends State<CategoryList> {
   // TODO: I WANT THE OVERLAY TO GIVE ME INFO?
   // THERE ARE OTHER WAYS THAN CURSED FUNCTION JUGGLING I KNOW IT
   void _removeNewCatOverlay() {//String newCatTitle){
-    _catOverlayEntry?.remove();
+    // _catOverlayEntry?.remove();
     addCat("Labour");
   }
 
@@ -59,7 +59,7 @@ class _CategoryListState extends State<CategoryList> {
     _catOverlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
         overlayRef: _catOverlayEntry!,
-        // closefunct: _removeOldCatOverlay,
+        closefunct: _removeOldCatOverlay,
         // returnfunct: _removeOverlay,
         choice: overlayChoice.category,
       ),
@@ -69,8 +69,7 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   void _removeOldCatOverlay() {//String newCatTitle){
-    _catOverlayEntry?.remove();
-    // addCat(newCatTitle);
+    // _catOverlayEntry?.remove();
   }
 
   // @override

@@ -326,6 +326,13 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
   void addWorksite() {
     setState(() {
       numWorksites++;
+
+      if (numWorksites > 1) {
+        worksiteList.add(
+          Divider(),
+        );
+      }
+
       worksiteList.add(
         // TODO: TELL BACKEND TO CREATE NEW WORKSITE
         InkWell(
@@ -372,10 +379,6 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
             ),
           ),
         ),
-      );
-
-      worksiteList.add(
-        Divider(),
       );
     });
   }
@@ -495,7 +498,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
     _overlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay(
-        // closefunct: _removeOverlay,
+        closefunct: () {}, // _removeOverlay, //TODO: This is bad
         overlayRef: _overlayEntry!,
         choice: overlayChoice.comments,
         comments: _comments,

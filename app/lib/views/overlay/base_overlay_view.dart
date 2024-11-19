@@ -12,13 +12,13 @@ class BaseOverlay extends StatelessWidget {
     super.key,
     required this.overlayRef,
     required this.choice,
-    // required this.closefunct,
+    required this.closefunct,
     this.comments = "",
   });
 
   final OverlayEntry overlayRef;
   final overlayChoice choice; 
-  // final VoidCallback closefunct;
+  final VoidCallback closefunct;
   final String comments;
   // final OverlayImpInterface overlay = getOverlay(choice);
 
@@ -78,6 +78,7 @@ class BaseOverlay extends StatelessWidget {
 
   // Close the overlay
   void _removeOverlay() {
+    closefunct();
     overlayRef.remove();
   } 
 }
