@@ -16,14 +16,16 @@ class ChecklistDayHandler extends RequestHandler<ChecklistDay> {
       Request request, String checklistId) async {
     try {
       List<ChecklistDay>? checklistDays = (await _checklistDayCache.getAll(
-              (x) async => await _checklistDayCache.LoadBulk(
-                  (ChecklistDay x) => x.checklistId == checklistId)))
+              (x) async => null
+              //(x) async => await _checklistDayCache.LoadBulk((ChecklistDay x) => x.checklistId == checklistId)
+              ))
           ?.where((x) => x.checklistId == checklistId)
           .toList();
-      if (checklistDays == null) {
+      if (checklistDays == null || checklistDays.isEmpty) {
         return Response.notFound("No checklist days found");
       } else {
-        return Response.ok(jsonEncode(checklistDays),
+        return Response.ok(
+            jsonEncode(checklistDays.map((x) => x.toJsonTransfer()).toList()),
             headers: {...jsonHeaders});
       }
     } catch (e) {

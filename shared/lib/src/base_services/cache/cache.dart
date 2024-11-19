@@ -10,7 +10,7 @@ import 'package:shared/src/base_services/cache/localStorage.dart';
 
 class Cache<T extends Entity> implements CacheInterface<T> {
   final EntityFactory<T> _parser;
-  final HashMap<String, String> cacheCheckSums = HashMap<String, String>();
+  final Map<String, String> cacheCheckSums = HashMap<String, String>();
   final HashMap<String, bool> cacheSyncFlags = HashMap<String, bool>();
   final ReadWriteMutex _m;
   final LocalStorage _cacheLocalStorage;
@@ -136,7 +136,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
   }
 
   @override
-  Future<HashMap<String, String>> getCacheCheckStates() async {
+  Future<Map<String, String>> getCacheCheckStates() async {
     return cacheCheckSums;
   }
 }

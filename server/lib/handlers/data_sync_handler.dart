@@ -19,32 +19,37 @@ class DataSync {
   final jsonHeaders = {
     'content-type': 'application/json',
   };
-  //default expect that if we send an ID to the server, and the server doesnt have that ID in Cache, we're immediatly flagging that ID for refresh, as it implies that the server went down, and we need to ensure that the server cache is up to date.
 
-  //on server side, we're pretty much just gonna have copies of our cache setups.
-  Future<Response> handleCheckCacheSync(Response response) async {
+  Future<Response> handleCheckCacheSync(Request request) async {
     try {
-      dynamic json = jsonDecode(await response.readAsString());
-      List<String> jsonChecklistIds = json[API_DataObject_ChecklistStateList];
+      dynamic json = jsonDecode(await request.readAsString());
+      List<String> jsonWorksiteIds =
+          json[API_DataObject_WorksiteStateList]?.cast<String>() ?? [];
+      List<String> jsonChecklistIds =
+          json[API_DataObject_ChecklistStateList]?.cast<String>() ?? [];
       List<String> jsonChecklistDayIds =
-          json[API_DataObject_ChecklistDayStateList];
-      List<String> jsonItemIds = json[API_DataObject_ItemStateList];
+          json[API_DataObject_ChecklistDayStateList]?.cast<String>() ?? [];
+      List<String> jsonItemIds =
+          json[API_DataObject_ItemStateList]?.cast<String>() ?? [];
       String userId = json[API_DataObject_UserId];
       String companyId = json[API_DataObject_CompanyId];
 
-      HashMap<String, String> worksiteCheckSums =
+      Map<String, String> worksiteCheckSums =
           await _worksiteCache.getCacheCheckStates();
-      worksiteCheckSums.removeWhere((key, value) => !jsonChecklistIds.contains(
-          key)); //This doesnot filter for worksties the user SHOULDn't have.
-      HashMap<String, String> checklistCheckSums =
+      worksiteCheckSums
+          .removeWhere((key, value) => !jsonWorksiteIds.contains(key));
+
+      Map<String, String> checklistCheckSums =
           await _checklistCache.getCacheCheckStates();
       checklistCheckSums
           .removeWhere((key, value) => !jsonChecklistIds.contains(key));
-      HashMap<String, String> checklistDayCheckSums =
+
+      Map<String, String> checklistDayCheckSums =
           await _checklistDayCache.getCacheCheckStates();
       checklistDayCheckSums
           .removeWhere((key, value) => !jsonChecklistDayIds.contains(key));
-      HashMap<String, String> itemCheckSums =
+
+      Map<String, String> itemCheckSums =
           await _itemCache.getCacheCheckStates();
       itemCheckSums.removeWhere((key, value) => !jsonItemIds.contains(key));
 
@@ -57,7 +62,7 @@ class DataSync {
 
       return Response.ok(jsonEncode(returnData), headers: {...jsonHeaders});
     } catch (e) {
-      rethrow;
+      return Response.internalServerError(body: e.toString());
     }
   }
 }

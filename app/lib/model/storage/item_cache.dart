@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
@@ -11,10 +12,11 @@ import 'package:shared/app_strings.dart';
 import 'package:shared/cache.dart';
 
 class ItemCache extends CacheService<Item> {
+  ItemFactory parser;
   ItemCache(
       DataConnectionService<Item> dataConnectionService,
       JsonFileAccess<Item> fileIOService,
-      ItemFactory parser,
+      this.parser,
       LocalStorage localStorage,
       ReadWriteMutex m)
       : super(dataConnectionService, fileIOService, parser, API_ItemPath,
@@ -23,10 +25,12 @@ class ItemCache extends CacheService<Item> {
   //nasty solution. Need to refactor
   Future<List<Item>?> loadChecklistItemsForChecklist(
           Checklist checklist) async =>
-      await LoadBulk(
-          "$API_ItemOnChecklistPath/${checklist.id}",
-          (Item x) =>
-              checklist.checklistIdsByDate.values.contains(x.checklistDayId));
+      (await LoadBulk(
+              "$API_ItemOnChecklistPath/${checklist.id}",
+              (Item x) => checklist.checklistIdsByDate.values
+                  .contains(x.checklistDayId)))
+          ?.map((e) => parser.fromJson(jsonDecode(e)))
+          .toList();
 
   Future<HashMap<String, List<Item>>> getItemsForChecklistDay(
       ChecklistDay checklistDay) async {

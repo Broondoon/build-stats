@@ -209,8 +209,7 @@ void main() {
       await cache.store(entity1.id, entity1);
       await cache.store(entity2.id, entity2);
 
-      HashMap<String, String> cacheCheckStates =
-          await cache.getCacheCheckStates();
+      Map<String, String> cacheCheckStates = await cache.getCacheCheckStates();
 
       expect(cacheCheckStates.length, 2);
       expect(cacheCheckStates[entity1.id], entity1.getChecksum());
@@ -227,8 +226,7 @@ void main() {
       await cache.store(entity.id, entity);
 
       // Check that cacheCheckSums does not contain the temp ID
-      HashMap<String, String> cacheCheckStates =
-          await cache.getCacheCheckStates();
+      Map<String, String> cacheCheckStates = await cache.getCacheCheckStates();
       expect(cacheCheckStates.containsKey(entity.id), isFalse);
 
       // cacheSyncFlags should be true
@@ -251,8 +249,7 @@ void main() {
       await cache.setCacheSyncFlags(serverCheckSums);
 
       // cacheCheckSums should not contain the entity
-      HashMap<String, String> cacheCheckStates =
-          await cache.getCacheCheckStates();
+      Map<String, String> cacheCheckStates = await cache.getCacheCheckStates();
       expect(cacheCheckStates.containsKey(entity.id), isFalse);
     });
   });

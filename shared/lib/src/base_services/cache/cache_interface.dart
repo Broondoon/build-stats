@@ -10,6 +10,6 @@ abstract class CacheInterface<T extends Entity> {
   Future<List<T>> storeBulk(List<T> entities);
   Future<T> store(String key, T value);
   Future<void> delete(String key);
-  Future<HashMap<String, String>> getCacheCheckStates();
+  Future<Map<String, String>> getCacheCheckStates();
   Future<void> setCacheSyncFlags(HashMap<String, String> serverCheckSums);
 }

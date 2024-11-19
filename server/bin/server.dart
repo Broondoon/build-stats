@@ -94,6 +94,51 @@ Future<void> main() async {
         worksiteCache, checklistCache, checklistDayCache, itemCache);
   });
 
+  injector.get<WorksiteCache>().store(
+      ID_WorksitePrefix + "1",
+      Worksite(
+        id: ID_WorksitePrefix + "1",
+        companyId: ID_CompanyPrefix + "1",
+        ownerId: ID_UserPrefix + "1",
+        dateCreated: DateTime.now().toUtc(),
+        dateUpdated: DateTime.now().toUtc(),
+      ));
+
+  Checklist checklistTest = Checklist(
+    id: ID_ChecklistPrefix + "1",
+    worksiteId: ID_WorksitePrefix + "1",
+    dateCreated: DateTime.now().toUtc(),
+    dateUpdated: DateTime.now().toUtc(),
+  );
+
+  ChecklistDay checklistDayTest = ChecklistDay(
+    id: ID_ChecklistDayPrefix + "1",
+    checklistId: ID_ChecklistPrefix + "1",
+    date: DateTime.now().toUtc(),
+    dateCreated: DateTime.now().toUtc(),
+    dateUpdated: DateTime.now().toUtc(),
+  );
+  Item itemTest = Item(
+      id: ID_ItemPrefix + "1",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unit: "test unit",
+      desc: "test desc",
+      result: "test result",
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Test', itemTest.id);
+  checklistTest.addChecklistDay(checklistDayTest, null, null);
+
+  injector.get<ChecklistCache>().store(checklistTest.id, checklistTest);
+  injector
+      .get<ChecklistDayCache>()
+      .store(checklistDayTest.id, checklistDayTest);
+  injector.get<ItemCache>().store(itemTest.id, itemTest);
+
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
   final port = int.parse(Platform.environment['PORT'] ?? Server_Port);
