@@ -39,13 +39,15 @@ class BaseChecklist extends Entity {
       throw Exception('All arguments cannot be null');
     }
     DateTime dateUtc = day?.date.toUtc() ?? date!.toUtc();
-    String dateKey = '${dateUtc.year}-${dateUtc.month}-${dateUtc.day}';
+    String dateKey =
+        '${dateUtc.year}-${dateUtc.month.toString().padLeft(2, '0')}-${dateUtc.day.toString().padLeft(2, '0')}';
     checklistIdsByDate[dateKey] = (day?.id ?? id)!;
   }
 
   removeChecklistDay(BaseChecklistDay checklistDay) {
     DateTime dateUtc = checklistDay.date.toUtc();
-    String dateKey = '${dateUtc.year}-${dateUtc.month}-${dateUtc.day}';
+    String dateKey =
+        '${dateUtc.year}-${dateUtc.month.toString().padLeft(2, '0')}-${dateUtc.day.toString().padLeft(2, '0')}';
     if (checklistIdsByDate.containsKey(dateKey)) {
       checklistIdsByDate.remove(dateKey);
     }

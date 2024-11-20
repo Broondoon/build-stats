@@ -34,7 +34,7 @@ class CacheService<T extends Entity> extends Cache<T> {
 
   Future<T?> getById(String key) async {
     return (await super.get([key], (x) async => await loadById(x?.first)))
-        ?.first;
+        ?.firstOrNull;
   }
 
   Future<List<String>?> loadById(String? key) async {

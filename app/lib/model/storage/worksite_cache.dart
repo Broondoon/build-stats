@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/entity/user.dart';
@@ -20,6 +21,9 @@ class WorksiteCache extends CacheService<Worksite> {
       : super(dataConnectionService, fileIOService, parser, API_WorksitePath,
             Dir_WorksiteFileString, localStorage, m);
   bool _haveLoadedUserWorksites = false;
+  void overrideHaveLoadedUserWorksites(bool value) {
+    _haveLoadedUserWorksites = value;
+  }
 
   Future<List<Worksite>?> getUserWorksites(User user) async {
     if (!_haveLoadedUserWorksites) {

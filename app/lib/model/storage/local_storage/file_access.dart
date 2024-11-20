@@ -18,18 +18,34 @@ class JsonFileAccess<T extends Entity> implements FileIOService<T> {
 
   @override
   Future<List<T>?> readDataFile(String path) async {
-    String jsonString = await m.protectRead(() async {
-      final file = await _getDataFile(path);
-      String jsonString = "";
-      if (await file.exists()) {
-        // Read the JSON file
-        jsonString = await file.readAsString();
+    try {
+      // Read the JSON string from the file
+      String jsonString = await m.protectRead(() async {
+        final file = await _getDataFile(path);
+        if (await file.exists()) {
+          return await file.readAsString();
+        }
+        return "";
+      });
+
+      // If the JSON string is empty, return null
+      if (jsonString.isEmpty) {
+        return null;
       }
-      return jsonString;
-    });
-    return jsonString.isNotEmpty
-        ? jsonDecode(jsonString).map((json) => _parser.fromJson(json)).toList()
-        : null;
+
+      // Decode the JSON string into a dynamic list
+      final List<dynamic> decodedJson = jsonDecode(jsonString);
+
+      // Transform each JSON object into an instance of T using the parser
+      final List<T> entities =
+          decodedJson.map((json) => _parser.fromJson(json) as T).toList();
+
+      return entities;
+    } catch (e) {
+      // Handle exceptions as needed (e.g., logging)
+      // For now, return null to indicate failure
+      return null;
+    }
   }
 
   @override
@@ -104,14 +120,31 @@ class JsonFileAccess<T extends Entity> implements FileIOService<T> {
       throw Exception("Mutex is not locked for reading or writing");
     }
     // Parse the JSON file
-    return jsonDecode(await file.readAsString())
-        .map((json) => _parser.fromJson(json))
-        .toList();
+    String? jsonString;
+
+    if (await file.exists()) {
+      jsonString = await file.readAsString();
+      if (jsonString.isNotEmpty) {
+        final List<dynamic> decodedJson = jsonDecode(jsonString);
+        final List<T> entities =
+            decodedJson.map((json) => _parser.fromJson(json) as T).toList();
+        return entities;
+      }
+    }
+    return [];
   }
 
   @override
   Future<T?> readDataFileByKey(String path, String key) async {
-    return (await readDataFile(path))
-        ?.firstWhere((element) => element.id == key);
+    final entities = await readDataFile(path);
+    if (entities == null || entities.isEmpty) {
+      return null;
+    }
+    try {
+      return entities.firstWhere((element) => element.id == key);
+    } catch (e) {
+      // If no element is found, return null
+      return null;
+    }
   }
 }

@@ -63,7 +63,7 @@ void main() {
       final date = DateTime(2021, 1, 1);
       checklist.addChecklistDay(null, date, 'day1');
 
-      expect(checklist.checklistIdsByDate['2021-1-1'], 'day1');
+      expect(checklist.checklistIdsByDate['2021-01-01'], 'day1');
     });
 
     test('removeChecklistDay removes day correctly', () {
@@ -84,10 +84,10 @@ void main() {
       );
 
       checklist.addChecklistDay(day, null, null);
-      expect(checklist.checklistIdsByDate['2021-1-1'], 'day1');
+      expect(checklist.checklistIdsByDate['2021-01-01'], 'day1');
 
       checklist.removeChecklistDay(day);
-      expect(checklist.checklistIdsByDate.containsKey('2021-1-1'), false);
+      expect(checklist.checklistIdsByDate.containsKey('2021-01-01'), false);
     });
 
     test('toJson serializes correctly', () {
@@ -102,7 +102,7 @@ void main() {
         dateUpdated: dateUpdated,
         flagForDeletion: true,
       );
-      checklist.checklistIdsByDate['2021-1-1'] = 'day1';
+      checklist.checklistIdsByDate['2021-01-01'] = 'day1';
 
       final json = checklist.toJson();
 
@@ -110,7 +110,7 @@ void main() {
         'id': 'checklist1',
         'worksiteId': 'worksite123',
         'name': 'Daily Checklist',
-        'checklistIdsByDate': {'2021-1-1': 'day1'},
+        'checklistIdsByDate': {'2021-01-01': 'day1'},
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
         'flagForDeletion': true,
@@ -124,12 +124,12 @@ void main() {
         dateCreated: DateTime.now(),
         dateUpdated: DateTime.now(),
       );
-      checklist.checklistIdsByDate['2021-1-1'] = 'day1';
-      checklist.checklistIdsByDate['2021-1-2'] = 'temp_day2';
+      checklist.checklistIdsByDate['2021-01-01'] = 'day1';
+      checklist.checklistIdsByDate['2021-01-02'] = 'temp_day2';
 
       final json = checklist.toJsonTransfer();
 
-      expect(json['checklistIdsByDate'], {'2021-1-1': 'day1'});
+      expect(json['checklistIdsByDate'], {'2021-01-01': 'day1'});
       expect(json.containsKey('flagForDeletion'), false);
     });
 
@@ -144,13 +144,13 @@ void main() {
         dateCreated: dateCreated,
         dateUpdated: dateUpdated,
       );
-      checklist.checklistIdsByDate['2021-1-1'] = 'day1';
-      checklist.checklistIdsByDate['2021-1-2'] = 'temp_day2';
+      checklist.checklistIdsByDate['2021-01-01'] = 'day1';
+      checklist.checklistIdsByDate['2021-01-02'] = 'temp_day2';
 
       final joinedData = checklist.joinData();
 
       expect(joinedData,
-          'checklist1|worksite123|Daily Checklist|2021-1-1,day1|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z');
+          'checklist1|worksite123|Daily Checklist|2021-01-01,day1|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z');
     });
   });
 
@@ -160,7 +160,7 @@ void main() {
         'id': 'checklist1',
         'worksiteId': 'worksite123',
         'name': 'Daily Checklist',
-        'checklistIdsByDate': {'2021-1-1': 'day1'},
+        'checklistIdsByDate': {'2021-01-01': 'day1'},
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
         'flagForDeletion': true,
@@ -172,7 +172,7 @@ void main() {
       expect(checklist.id, 'checklist1');
       expect(checklist.worksiteId, 'worksite123');
       expect(checklist.name, 'Daily Checklist');
-      expect(checklist.checklistIdsByDate, {'2021-1-1': 'day1'});
+      expect(checklist.checklistIdsByDate, {'2021-01-01': 'day1'});
       expect(checklist.dateCreated, DateTime.parse('2021-01-01T00:00:00.000Z'));
       expect(checklist.dateUpdated, DateTime.parse('2021-01-02T00:00:00.000Z'));
       expect(checklist.flagForDeletion, true);
