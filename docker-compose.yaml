@@ -1,16 +1,31 @@
-version: '3.8'
-
+version: "3.8"
 services:
-  flutter_app:
-    build:
-      context: ./app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - server
-
   server:
     build:
-      context: ./server
+      context: .
+      dockerfile: Dockerfile-server
+    container_name: dart_server
     ports:
-      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./shared:/shared
+
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile-app
+    container_name: flutter_app1
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./shared:/shared
+
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile-app
+    container_name: flutter_app2
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./shared:/shared

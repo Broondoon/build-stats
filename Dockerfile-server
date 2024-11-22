@@ -1,0 +1,18 @@
+# Use a Dart base image
+FROM dart:stable
+
+# Set working directory inside the container
+WORKDIR /server
+
+# Copy the server and shared directories
+COPY ./server /server
+COPY ./shared /shared
+
+# Get dependencies
+RUN dart pub get
+
+# Expose the port used by the server
+EXPOSE 8081
+
+# Command to run the Dart server
+CMD ["dart", "run", "bin/server.dart"]
