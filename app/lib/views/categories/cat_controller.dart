@@ -11,7 +11,7 @@ class NewCatState {
 }
 
 class NewCatNotifier extends StateNotifier<NewCatState> {
-  NewCatNotifier() : super(NewCatState(""));
+  NewCatNotifier() : super(NewCatState(''));
 
   void makeNewCat(String newName) {
     state = NewCatState(newName);

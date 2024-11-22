@@ -1,11 +1,7 @@
 // View Imports:
-import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
 import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
-import 'package:build_stats_flutter/views/categories/old_category_view.dart';
-import 'package:build_stats_flutter/views/comments/comment_view.dart';
-import 'package:build_stats_flutter/views/item/item_view.dart';
-import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
+import 'package:build_stats_flutter/views/date/date_row_view.dart';
 
 // Model Imports:
 import 'package:build_stats_flutter/model/entity/user.dart';
@@ -22,9 +18,11 @@ import 'package:build_stats_flutter/model/Domain/Service/data_connection_service
 // Resource Imports:
 import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
+import 'package:build_stats_flutter/views/worksite/worksites_page_view.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ??? Imports:
@@ -48,7 +46,8 @@ void main() async {
 
   final injector = Injector.appInstance;
 
-  injector.registerSingleton<LocalStorage>(() => LocalStorage(ReadWriteMutex()));
+  injector
+      .registerSingleton<LocalStorage>(() => LocalStorage(ReadWriteMutex()));
 
   injector.registerDependency<WorksiteFactory>(() => WorksiteFactory());
   injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
@@ -62,8 +61,8 @@ void main() async {
   // TODO: ERRR
   injector.registerDependency<DataConnection<ChecklistDay>>(
       () => DataConnection<ChecklistDay>());
-  injector.registerDependency<DataConnection<Item>>(
-      () => DataConnection<Item>());
+  injector
+      .registerDependency<DataConnection<Item>>(() => DataConnection<Item>());
 
   injector.registerSingleton<JsonFileAccess<Worksite>>(() {
     final parser = injector.get<WorksiteFactory>();
@@ -91,7 +90,8 @@ void main() async {
     final parser = injector.get<WorksiteFactory>();
     final storage = injector.get<LocalStorage>();
     final m = ReadWriteMutex();
-    return WorksiteCache(dataConnection, fileIOService, parser, storage, m); // storage, m);
+    return WorksiteCache(
+        dataConnection, fileIOService, parser, storage, m); // storage, m);
   });
 
   injector.registerSingleton<ChecklistCache>(() {
@@ -124,7 +124,8 @@ void main() async {
   injector.registerDependency<ChangeManager>(() {
     final _worksiteDataConnection = injector.get<DataConnection<Worksite>>();
     final _checklistDataConnection = injector.get<DataConnection<Checklist>>();
-    final _checklistDayDataConnection = injector.get<DataConnection<ChecklistDay>>();
+    final _checklistDayDataConnection =
+        injector.get<DataConnection<ChecklistDay>>();
     final _itemDataConnection = injector.get<DataConnection<Item>>();
     final _worksiteCache = injector.get<WorksiteCache>(); // <-- err
     final _checklistCache = injector.get<ChecklistCache>();
@@ -159,10 +160,9 @@ void main() async {
   });
 
   try {
-    runApp(
-      const MyApp()
-      // const ProviderScope(child: MyApp()),
-    );
+    runApp(const MyApp()
+        // const ProviderScope(child: MyApp()),
+        );
   } catch (e) {
     print(e);
     exit(1);
@@ -189,7 +189,7 @@ void main() async {
 //       comment: "comment",
 //       creatorId: 1,
 //       verified: true);
-  
+
 //   await WorksiteCache.StoreWorksite(testWorksite);
 //   print("stored worksite");
 //   await ChecklistCache.StoreChecklist(testChecklist);
@@ -248,22 +248,23 @@ class MyLandingPage extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: MyAppColours.g5,
             ),
           ),
-
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox( // A sneaky hack! Forces spaceBetween to put things where we want them
+                const SizedBox(
+                  // A sneaky hack! Forces spaceBetween to put things where we want them
                   height: 0.0,
                   width: 0.0,
                 ),
-                Text(
-                  "SiteReady",
+                const Text(
+                  'SiteReady',
                   style: MyAppStyle.titleFont,
                 ),
                 // SizedBox(
@@ -274,31 +275,25 @@ class MyLandingPage extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(
-                            builder: (context) {
-                              return const MyWorksitesPage();
-                            }
-                          )
-                        );
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const MyWorksitesPage();
+                        }));
                       },
-                      child: const Text("Office"),
+                      child: const Text('Office'),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(
-                            builder: (context) {
-                              return const MyChecklistPage();
-                            }
-                          )
-                        );
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const MyChecklistPage();
+                        }));
                       },
-                      child: const Text("Worksite"),
+                      child: const Text('Worksite'),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 0.0,
                   width: 0.0,
                 ),
@@ -307,116 +302,6 @@ class MyLandingPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class MyWorksitesPage extends StatefulWidget {
-  const MyWorksitesPage({super.key});
-
-  @override
-  State<MyWorksitesPage> createState() => _MyWorksitesPageState();
-}
-
-class _MyWorksitesPageState extends State<MyWorksitesPage> {
-  // TODO: LOAD FROM DB ON CONSTRUCTION
-  List<Widget> worksiteList = [];
-  var numWorksites = 0;
-  
-  void addWorksite() {
-    setState(() {
-      numWorksites++;
-
-      if (numWorksites > 1) {
-        worksiteList.add(
-          Divider(),
-        );
-      }
-
-      worksiteList.add(
-        // TODO: TELL BACKEND TO CREATE NEW WORKSITE
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context, MaterialPageRoute(
-                builder: (context) {
-                  // TODO: GET SELECTED CHECKLIST INFO
-                  // AND PASS IT TO THE CHECKLIST PAGE?
-                  return const MyChecklistPage();
-                },
-              ),
-            );
-          },
-          child: SizedBox(
-            height: 80,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Divider(),
-                InkWell(
-                    
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // TODO: READ FROM WORKSITE
-                        Text(
-                          "Worksite $numWorksites",
-                          style: MyAppStyle.regularFont,
-                        ),
-                        Text(
-                          "Start Date: 20XX-01-01",
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Divider(),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: TopBar(
-        appBarText: "Worksites",
-        worksiteDate: null,
-      ),
-      body: Material(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
-          child: Column(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                // physics: NeverScrollableScrollPhysics(),
-                itemCount: worksiteList.length,
-                itemBuilder: (context, index) {
-                  return worksiteList[index];
-                },
-              ),
-              Spacer(),
-              TextButton(
-                onPressed: () {
-                  addWorksite();
-                },
-                child: Text(
-                  "Create New Worksite",
-                  style: MyAppStyle.regularFont,
-                ),
-              ),
-            ],
-          ),
-        ),
-      )
     );
   }
 }
@@ -431,11 +316,35 @@ class MyChecklistPage extends StatefulWidget {
 class _MyChecklistPageState extends State<MyChecklistPage> {
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
-  User? currUser;
-  Worksite? currWorksite;
-  Checklist? currChecklist;
-  ChecklistDay? currChecklistDay;
-  List<List<String>>? currItemsByCat;
+  User currUser = User(
+        id: 'user_1',
+        companyId: 'company_1',
+        dateCreated: DateTime.now(),
+        dateUpdated: DateTime.now()
+  );
+
+  Worksite currWorksite = Worksite(
+    id: '1', 
+    dateCreated: DateTime.now(), 
+    dateUpdated: DateTime.now(),
+  );
+
+  Checklist currChecklist = Checklist(
+    id: '1', 
+    worksiteId: '1', 
+    dateCreated: DateTime.now(), 
+    dateUpdated: DateTime.now(),
+  );
+
+  ChecklistDay currChecklistDay = ChecklistDay(
+    id: '1',
+    checklistId: '1', 
+    date: DateTime.now(), 
+    dateCreated: DateTime.now(), 
+    dateUpdated: DateTime.now()
+  );
+
+  List<List<String>>? currItemsByCat = [];
 
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
@@ -445,22 +354,26 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
-    // _loadEverything();
+    _loadEverything();
   }
 
   Future<void> _loadEverything() async {
-    currUser = User(
-      id: 'user_1',
-      companyId: 'company_1',
-      dateCreated: DateTime.now(),
-      dateUpdated: DateTime.now()
-    );
+    // currUser = User(
+    //     id: 'user_1',
+    //     companyId: 'company_1',
+    //     dateCreated: DateTime.now(),
+    //     dateUpdated: DateTime.now());
 
-    currWorksite;// = (await changeManager.getUserWorksites(currUser!))!.first;
+    // currWorksite = (await changeManager.getUserWorksites(currUser!))!.first;
 
-    currChecklist;// = await changeManager.getChecklistById(currWorksite!.checklistIds!.first);
+    // currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds!.first) ?? Checklist(
+    //   id: currUser!.id,
+    //   worksiteId: currWorksite!.id,
+    //   dateCreated: currUser!.dateCreated,
+    //   dateUpdated: currUser!.dateUpdated,
+    // );
 
-    currChecklistDay;// = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+    // currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
 
     setState(() {
       // getItemsByCategory() gives ids
@@ -480,9 +393,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   }
 
   Future<void> _saveChanges() async {
-
     // Save when you've added checklistIds to this day
-    currChecklistDay = await changeManager.updateChecklistDay(currChecklistDay!, currChecklistDay!.date);
+    currChecklistDay = await changeManager.updateChecklistDay(
+        currChecklistDay!, currChecklistDay!.date);
 
     currChecklist = await changeManager.updateChecklist(currChecklist!);
 
@@ -494,14 +407,16 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   // TODO: Untangle this mess so that we can actually refactor it into a view
   void _showCommentOverlay(BuildContext context) {
     // TODO: LOAD COMMENTS WHEN RAN
-    String _comments = "placeholder";
+    String comments = 'placeholder';
 
-    _overlayEntry = OverlayEntry (
-      builder: (context) => BaseOverlay(
+    _overlayEntry = OverlayEntry(
+      builder: (context) => BaseOverlay.comment(
         closefunct: () {}, // _removeOverlay, //TODO: This is bad
         overlayRef: _overlayEntry!,
-        choice: overlayChoice.comments,
-        comments: _comments,
+        // choice: overlayChoice.comments,
+        comments: comments,
+        pageday: pageDay,
+        checklistDay: currChecklistDay,
       ),
     );
 
@@ -532,11 +447,11 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       // backgroundColor: Colors.transparent,
       appBar: TopBar(
         //TODO: TEST THIS WORKS
-        appBarText: currChecklist?.name ?? "Worksite 1",
+        appBarText: currChecklist?.name ?? 'Worksite 1',
         worksiteDate: startDay,
       ),
 
-      bottomNavigationBar: NavBottomBar(),
+      bottomNavigationBar: const NavBottomBar(),
 
       body: Column(
         children: [
@@ -545,9 +460,12 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             pageDay: pageDay,
             onDateChange: _updatePageDay,
           ),
-          
-          CategoryList(),
-          
+
+          CategoryList(
+            pageday: pageDay,
+            checklistDay: currChecklistDay!,
+          ),
+
           // CommentCard(),
 
           ButtonRow(
@@ -558,7 +476,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             },
           ),
 
-          SizedBox(height: 20,),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );

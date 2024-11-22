@@ -1,7 +1,7 @@
 // View Imports:
 
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
-import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
+import 'package:build_stats_flutter/views/categories/cat_expansion_tile_view.dart';
 import 'package:flutter/material.dart';
 
 class OldCategoryView extends StatelessWidget {

@@ -11,7 +11,7 @@ class CatRow extends StatefulWidget {
   });
 
   final String catTitle;
-  final VoidCallback openOverlayFunct;
+  final Function openOverlayFunct;
 
   @override
   State<CatRow> createState() => _CatRowState();
@@ -21,7 +21,9 @@ class _CatRowState extends State<CatRow> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: widget.openOverlayFunct,
+      onTap: () {
+        widget.openOverlayFunct(widget.catTitle);
+      },
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
         child: Row(

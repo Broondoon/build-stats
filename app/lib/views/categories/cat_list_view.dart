@@ -1,16 +1,21 @@
 // View Imports:
 
 // import 'package:build_stats_flutter/main.dart';
+import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
-import 'package:build_stats_flutter/resources/app_style.dart';
-import 'package:build_stats_flutter/views/categories/cat_view.dart';
+import 'package:build_stats_flutter/views/categories/cat_row_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
 import 'package:flutter/material.dart';
 
 class CategoryList extends StatefulWidget {
   const CategoryList({
     super.key,
+    required this.pageday,
+    required this.checklistDay,
   });
+
+  final DateTime pageday;
+  final ChecklistDay checklistDay;
 
   @override
   State<CategoryList> createState() => _CategoryListState();
@@ -23,7 +28,7 @@ class _CategoryListState extends State<CategoryList> {
   OverlayEntry? _catOverlayEntry;
 
   @override
-  // TODO: declare this as async
+  // TODO: declare this as async?
   void initState() {
     super.initState();
     _loadCats();
@@ -37,11 +42,11 @@ class _CategoryListState extends State<CategoryList> {
 
   void showNewCatOverlay() {
     _catOverlayEntry = OverlayEntry (
-      builder: (context) => BaseOverlay(
+      builder: (context) => BaseOverlay.newCat(
         overlayRef: _catOverlayEntry!,
         closefunct: _removeNewCatOverlay,
-        // returnfunct: _removeOverlay,
-        choice: overlayChoice.newcategory,
+        pageday: widget.pageday,
+        checklistDay: widget.checklistDay,
       ),
     );
 
@@ -52,16 +57,17 @@ class _CategoryListState extends State<CategoryList> {
   // THERE ARE OTHER WAYS THAN CURSED FUNCTION JUGGLING I KNOW IT
   void _removeNewCatOverlay() {//String newCatTitle){
     // _catOverlayEntry?.remove();
-    addCat("Labour");
+    addCat('Labour');
   }
 
-  void showOldCatOverlay() {
+  void showOldCatOverlay(String catTitle) {
     _catOverlayEntry = OverlayEntry (
-      builder: (context) => BaseOverlay(
+      builder: (context) => BaseOverlay.oldCat(
         overlayRef: _catOverlayEntry!,
         closefunct: _removeOldCatOverlay,
-        // returnfunct: _removeOverlay,
-        choice: overlayChoice.category,
+        catTitle: catTitle,
+        pageday: widget.pageday,
+        checklistDay: widget.checklistDay,
       ),
     );
 
@@ -80,7 +86,7 @@ class _CategoryListState extends State<CategoryList> {
     setState(() {
       if (_catList.isNotEmpty) {
         _catList.add(
-          Divider(
+          const Divider(
             color: Colors.grey,
             thickness: 0.25,
             indent: 8,
@@ -119,7 +125,7 @@ class _CategoryListState extends State<CategoryList> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.add),
+              icon: const Icon(Icons.add),
               onPressed: () {
                 // addCat("Hi");
                 showNewCatOverlay();

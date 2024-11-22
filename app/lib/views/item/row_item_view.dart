@@ -2,12 +2,12 @@ import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 
 class RowItem extends StatefulWidget {
   const RowItem({
     super.key,
     this.item,
-    required this.changeManager,
     this.checklistDay,
     // required this.pageDay,
     this.pageDay, //TODO: tech debt, not sure effects of making not required but I did for bandaid
@@ -17,7 +17,6 @@ class RowItem extends StatefulWidget {
   });
 
   final Item? item;
-  final ChangeManager changeManager;
   final ChecklistDay? checklistDay;
   final DateTime? pageDay;
   // final String unit;
@@ -29,7 +28,8 @@ class RowItem extends StatefulWidget {
 }
 
 class _RowItemState extends State<RowItem> {
-  // Item? _item;
+  ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+
   late String _unit;
   late String _desc;
   late String _result;
@@ -42,9 +42,9 @@ class _RowItemState extends State<RowItem> {
   void initState() {
     super.initState();
     // _item = widget.item;
-    _unit = ""; //_item.unit ?? "";
-    _desc = ""; //_item.desc ?? "";
-    _result = ""; //= _item.result ?? "";
+    _unit = ''; //_item.unit ?? "";
+    _desc = ''; //_item.desc ?? "";
+    _result = ''; //= _item.result ?? "";
 
     unitEdit.text = _unit;
     descEdit.text = _desc;
@@ -62,20 +62,19 @@ class _RowItemState extends State<RowItem> {
 
   Future<void> _saveItemChanges() async {
     // _item = await widget.changeManager.updateItem(_item, widget.checklistDay, widget.pageDay);
-    _unit = ""; //_item.unit ?? "";
-    _desc = "";//_item.desc ?? "";
-    _result = "";//_item.result ?? "";
+    _unit = ''; //_item.unit ?? "";
+    _desc = '';//_item.desc ?? "";
+    _result = '';//_item.result ?? "";
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 40,
-      decoration: BoxDecoration(
-          border: Border.all(
-        // color: Colors.blueAccent,
-        width: 1,
-      )),
+      // decoration: BoxDecoration(
+      //     border: Border.all(
+      //   width: 1,
+      // )),
       child: Row(
         children: [
           SizedBox(
@@ -83,31 +82,36 @@ class _RowItemState extends State<RowItem> {
             child: TextFormField(
               controller: unitEdit,
               decoration: const InputDecoration(
-                // border: OutlineInputBorder(),
-                border: InputBorder.none,
+                // border: InputBorder.none,
+                // border: OutlineInputBorder(
+                //   borderSide: BorderSide(
+                //   width: 1,
+                // ),
+                //   borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                // ),
                 hintText: 'Units',
               ),
             )
           ),
 
-          // SizedBox(width: 10),
-          VerticalDivider(),
-          // SizedBox(width: 25),
+          const VerticalDivider(
+            thickness: 0.5,
+          ),
 
           Expanded(
             child: TextFormField(
               controller: descEdit,
               decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
-                border: InputBorder.none,
+                // border: InputBorder.none,
                 hintText: 'Description'
               ),
             )
           ),
 
-          // SizedBox(width: 25),
-          VerticalDivider(),
-          // SizedBox(width: 25),
+          const VerticalDivider(
+
+          ),
 
           SizedBox(
             width: 100,
@@ -116,7 +120,7 @@ class _RowItemState extends State<RowItem> {
               controller: resultEdit,
               decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
-                border: InputBorder.none,
+                // border: InputBorder.none,
                 hintText: 'Value'
               ),
             )
