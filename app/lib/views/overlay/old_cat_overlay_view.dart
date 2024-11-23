@@ -50,20 +50,23 @@ class _OldCatState extends State<OldCat> {
     _itemList = [];
 
     for (String id in _idList) {
-      print('LOADING ITEM BY ID $id');
       Item? item = await changeManager.getItemById(id);
-      print('ITEM: \n\n$item');
+      // print('ITEM: \n${item?.toJson()}\n\n');
       if (item != null) {
-        _itemList.add(
-          RowItem(
-            item: item,
-            checklistDay: widget.checklistDay,
-            pageDay: widget.pageDay,
-          )
-        );
+        setState(() {
+          print("ADDING NEW ITEM 'CAUSE WE FOUND IT BY ID");
+          _itemList.add(
+            RowItem(
+              item: item,
+              checklistDay: widget.checklistDay,
+              pageDay: widget.pageDay,
+            )
+          );
+        });
       }
       else {
         print('COULD NOT FIND ITEM BY ID');
+        print('MISSING ID: $id');
       }
     }
   }
