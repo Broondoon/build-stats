@@ -6,12 +6,7 @@ import 'package:flutter/material.dart';
 class NewCat extends StatefulWidget implements OverlayImpInterface {
   const NewCat({
     super.key,
-    // required this.ref
   });
-
-  // final WidgetRef ref;
-
-  // late final Function closer = timeToClose;
 
   // TODO: fix this so that it actually does somthing, because as now it's BROKEN
   @override
@@ -24,7 +19,7 @@ class NewCat extends StatefulWidget implements OverlayImpInterface {
 }
 
 class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
-  late String catName = "";
+  late String catName = '';
   TextEditingController catNameEdit = TextEditingController();
 
   @override

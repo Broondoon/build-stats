@@ -1,5 +1,4 @@
 // View Imports:
-import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
@@ -8,7 +7,6 @@ import 'package:build_stats_flutter/views/overlay/new_worksite_overlay_view.dart
 import 'package:build_stats_flutter/views/overlay/old_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
 
 // A key failure of this BaseOverlay system is the
 // need for certain params which don't get used.
@@ -35,7 +33,7 @@ class BaseOverlay extends StatelessWidget {
 
   final OverlayEntry overlayRef;
   final overlayChoice choice; 
-  final VoidCallback closefunct;
+  final Function closefunct;
   final String? comments;
   final String? catTitle;
   final DateTime? pageday;
@@ -46,7 +44,7 @@ class BaseOverlay extends StatelessWidget {
 
   factory BaseOverlay.oldCat({
     required OverlayEntry overlayRef,
-    required VoidCallback closefunct,
+    required Function closefunct,
     String? comments,
     required String catTitle,
     required DateTime pageday,
@@ -64,7 +62,7 @@ class BaseOverlay extends StatelessWidget {
 
   factory BaseOverlay.newCat({
     required OverlayEntry overlayRef,
-    required VoidCallback closefunct,
+    required Function closefunct,
     String? comments,
     String? catTitle,
     DateTime? pageday,
@@ -79,7 +77,7 @@ class BaseOverlay extends StatelessWidget {
   factory BaseOverlay.comment({
     required OverlayEntry overlayRef,
     // required overlayChoice choice,
-    required VoidCallback closefunct,
+    required Function closefunct,
     required String comments,
     String? catTitle,
     DateTime? pageday,
