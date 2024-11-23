@@ -28,7 +28,7 @@ void main() {
       localStorage = FakeLocalStorage();
       mutex = TestReadWriteMutex();
       entityFactory = MockEntityFactory<Entity>();
-      cache = Cache<Entity>(entityFactory, localStorage, mutex);
+      cache = Cache<Entity>(entityFactory, localStorage, mutex, "");
     });
 
     test('Store and Get Entity', () async {

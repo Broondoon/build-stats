@@ -19,10 +19,16 @@ class CacheService<T extends Entity> extends Cache<T> {
   HashMap<String, bool> get cacheSyncFlags => _cacheSyncFlags;
   final ReadWriteMutex _m; // = ReadWriteMutex();
   final LocalStorage _cacheLocalStorage;
+  final String _idPrefix;
 
   //testing only
-  CacheService(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m);
+  CacheService(this._parser, this._cacheLocalStorage, this._m, this._idPrefix)
+      : super(
+          _parser,
+          _cacheLocalStorage,
+          _m,
+          _idPrefix,
+        );
 
   Future<T?> getById(String key) async {
     // if (_cacheLocalStorage.keys.isEmpty) {
@@ -37,19 +43,10 @@ class CacheService<T extends Entity> extends Cache<T> {
         ?.first;
   }
 
-  @override
-  Future<List<T>?> getAll(
-      Future<List<String>?> Function(List<String>?) onCacheMiss) async {
-    //HACKED. NEED TO FIX
-    // if (_cacheLocalStorage.keys.isEmpty) {
-    //   testDeepCache.forEach((key, value) async {
-    //     print(value);
-    //     await _cacheLocalStorage.setItem(key, value);
-    //   });
-    // }
-    // print(_cacheLocalStorage.keys);
-    return await get(_cacheLocalStorage.keys.toList(), onCacheMiss);
-  }
+  // @override
+  // Future<List<T>?> getAll(String idPrefix,
+  //         Future<List<String>?> Function(List<String>?) onCacheMiss) async =>
+  //     await get(_cacheLocalStorage.keys.toList(), onCacheMiss);
 
 //Long term storage disabled for MVP.
   // Future<List<String>?> loadById(String? key) async {

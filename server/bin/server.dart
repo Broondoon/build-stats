@@ -95,15 +95,13 @@ Future<void> main() async {
   });
 
   // DEFAULT VALUE CREATION
-  injector.get<WorksiteCache>().store(
-      ID_WorksitePrefix + "1",
-      Worksite(
-        id: ID_WorksitePrefix + "1",
-        companyId: ID_CompanyPrefix + "1",
-        ownerId: ID_UserPrefix + "1",
-        dateCreated: DateTime.now().toUtc(),
-        dateUpdated: DateTime.now().toUtc(),
-      ));
+  Worksite worksiteTest = Worksite(
+    id: ID_WorksitePrefix + "1",
+    companyId: ID_CompanyPrefix + "1",
+    ownerId: ID_UserPrefix + "1",
+    dateCreated: DateTime.now().toUtc(),
+    dateUpdated: DateTime.now().toUtc(),
+  );
 
   Checklist checklistTest = Checklist(
     id: ID_ChecklistPrefix + "1",
@@ -133,7 +131,9 @@ Future<void> main() async {
 
   checklistDayTest.addItemId('Test', itemTest.id);
   checklistTest.addChecklistDay(checklistDayTest, null, null);
+  worksiteTest.checklistIds!.add(checklistTest.id);
 
+  injector.get<WorksiteCache>().store(worksiteTest.id, worksiteTest);
   injector.get<ChecklistCache>().store(checklistTest.id, checklistTest);
   injector
       .get<ChecklistDayCache>()

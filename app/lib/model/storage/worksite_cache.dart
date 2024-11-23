@@ -19,7 +19,7 @@ class WorksiteCache extends CacheService<Worksite> {
       LocalStorage localStorage,
       ReadWriteMutex m)
       : super(dataConnectionService, fileIOService, parser, API_WorksitePath,
-            Dir_WorksiteFileString, localStorage, m);
+            Dir_WorksiteFileString, localStorage, m, ID_WorksitePrefix);
   bool _haveLoadedUserWorksites = false;
   void overrideHaveLoadedUserWorksites(bool value) {
     _haveLoadedUserWorksites = value;

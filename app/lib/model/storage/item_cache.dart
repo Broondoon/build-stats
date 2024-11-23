@@ -20,7 +20,7 @@ class ItemCache extends CacheService<Item> {
       LocalStorage localStorage,
       ReadWriteMutex m)
       : super(dataConnectionService, fileIOService, parser, API_ItemPath,
-            Dir_ItemFileString, localStorage, m);
+            Dir_ItemFileString, localStorage, m, ID_ItemPrefix);
 
   //nasty solution. Need to refactor
   Future<List<Item>?> loadChecklistItemsForChecklist(

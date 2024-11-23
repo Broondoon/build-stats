@@ -254,8 +254,14 @@ class BaseChecklistDayFactory<T extends BaseChecklistDay>
       flagForDeletion: json['flagForDeletion'] ?? false,
     );
 
-    result.itemsByCatagory = HashMap<String, List<String>>.from(
-        json['itemsByCatagory'] ?? <String, List<String>>{});
+    Map<String, dynamic> itemsByCatagory = json['itemsByCatagory'] ?? {};
+    for (MapEntry<String, dynamic> entry in itemsByCatagory.entries) {
+      result.itemsByCatagory[entry.key] = List<String>.from(entry.value);
+    }
+
+    // result.itemsByCatagory = HashMap<String, List<String>>.from(
+    //     json['itemsByCatagory'] as Map<String, List<String>>? ??
+    //         <String, List<String>>{});
     //jsonDecode(json['itemsByCatagory']) ?? <String, List<String>>{});
 
     return result;

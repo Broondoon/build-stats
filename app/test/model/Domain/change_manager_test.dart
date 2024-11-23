@@ -156,6 +156,11 @@ void main() {
     });
     test('createWorksite creates and stores a new worksite', () async {
       // Arrange
+      final userId = ID_UserPrefix + '123';
+      final companyId = ID_CompanyPrefix + '456';
+      when(mockUser.id).thenReturn(userId);
+      when(mockUser.companyId).thenReturn(companyId);
+
       final tempIdPattern = RegExp(r'^temp_worksite_\d+$');
 
       when(mockWorksiteCache.store(any, any)).thenAnswer((_) async {
@@ -163,7 +168,7 @@ void main() {
       });
 
       // Act
-      final result = await changeManager.createWorksite();
+      final result = await changeManager.createWorksite(mockUser);
 
       // Assert
       expect(result, isNotNull);

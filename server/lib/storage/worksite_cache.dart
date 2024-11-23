@@ -13,5 +13,5 @@ class WorksiteCache extends CacheService<Worksite> {
   final ReadWriteMutex _m;
 
   WorksiteCache(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m);
+      : super(_parser, _cacheLocalStorage, _m, ID_WorksitePrefix);
 }

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:math';
 import 'package:meta/meta.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
@@ -13,9 +14,10 @@ class Cache<T extends Entity> implements CacheInterface<T> {
   final HashMap<String, String> cacheCheckSums = HashMap<String, String>();
   final HashMap<String, bool> cacheSyncFlags = HashMap<String, bool>();
   final ReadWriteMutex _m;
+  final String _idPrefix;
   final LocalStorage _cacheLocalStorage;
 
-  Cache(this._parser, this._cacheLocalStorage, this._m);
+  Cache(this._parser, this._cacheLocalStorage, this._m, this._idPrefix);
 
   @override
   Future<List<T>?> get(List<String> keys,
@@ -54,13 +56,20 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         entities.addAll(await storeBulk(missingEntities));
       }
     }
+
     return entities;
   }
 
   @override
   Future<List<T>?> getAll(
       Future<List<String>?> Function(List<String>?) onCacheMiss) async {
-    return await get(_cacheLocalStorage.keys.toList(), onCacheMiss);
+    return await get(
+        _cacheLocalStorage.keys
+            .where((x) =>
+                x.startsWith(_idPrefix) ||
+                x.startsWith(ID_TempIDPrefix + _idPrefix))
+            .toList(),
+        onCacheMiss);
   }
 
   @override

@@ -431,6 +431,7 @@ class ChangeManager {
   }
 
   Future<Item?> getItemById(String id) async {
+    print("Getting item by ID: $id");
     return await _itemCache.getById(id);
   }
 

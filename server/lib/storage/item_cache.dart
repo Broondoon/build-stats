@@ -12,5 +12,5 @@ class ItemCache extends CacheService<Item> {
   final LocalStorage _cacheLocalStorage;
   final ReadWriteMutex _m;
   ItemCache(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m);
+      : super(_parser, _cacheLocalStorage, _m, ID_ItemPrefix);
 }

@@ -13,7 +13,7 @@ class ChecklistDayCache extends CacheService<ChecklistDay> {
   final ReadWriteMutex _m;
 
   ChecklistDayCache(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m);
+      : super(_parser, _cacheLocalStorage, _m, ID_ChecklistDayPrefix);
 }
 
 class ChecklistCache extends CacheService<Checklist> {
@@ -21,5 +21,5 @@ class ChecklistCache extends CacheService<Checklist> {
   final LocalStorage _cacheLocalStorage;
   final ReadWriteMutex _m;
   ChecklistCache(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m);
+      : super(_parser, _cacheLocalStorage, _m, ID_ChecklistPrefix);
 }

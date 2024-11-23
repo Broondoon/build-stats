@@ -27,10 +27,18 @@ class CacheService<T extends Entity> extends Cache<T> {
   HashMap<String, bool> get cacheSyncFlags => _cacheSyncFlags;
   final ReadWriteMutex _m; // = ReadWriteMutex();
   final LocalStorage _cacheLocalStorage;
+  final String _idPrefix;
 
-  CacheService(this._dataConnectionService, this._fileIOService, this._parser,
-      this._apiPath, this._filePath, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m);
+  CacheService(
+      this._dataConnectionService,
+      this._fileIOService,
+      this._parser,
+      this._apiPath,
+      this._filePath,
+      this._cacheLocalStorage,
+      this._m,
+      this._idPrefix)
+      : super(_parser, _cacheLocalStorage, _m, _idPrefix);
 
   Future<T?> getById(String key) async {
     return (await super.get([key], (x) async => await loadById(x?.first)))
