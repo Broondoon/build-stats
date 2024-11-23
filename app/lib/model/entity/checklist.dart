@@ -16,7 +16,8 @@ class Checklist extends BaseChecklist {
       : super.fromBaseChecklist();
 
   (bool, String?) getChecklistDayID(DateTime date) {
-    String dateKey = '${date.year}-${date.month}-${date.day}';
+    String dateKey =
+        '${date.toUtc().year}-${date.toUtc().month.toString().padLeft(2, '0')}-${date.toUtc().day.toString().padLeft(2, '0')}';
     if (checklistIdsByDate.isEmpty) {
       return (false, ID_DefaultBlankChecklistDayID);
     } else if (checklistIdsByDate.containsKey(dateKey)) {
@@ -25,7 +26,10 @@ class Checklist extends BaseChecklist {
       List<String> keys = checklistIdsByDate.keys.toList();
       keys.sort();
       for (String key in keys.reversed) {
-        if (DateTime.parse(key).isBefore(DateTime.parse(dateKey))) {
+        print(key);
+        if (DateTime.parse(key)
+            .toUtc()
+            .isBefore(DateTime.parse(dateKey).toUtc())) {
           return (
             checklistIdsByDate[key] == ID_DefaultBlankChecklistDayID,
             checklistIdsByDate[key]

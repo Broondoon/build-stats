@@ -15,15 +15,18 @@ class ChecklistHandler extends RequestHandler<Checklist> {
   Future<Response> handleGetChecklistsOnWorksite(
       Request request, String worksiteId) async {
     try {
-      List<Checklist>? checklists = (await _checklistCache.getAll((x) async =>
-              await _checklistCache.LoadBulk(
-                  (Checklist x) => x.worksiteId == worksiteId)))
+      List<Checklist>? checklists = (await _checklistCache.getAll(
+              (x) async => null
+              //(x) async => await _checklistCache.LoadBulk((Checklist x) => x.worksiteId == worksiteId))
+              ))
           ?.where((x) => x.worksiteId == worksiteId)
           .toList();
-      if (checklists == null) {
+      if (checklists == null || checklists.isEmpty) {
         return Response.notFound("No checklists found");
       } else {
-        return Response.ok(jsonEncode(checklists), headers: {...jsonHeaders});
+        return Response.ok(
+            jsonEncode(checklists.map((x) => x.toJsonTransfer()).toList()),
+            headers: {...jsonHeaders});
       }
     } catch (e) {
       return Response.internalServerError(body: e.toString());

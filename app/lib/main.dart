@@ -24,6 +24,7 @@ import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
 import 'package:build_stats_flutter/views/worksite/worksites_page_view.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared/app_strings.dart';
 
 // ??? Imports:
 import 'package:shared/cache.dart';
@@ -167,6 +168,13 @@ void main() async {
     print(e);
     exit(1);
   }
+
+  // try {
+  //   runApp(const MyApp());
+  // } catch (e) {
+  //   print(e);
+  //   exit(1);
+  // }
 }
 
 // Future<void> initTestStorage() async {

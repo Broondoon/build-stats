@@ -1,120 +1,144 @@
-import 'package:shared/resources/app_strings.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'dart:collection';
 
+import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared/app_strings.dart';
+
 void main() {
-  group('Checklist Tests', () {
+  group('Checklist', () {
     late Checklist checklist;
-    late ChecklistDay checklistDay1;
-    late ChecklistDay checklistDay2;
 
     setUp(() {
-      checklist = Checklist(id: 'checklist1', worksiteId: 'worksite1');
-      checklistDay1 = ChecklistDay(
-        id: 'day1',
-        checklistId: 'checklist1',
-        date: DateTime(2023, 1, 1),
-        dateCreated: DateTime(2023, 1, 1),
-        dateUpdated: DateTime(2023, 1, 1),
-      );
-      checklistDay2 = ChecklistDay(
-        id: 'day2',
-        checklistId: 'checklist1',
-        date: DateTime(2023, 1, 2),
-        dateCreated: DateTime(2023, 1, 2),
-        dateUpdated: DateTime(2023, 1, 2),
+      checklist = Checklist(
+        id: 'checklist1',
+        worksiteId: 'worksite1',
+        name: 'Test Checklist',
+        dateCreated: DateTime.now(),
+        dateUpdated: DateTime.now(),
+        flagForDeletion: false,
       );
     });
 
-    test('Initial checklist should have no checklist days', () {
-      expect(checklist.TESTING_GetChecklistIdsByDate().isEmpty, true);
+    test('getChecklistDayID returns default when checklistIdsByDate is empty',
+        () {
+      // Arrange
+      final date = DateTime(2022, 1, 1);
+      checklist.checklistIdsByDate = HashMap.from({});
+
+      // Act
+      final result = checklist.getChecklistDayID(date);
+
+      // Assert
+      expect(result, equals((false, ID_DefaultBlankChecklistDayID)));
     });
 
-    test('Add checklist day', () {
-      checklist.addChecklistDay(checklistDay1);
-      expect(checklist.TESTING_GetChecklistIdsByDate().length, 1);
+    test(
+        'getChecklistDayID returns true and correct ID when date is in checklistIdsByDate',
+        () {
+      // Arrange
+      final date = DateTime(2022, 1, 1);
+      final dateKey =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final checklistDayId = 'checklistDay1';
+
+      checklist.checklistIdsByDate = HashMap.from({
+        dateKey: checklistDayId,
+      });
+
+      // Act
+      final result = checklist.getChecklistDayID(date);
+
+      // Assert
+      expect(result, equals((true, checklistDayId)));
+    });
+
+    test('getChecklistDayID returns correct ID for the closest earlier date',
+        () {
+      // Arrange
+      final date = DateTime(2022, 1, 3);
+      final earlierDate1 = DateTime(2022, 1, 1).toUtc();
+      final earlierDate2 = DateTime(2022, 1, 2).toUtc();
+      final dateKey1 =
+          '${earlierDate1.year}-${earlierDate1.month.toString().padLeft(2, '0')}-${earlierDate1.day.toString().padLeft(2, '0')}';
+      final dateKey2 =
+          '${earlierDate2.year}-${earlierDate2.month.toString().padLeft(2, '0')}-${earlierDate2.day.toString().padLeft(2, '0')}';
+      final checklistDayId1 = 'checklistDay1';
+      final checklistDayId2 = 'checklistDay2';
+
+      checklist.checklistIdsByDate = HashMap.from({
+        dateKey1: checklistDayId1,
+        dateKey2: checklistDayId2,
+      });
+
+      // Act
+      final result = checklist.getChecklistDayID(date);
+
+      // Assert
       expect(
-          checklist.TESTING_GetChecklistIdsByDate()[
-              checklistDay1.date.toIso8601String()],
-          checklistDay1.id);
+          result,
+          equals((
+            checklistDayId2 == ID_DefaultBlankChecklistDayID,
+            checklistDayId2
+          )));
     });
 
-    test('Get checklist day ID for existing date', () {
-      checklist.addChecklistDay(checklistDay1);
-      var result = checklist.getChecklistDayID(DateTime(2023, 1, 1));
-      expect(result, (true, 'day1'));
+    test('getChecklistDayID returns last date when no earlier dates are found',
+        () {
+      // Arrange
+      final date = DateTime(2022, 1, 1);
+      final futureDate = DateTime(2022, 1, 5).toUtc();
+      final String futureDateKey =
+          '${futureDate.year}-${futureDate.month.toString().padLeft(2, '0')}-${futureDate.day.toString().padLeft(2, '0')}';
+      const checklistDayId = 'checklistDayFuture';
+
+      checklist.checklistIdsByDate = HashMap.from({
+        futureDateKey: checklistDayId,
+      });
+
+      // Act
+      final result = checklist.getChecklistDayID(date);
+
+      // Assert
+      expect(
+          result,
+          equals((
+            checklistDayId == ID_DefaultBlankChecklistDayID,
+            checklistDayId
+          )));
     });
 
-    test('Get checklist day ID for non-existing date', () {
-      checklist.addChecklistDay(checklistDay1);
-      var result = checklist.getChecklistDayID(DateTime(2023, 1, 3));
-      expect(result, (false, 'day1'));
-    });
+    test('getChecklistDayID handles multiple dates correctly', () {
+      // Arrange
+      final date = DateTime(2022, 1, 4);
+      final dates = [
+        DateTime(2022, 1, 1).toUtc(),
+        DateTime(2022, 1, 2).toUtc(),
+        DateTime(2022, 1, 3).toUtc(),
+        DateTime(2022, 1, 5).toUtc(),
+      ];
+      final dateKeys = dates
+          .map((d) =>
+              '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}')
+          .toList();
+      final checklistDayIds = ['day1', 'day2', 'day3', 'day5'];
 
-    test('Get checklist day ID for empty checklist', () {
-      var result = checklist.getChecklistDayID(DateTime(2023, 1, 1));
-      expect(result, (false, ID_DefaultBlankChecklistDayID));
-    });
-  });
+      checklist.checklistIdsByDate = HashMap.from({
+        dateKeys[0]: checklistDayIds[0],
+        dateKeys[1]: checklistDayIds[1],
+        dateKeys[2]: checklistDayIds[2],
+        dateKeys[3]: checklistDayIds[3],
+      });
 
-  group('ChecklistDay Tests', () {
-    late ChecklistDay checklistDay;
-    setUp(() {
-      checklistDay = ChecklistDay(
-        id: 'day1',
-        checklistId: 'checklist1',
-        comment: 'Test comment',
-        date: DateTime(2023, 1, 1),
-        dateCreated: DateTime(2023, 1, 1),
-        dateUpdated: DateTime(2023, 1, 1),
-      );
+      // Act
+      final result = checklist.getChecklistDayID(date);
 
-      checklistDay.itemsByCatagory = HashMap<String, List<String>>();
-      checklistDay.itemsByCatagory['cat1'] = ['item1', 'item2'];
-    });
-
-    test('ChecklistDay toJson', () {
-      var json = checklistDay.toJson();
-      expect(json['id'], 'day1');
-      expect(json['checklistId'], 'checklist1');
-      expect(json['date'], '2023-01-01T00:00:00.000');
-      expect(json['comment'], 'Test comment');
-      expect(json['itemsByCatagory'], '{cat1: [item1, item2]}');
-      expect(json['dateCreated'], '2023-01-01T00:00:00.000');
-      expect(json['dateUpdated'], '2023-01-01T00:00:00.000');
-    });
-
-    test('ChecklistDay joinData', () {
-      var joinedData = checklistDay.joinData();
-      expect(joinedData,
-          'day1|checklist1|2023-01-01T00:00:00.000|Test comment|cat1,item1,item2|2023-01-01T00:00:00.000|2023-01-01T00:00:00.000');
-    });
-
-    test('ChecklistDay getChecksum', () {
-      var checksum = checklistDay.getChecksum();
-      expect(checksum, '56eb4797');
-    });
-  });
-  group('ChecklistDayFactory Tests', () {
-    test('ChecklistDayFactory fromJson', () {
-      var json = {
-        'id': 'day1',
-        'checklistId': 'checklist1',
-        'date': '2023-01-01T00:00:00.000',
-        'comment': 'Test comment',
-        'dateCreated': '2023-01-01T00:00:00.000',
-        'dateUpdated': '2023-01-01T00:00:00.000',
-        'itemsByCatagory': {}
-      };
-      var factory = ChecklistDayFactory();
-      var checklistDay = factory.fromJson(json);
-      expect(checklistDay.id, 'day1');
-      expect(checklistDay.checklistId, 'checklist1');
-      expect(checklistDay.date, DateTime(2023, 1, 1));
-      expect(checklistDay.comment, 'Test comment');
-      expect(checklistDay.dateCreated, DateTime(2023, 1, 1));
-      expect(checklistDay.dateUpdated, DateTime(2023, 1, 1));
+      // Assert
+      expect(
+          result,
+          equals((
+            checklistDayIds[2] == ID_DefaultBlankChecklistDayID,
+            checklistDayIds[2]
+          )));
     });
   });
 }

@@ -26,8 +26,8 @@ class BaseUser extends Entity {
     return {
       'id': id,
       'companyId': companyId,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
       'flagForDeletion': flagForDeletion,
     };
   }
@@ -37,8 +37,8 @@ class BaseUser extends Entity {
     return {
       'id': id,
       'companyId': companyId,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
     };
   }
 
@@ -47,8 +47,8 @@ class BaseUser extends Entity {
     return [
       id,
       companyId,
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
+      dateCreated.toUtc().toIso8601String(),
+      dateUpdated.toUtc().toIso8601String(),
     ].join('|');
   }
 }

@@ -1,28 +1,32 @@
 import 'dart:convert';
-import 'dart:core';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
-import 'package:http/http.dart';
-import 'package:shared/entity.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared/entity.dart';
 
 abstract class DataConnectionService<T extends Entity> {
   Future<String> get(String path);
   Future<String> post(String path, T value);
   Future<String> put(String path, T value);
-  Future<void> delete(String path, List<String> key);
+  Future<void> delete(String path, List<String> keys);
 }
 
 class DataConnection<T extends Entity> implements DataConnectionService<T> {
+  final http.Client client;
+
+  DataConnection({http.Client? client}) : client = client ?? http.Client();
+
   @override
   Future<String> get(String path) async {
     try {
       print("GET: " + path);
-      Response response = await http.get(Uri.parse(path));
+      http.Response response = await client.get(Uri.parse(path));
       if (response.statusCode == 200) {
         return response.body;
       } else {
         throw HttpException(response.statusCode, response.body);
       }
+    } on HttpException {
+      rethrow;
     } catch (e) {
       throw HttpException(503, "Service Unavailable");
     }
@@ -32,13 +36,15 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   Future<String> post(String path, T value) async {
     try {
       print("POST: " + path);
-      Response response =
-          await http.post(Uri.parse(path), body: value.toJson());
+      http.Response response =
+          await client.post(Uri.parse(path), body: value.toJson());
       if (response.statusCode == 200) {
         return response.body;
       } else {
         throw HttpException(response.statusCode, response.body);
       }
+    } on HttpException {
+      rethrow;
     } catch (e) {
       throw HttpException(503, "Service Unavailable");
     }
@@ -48,13 +54,15 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   Future<String> put(String path, T value) async {
     try {
       print("PUT: " + path);
-
-      Response response = await http.put(Uri.parse(path), body: value.toJson());
+      http.Response response =
+          await client.put(Uri.parse(path), body: value.toJson());
       if (response.statusCode == 200) {
         return response.body;
       } else {
         throw HttpException(response.statusCode, response.body);
       }
+    } on HttpException {
+      rethrow;
     } catch (e) {
       throw HttpException(503, "Service Unavailable");
     }
@@ -63,15 +71,16 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
   @override
   Future<void> delete(String path, List<String> keys) async {
     try {
-      print("DEKETE: " + path);
-
-      Response response =
-          await http.delete(Uri.parse(path), body: jsonEncode(keys));
+      print("DELETE: " + path);
+      http.Response response =
+          await client.delete(Uri.parse(path), body: jsonEncode(keys));
       if (response.statusCode == 200) {
         return;
       } else {
         throw HttpException(response.statusCode, response.body);
       }
+    } on HttpException {
+      rethrow;
     } catch (e) {
       throw HttpException(503, "Service Unavailable");
     }

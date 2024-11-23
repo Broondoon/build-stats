@@ -34,10 +34,10 @@ class CacheService<T extends Entity> extends Cache<T> {
 
   Future<T?> getById(String key) async {
     return (await super.get([key], (x) async => await loadById(x?.first)))
-        ?.first;
+        ?.firstOrNull;
   }
 
-  Future<T?> loadById(String? key) async {
+  Future<List<String>?> loadById(String? key) async {
     if (key == null) {
       return null;
     }
@@ -73,12 +73,14 @@ class CacheService<T extends Entity> extends Cache<T> {
       }
       if (entity != null) {
         entity = await storeUnprotected(key, entity);
+        return [jsonEncode(entity.toJson())];
+      } else {
+        return null;
       }
-      return entity;
     });
   }
 
-  Future<List<T>?> LoadBulk(String apiPath, Function(T) comparer) async {
+  Future<List<String>?> LoadBulk(String apiPath, Function(T) comparer) async {
     List<T> entities = <T>[];
     try {
       String? entitiesJsonRemote = await _dataConnectionService.get(apiPath);
@@ -126,6 +128,8 @@ class CacheService<T extends Entity> extends Cache<T> {
           rethrow;
       }
     }
-    return await storeBulk(entities);
+    return (await storeBulk(entities))
+        .map((e) => jsonEncode(e.toJson()))
+        .toList();
   }
 }

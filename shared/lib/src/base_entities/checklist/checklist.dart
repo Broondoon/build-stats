@@ -38,14 +38,18 @@ class BaseChecklist extends Entity {
     if (day == null && date == null && id == null) {
       throw Exception('All arguments cannot be null');
     }
-    DateTime dateKey = day?.date ?? date!;
-    checklistIdsByDate['${dateKey.year}-${dateKey.month}-${dateKey.day}'] =
-        (day?.id ?? id)!;
+    DateTime dateUtc = day?.date.toUtc() ?? date!.toUtc();
+    String dateKey =
+        '${dateUtc.year}-${dateUtc.month.toString().padLeft(2, '0')}-${dateUtc.day.toString().padLeft(2, '0')}';
+    checklistIdsByDate[dateKey] = (day?.id ?? id)!;
   }
 
   removeChecklistDay(BaseChecklistDay checklistDay) {
-    if (checklistIdsByDate.containsKey(checklistDay.date.toIso8601String())) {
-      checklistIdsByDate.remove(checklistDay.date.toIso8601String());
+    DateTime dateUtc = checklistDay.date.toUtc();
+    String dateKey =
+        '${dateUtc.year}-${dateUtc.month.toString().padLeft(2, '0')}-${dateUtc.day.toString().padLeft(2, '0')}';
+    if (checklistIdsByDate.containsKey(dateKey)) {
+      checklistIdsByDate.remove(dateKey);
     }
   }
 
@@ -56,8 +60,8 @@ class BaseChecklist extends Entity {
       'worksiteId': worksiteId,
       'name': name,
       'checklistIdsByDate': checklistIdsByDate,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
       'flagForDeletion': flagForDeletion,
     };
   }
@@ -71,8 +75,8 @@ class BaseChecklist extends Entity {
       'checklistIdsByDate': HashMap.fromEntries(checklistIdsByDate.entries
           .where((e) => !e.value.startsWith(ID_TempIDPrefix))
           .map((e) => MapEntry(e.key, e.value))),
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
     };
   }
 
@@ -86,8 +90,8 @@ class BaseChecklist extends Entity {
           .where((e) => !e.value.startsWith(ID_TempIDPrefix))
           .map((e) => '${e.key},${e.value}')
           .join('|'),
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
+      dateCreated.toUtc().toIso8601String(),
+      dateUpdated.toUtc().toIso8601String(),
     ].join('|');
   }
 }
@@ -195,11 +199,11 @@ class BaseChecklistDay extends Entity {
     return {
       'id': id,
       'checklistId': checklistId,
-      'date': date.toIso8601String(),
+      'date': date.toUtc().toIso8601String(),
       'comment': comment,
       'itemsByCatagory': itemsByCatagory,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
       'flagForDeletion': flagForDeletion,
     };
   }
@@ -209,13 +213,13 @@ class BaseChecklistDay extends Entity {
     return {
       'id': id,
       'checklistId': checklistId,
-      'date': date.toIso8601String(),
+      'date': date.toUtc().toIso8601String(),
       'comment': comment,
       'itemsByCatagory': HashMap.fromEntries(itemsByCatagory.entries.map((e) =>
           MapEntry(e.key,
               e.value.where((x) => !x.startsWith(ID_TempIDPrefix)).toList()))),
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
+      'dateCreated': dateCreated.toUtc().toIso8601String(),
+      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
     };
   }
 
@@ -224,14 +228,14 @@ class BaseChecklistDay extends Entity {
     return [
       id,
       checklistId,
-      date.toIso8601String(),
+      date.toUtc().toIso8601String(),
       comment ?? '',
       itemsByCatagory.entries
           .map((e) =>
               '${e.key},${e.value.where((element) => !element.startsWith(ID_TempIDPrefix)).join(',')}')
           .join('|'),
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
+      dateCreated.toUtc().toIso8601String(),
+      dateUpdated.toUtc().toIso8601String(),
     ].join('|');
   }
 }
@@ -249,8 +253,10 @@ class BaseChecklistDayFactory<T extends BaseChecklistDay>
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
       flagForDeletion: json['flagForDeletion'] ?? false,
     );
+
     result.itemsByCatagory = HashMap<String, List<String>>.from(
-        jsonDecode(json['itemsByCatagory']) ?? <String, List<String>>{});
+        json['itemsByCatagory'] ?? <String, List<String>>{});
+    //jsonDecode(json['itemsByCatagory']) ?? <String, List<String>>{});
 
     return result;
   }

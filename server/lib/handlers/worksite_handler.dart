@@ -16,16 +16,16 @@ class WorksiteHandler extends RequestHandler<Worksite> {
   Future<Response> handleGetUserVisibleWorksites(
       Request request, String companyId, String userId) async {
     try {
-      List<Worksite>? worksites = (await _worksiteCache.getAll((x) async =>
-              await _worksiteCache.LoadBulk((Worksite x) =>
-                  x.ownerId == userId && x.companyId == companyId)))
+      List<Worksite>? worksites = (await _worksiteCache.getAll((x) async => null
+              //(x) async => await _worksiteCache.LoadBulk((Worksite x) => x.ownerId == userId && x.companyId == companyId)
+              ))
           ?.where((x) => x.ownerId == userId && x.companyId == companyId)
           .toList();
-      if (worksites == null) {
+      if (worksites == null || worksites.isEmpty) {
         return Response.notFound("No worksites found");
       } else {
         return Response.ok(
-            jsonEncode(worksites /*.map((x) => x.toJsonTransfer())*/),
+            jsonEncode(worksites.map((x) => x.toJsonTransfer()).toList()),
             headers: {...jsonHeaders});
       }
     } catch (e) {
