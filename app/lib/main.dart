@@ -325,32 +325,32 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
   User currUser = User(
-        id: 'user_1',
-        companyId: 'company_1',
+        id: '${ID_UserPrefix}1',
+        companyId: '${ID_CompanyPrefix}1',
         dateCreated: DateTime.now(),
-        dateUpdated: DateTime.now()
+        dateUpdated: DateTime.now(),
   );
 
-  Worksite currWorksite = Worksite(
-    id: '1', 
-    dateCreated: DateTime.now(), 
-    dateUpdated: DateTime.now(),
-  );
+  Worksite? currWorksite; // = Worksite(
+  //   id: '1', 
+  //   dateCreated: DateTime.now(), 
+  //   dateUpdated: DateTime.now(),
+  // );
 
-  Checklist currChecklist = Checklist(
-    id: '1', 
-    worksiteId: '1', 
-    dateCreated: DateTime.now(), 
-    dateUpdated: DateTime.now(),
-  );
+  Checklist? currChecklist; // = Checklist(
+  //   id: '1', 
+  //   worksiteId: '1', 
+  //   dateCreated: DateTime.now(), 
+  //   dateUpdated: DateTime.now(),
+  // );
 
-  ChecklistDay currChecklistDay = ChecklistDay(
-    id: '1',
-    checklistId: '1', 
-    date: DateTime.now(), 
-    dateCreated: DateTime.now(), 
-    dateUpdated: DateTime.now()
-  );
+  ChecklistDay? currChecklistDay; // = ChecklistDay(
+  //   id: '1',
+  //   checklistId: '1', 
+  //   date: DateTime.now(), 
+  //   dateCreated: DateTime.now(), 
+  //   dateUpdated: DateTime.now()
+  // );
 
   List<List<String>>? currItemsByCat = [];
 
@@ -362,28 +362,29 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
-    _loadEverything();
+    // _loadEverything();
   }
 
-  Future<void> _loadEverything() async {
-    // currUser = User(
-    //     id: 'user_1',
-    //     companyId: 'company_1',
-    //     dateCreated: DateTime.now(),
-    //     dateUpdated: DateTime.now());
+  Future<void> _loadEverything() async {    
+    List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
 
-    // currWorksite = (await changeManager.getUserWorksites(currUser!))!.first;
+    if (userWorksites.length == 0) {
+      currWorksite = await changeManager.createWorksite();
+    }
+    else {
+      // TODO: actually load the right one
+      // But for now, just load the first one
+      currWorksite = userWorksites.first;
+    }
 
-    // currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds!.first) ?? Checklist(
-    //   id: currUser!.id,
-    //   worksiteId: currWorksite!.id,
-    //   dateCreated: currUser!.dateCreated,
-    //   dateUpdated: currUser!.dateUpdated,
-    // );
+    currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds!.first)
+      ?? await changeManager.createChecklist(currWorksite!);
 
-    // currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+    currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+      // ?? await changeManager.createChecklistDay(currChecklist!, null, currUser.dateUpdated);
+  }
 
-    setState(() {
+  // setState(() {
       // getItemsByCategory() gives ids
       // getItemById() gives the item I want
 
@@ -397,8 +398,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       //   List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
       //   currItemsByCat!.add(catIds);
       // });
-    });
-  }
+    // });
 
   Future<void> _saveChanges() async {
     // Save when you've added checklistIds to this day
@@ -436,11 +436,11 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // });
   }
 
-  // void _removeOverlay() {
-  //   // TODO: SAVE COMMENT
-
-  //   _overlayEntry?.remove();
-  // }
+  Future<void> testFutureBuilderWithDelay() async {
+    await Future.delayed(const Duration(seconds: 5), () {
+      print('Delay done!');
+    });
+  }
 
   void _updatePageDay(DateTime newDay) {
     setState(() {
@@ -451,44 +451,65 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
-    return Scaffold(
-      // backgroundColor: Colors.transparent,
-      appBar: TopBar(
-        //TODO: TEST THIS WORKS
-        appBarText: currChecklist?.name ?? 'Worksite 1',
-        worksiteDate: startDay,
-      ),
-
-      bottomNavigationBar: const NavBottomBar(),
-
-      body: Column(
-        children: [
-          DateRow(
-            startDay: startDay,
-            pageDay: pageDay,
-            onDateChange: _updatePageDay,
-          ),
-
-          CategoryList(
-            pageday: pageDay,
-            checklistDay: currChecklistDay!,
-          ),
-
-          // CommentCard(),
-
-          ButtonRow(
-            editFunct: () {},
-            saveFunct: () {},
-            commentFunct: () {
-              _showCommentOverlay(context);
-            },
-          ),
-
-          const SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
+    return FutureBuilder<void>(
+      // future: testFutureBuilderWithDelay(),
+      future: _loadEverything(),
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Text('Waiting...')
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold (
+            body: Text(
+              'Error: ${snapshot.error}',  // Display the error
+              style: TextStyle(color: Colors.red),
+            ),
+          );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+            // backgroundColor: Colors.transparent,
+            appBar: TopBar(
+              //TODO: TEST THIS WORKS
+              appBarText: currChecklist?.name ?? 'Worksite 1',
+              worksiteDate: startDay,
+            ),
+          
+            bottomNavigationBar: const NavBottomBar(),
+          
+            body: Column(
+              children: [
+                DateRow(
+                  startDay: startDay,
+                  pageDay: pageDay,
+                  onDateChange: _updatePageDay,
+                ),
+          
+                CategoryList(
+                  pageday: pageDay,
+                  checklistDay: currChecklistDay!,
+                ),
+          
+                // CommentCard(),
+          
+                ButtonRow(
+                  editFunct: () {},
+                  saveFunct: () {},
+                  commentFunct: () {
+                    _showCommentOverlay(context);
+                  },
+                ),
+          
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+          );
+        } else {
+          return Text("Nope, nada");
+        }
+      }
     );
   }
 }

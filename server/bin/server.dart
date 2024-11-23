@@ -94,6 +94,7 @@ Future<void> main() async {
         worksiteCache, checklistCache, checklistDayCache, itemCache);
   });
 
+  // DEFAULT VALUE CREATION
   injector.get<WorksiteCache>().store(
       ID_WorksitePrefix + "1",
       Worksite(
