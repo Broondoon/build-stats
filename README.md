@@ -1,5 +1,5 @@
-# build-stats
-SENG 480A Startup Programming project repository. Build Stats - bridging the construction communication gap with better data.
+# SiteReady v0.9
+SENG 480A Startup Programming project repository. SiteReady - bridging the construction communication gap between office and worksite.
 
 The **Project Page** can be found [here](https://buildstatscommunication.wordpress.com/).
 
@@ -16,8 +16,6 @@ Requirements:
 Follow [these instructions](https://docs.flutter.dev/get-started/install) to download and install the Flutter SDK, and follow the `flutter doctor` to ensure your environment has everything it needs.
 
 Once everything is set, just open the project in VS Code or any editor, navigate to `main.dart` and run the file. Alternatively, run the command `flutter run` in CMD.
-
-
 
 ---
 

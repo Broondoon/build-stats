@@ -12,3 +12,11 @@ enum HttpResponse implements Comparable<HttpResponse> {
   @override
   int compareTo(HttpResponse other) => code.compareTo(other.code);
 }
+
+// ignore: camel_case_types
+enum overlayChoice {
+  comments,
+  newcategory,
+  category,
+  worksite,
+}

@@ -1,6 +1,7 @@
 // View Imports:
-import 'package:build_stats_flutter/views/item/item_view.dart';
-import 'package:build_stats_flutter/views/checklist/checklist_view.dart';
+import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
+import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
+import 'package:build_stats_flutter/views/date/date_row_view.dart';
 
 // Model Imports:
 import 'package:build_stats_flutter/model/entity/user.dart';
@@ -17,8 +18,12 @@ import 'package:build_stats_flutter/model/Domain/Service/data_connection_service
 // Resource Imports:
 import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
+import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
+import 'package:build_stats_flutter/views/worksite/worksites_page_view.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared/app_strings.dart';
 
 // ??? Imports:
@@ -156,23 +161,9 @@ void main() async {
   });
 
   try {
-    User user = User(
-      id: ID_UserPrefix + "1",
-      companyId: ID_CompanyPrefix + "1",
-      dateCreated: DateTime.now(),
-      dateUpdated: DateTime.now(),
-    );
-
-    var worksites = await injector.get<ChangeManager>().getUserWorksites(user);
-    var worksite = await injector
-        .get<ChangeManager>()
-        .getWorksiteById(worksites!.first.id);
-    var newWorksite = await injector.get<ChangeManager>().createWorksite();
-    var newWorksiteById =
-        await injector.get<ChangeManager>().getWorksiteById(newWorksite.id);
-    var checklist = await injector
-        .get<ChangeManager>()
-        .getChecklistById(worksite!.checklistIds!.first);
+    runApp(const MyApp()
+        // const ProviderScope(child: MyApp()),
+        );
   } catch (e) {
     print(e);
     exit(1);
@@ -265,7 +256,7 @@ class MyLandingPage extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: MyAppColours.g5,
             ),
           ),
@@ -275,13 +266,13 @@ class MyLandingPage extends StatelessWidget {
                   MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
+                const SizedBox(
                   // A sneaky hack! Forces spaceBetween to put things where we want them
                   height: 0.0,
                   width: 0.0,
                 ),
-                Text(
-                  "SiteReady",
+                const Text(
+                  'SiteReady',
                   style: MyAppStyle.titleFont,
                 ),
                 // SizedBox(
@@ -297,7 +288,7 @@ class MyLandingPage extends StatelessWidget {
                           return const MyWorksitesPage();
                         }));
                       },
-                      child: const Text("Office"),
+                      child: const Text('Office'),
                     ),
                     TextButton(
                       onPressed: () {
@@ -306,11 +297,11 @@ class MyLandingPage extends StatelessWidget {
                           return const MyChecklistPage();
                         }));
                       },
-                      child: const Text("Worksite"),
+                      child: const Text('Worksite'),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 0.0,
                   width: 0.0,
                 ),
@@ -320,100 +311,6 @@ class MyLandingPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class MyWorksitesPage extends StatefulWidget {
-  const MyWorksitesPage({super.key});
-
-  @override
-  State<MyWorksitesPage> createState() => _MyWorksitesPageState();
-}
-
-class _MyWorksitesPageState extends State<MyWorksitesPage> {
-  // TODO: LOAD FROM DB ON CONSTRUCTION
-  List<Widget> worksiteList = [];
-  var numWorksites = 0;
-
-  void addWorksite() {
-    setState(() {
-      numWorksites++;
-      worksiteList.add(
-        // TODO: TELL BACKEND TO CREATE NEW WORKSITE
-        GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              // TODO: GET SELECTED CHECKLIST INFO
-              // AND PASS IT TO THE CHECKLIST PAGE?
-              return const MyChecklistPage();
-            }));
-          },
-          child: SizedBox(
-              height: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Divider(),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // TODO: READ FROM WORKSITE
-                        Text(
-                          "Worksite $numWorksites",
-                          style: MyAppStyle.regularFont,
-                        ),
-                        Text(
-                          "Start Date: 20XX-01-01",
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(),
-                ],
-              )),
-        ),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: TopBar(
-          appBarText: "Worksites",
-          worksiteDate: null,
-        ),
-        body: Material(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  // physics: NeverScrollableScrollPhysics(),
-                  itemCount: worksiteList.length,
-                  itemBuilder: (context, index) {
-                    return worksiteList[index];
-                  },
-                ),
-                Spacer(),
-                TextButton(
-                  onPressed: () {
-                    addWorksite();
-                  },
-                  child: Text(
-                    "Create New Worksite",
-                    style: MyAppStyle.regularFont,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
   }
 }
 
@@ -427,11 +324,35 @@ class MyChecklistPage extends StatefulWidget {
 class _MyChecklistPageState extends State<MyChecklistPage> {
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
-  User? currUser;
-  Worksite? currWorksite;
-  Checklist? currChecklist;
-  ChecklistDay? currChecklistDay;
-  List<List<String>>? currItemsByCat;
+  User currUser = User(
+        id: 'user_1',
+        companyId: 'company_1',
+        dateCreated: DateTime.now(),
+        dateUpdated: DateTime.now()
+  );
+
+  Worksite currWorksite = Worksite(
+    id: '1', 
+    dateCreated: DateTime.now(), 
+    dateUpdated: DateTime.now(),
+  );
+
+  Checklist currChecklist = Checklist(
+    id: '1', 
+    worksiteId: '1', 
+    dateCreated: DateTime.now(), 
+    dateUpdated: DateTime.now(),
+  );
+
+  ChecklistDay currChecklistDay = ChecklistDay(
+    id: '1',
+    checklistId: '1', 
+    date: DateTime.now(), 
+    dateCreated: DateTime.now(), 
+    dateUpdated: DateTime.now()
+  );
+
+  List<List<String>>? currItemsByCat = [];
 
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
@@ -441,21 +362,26 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
-    // _loadEverything();
+    _loadEverything();
   }
 
   Future<void> _loadEverything() async {
-    currUser = User(
-        id: 'user_1',
-        companyId: 'company_1',
-        dateCreated: DateTime.now(),
-        dateUpdated: DateTime.now());
+    // currUser = User(
+    //     id: 'user_1',
+    //     companyId: 'company_1',
+    //     dateCreated: DateTime.now(),
+    //     dateUpdated: DateTime.now());
 
-    currWorksite; // = (await changeManager.getUserWorksites(currUser!))!.first;
+    // currWorksite = (await changeManager.getUserWorksites(currUser!))!.first;
 
-    currChecklist; // = await changeManager.getChecklistById(currWorksite!.checklistIds!.first);
+    // currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds!.first) ?? Checklist(
+    //   id: currUser!.id,
+    //   worksiteId: currWorksite!.id,
+    //   dateCreated: currUser!.dateCreated,
+    //   dateUpdated: currUser!.dateUpdated,
+    // );
 
-    currChecklistDay; // = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+    // currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
 
     setState(() {
       // getItemsByCategory() gives ids
@@ -487,74 +413,18 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   }
 
   // TODO: Untangle this mess so that we can actually refactor it into a view
-  void showCommentOverlay(BuildContext context) {
+  void _showCommentOverlay(BuildContext context) {
     // TODO: LOAD COMMENTS WHEN RAN
-    String _comments;
+    String comments = 'placeholder';
 
     _overlayEntry = OverlayEntry(
-      builder: (context) => Stack(
-        children: [
-          GestureDetector(
-            onTap: _removeOverlay,
-            child: Container(
-              color: Colors.black54,
-              width: double.infinity,
-              height: double.infinity,
-            ),
-          ),
-          Positioned(
-            // needed to have overlay from bottom
-            bottom: 0,
-            child: Material(
-              // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
-              child: Container(
-                // ignoring the VS Code suggestion
-                width: MediaQuery.of(context).size.width, // * 0.6,
-                height: MediaQuery.of(context).size.height * 0.86,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.,
-                    children: [
-                      Container(
-                        color: MyAppColours.g4,
-                        child: SizedBox(
-                          height: 40,
-                          child: Center(
-                            child: Text(
-                              "Comments",
-                              style: MyAppStyle.regularFont,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                            color: MyAppColours.g5,
-                            width: 2.0,
-                          )),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
-                            // TODO: REFACTOR FOR LOADING AND CODE MANIPULATION OF TEXT CONTENT
-                            child: TextField(
-                              maxLines: null,
-                              decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Start writing something..."),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+      builder: (context) => BaseOverlay.comment(
+        closefunct: () {}, // _removeOverlay, //TODO: This is bad
+        overlayRef: _overlayEntry!,
+        // choice: overlayChoice.comments,
+        comments: comments,
+        pageday: pageDay,
+        checklistDay: currChecklistDay,
       ),
     );
 
@@ -566,22 +436,17 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // });
   }
 
-  void _removeOverlay() {
-    // TODO: SAVE COMMENT
+  // void _removeOverlay() {
+  //   // TODO: SAVE COMMENT
 
-    _overlayEntry?.remove();
-  }
+  //   _overlayEntry?.remove();
+  // }
 
   void _updatePageDay(DateTime newDay) {
     setState(() {
       pageDay = newDay;
-      // It works! :)
-      // print("NEW DAY");
-      // print(pageDay);
     });
   }
-
-  // void _update
 
   @override
   Widget build(BuildContext context) {
@@ -590,11 +455,11 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       // backgroundColor: Colors.transparent,
       appBar: TopBar(
         //TODO: TEST THIS WORKS
-        appBarText: currChecklist?.name ?? "Worksite 1",
+        appBarText: currChecklist?.name ?? 'Worksite 1',
         worksiteDate: startDay,
       ),
 
-      bottomNavigationBar: NavBottomBar(),
+      bottomNavigationBar: const NavBottomBar(),
 
       body: Column(
         children: [
@@ -604,84 +469,22 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             onDateChange: _updatePageDay,
           ),
 
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  CategoryExpansionTile(
-                    catTitle: Text("Labour"),
-                    catIds: [], // currItemsByCat![0],
-                    changeManager: changeManager,
-                    checklistDay: null, //currChecklistDay!,
-                    pageDay: pageDay,
-                  ),
-                  CategoryExpansionTile(
-                    catTitle: Text("Equipment"),
-                    catIds: [], // currItemsByCat![1],
-                    changeManager: changeManager,
-                    checklistDay: null, // currChecklistDay!,
-                    pageDay: pageDay,
-                  ),
-                  CategoryExpansionTile(
-                    catTitle: Text("Materials"),
-                    catIds: [], // currItemsByCat![0],
-                    changeManager: changeManager,
-                    checklistDay: null, // currChecklistDay!,
-                    pageDay: pageDay,
-                  ),
-                ],
-              ),
-            ),
+          CategoryList(
+            pageday: pageDay,
+            checklistDay: currChecklistDay!,
           ),
 
           // CommentCard(),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 100,
-                height: 40,
-                child: TextButton(
-                  // style: MyAppStyle.buttonStyle,
-                  child: Text(
-                    "Edit",
-                    style: MyAppStyle.regularFont,
-                  ),
-                  onPressed: () {},
-                ),
-              ),
-              SizedBox(
-                width: 100,
-                height: 40,
-                child: TextButton(
-                  // style: MyAppStyle.buttonStyle,
-                  child: Text(
-                    "Submit",
-                    style: MyAppStyle.regularFont,
-                  ),
-                  onPressed: () {},
-                ),
-              ),
-              SizedBox(
-                width: 120,
-                height: 40,
-                child: TextButton(
-                  // style: MyAppStyle.buttonStyle,
-                  child: Text(
-                    "Comments",
-                    style: MyAppStyle.regularFont,
-                  ),
-                  onPressed: () {
-                    showCommentOverlay(context);
-                  },
-                ),
-              ),
-            ],
+          ButtonRow(
+            editFunct: () {},
+            saveFunct: () {},
+            commentFunct: () {
+              _showCommentOverlay(context);
+            },
           ),
 
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ],
