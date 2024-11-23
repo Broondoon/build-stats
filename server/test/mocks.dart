@@ -1170,20 +1170,21 @@ class MockChecklistDayCache extends _i1.Mock implements _i13.ChecklistDayCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<Map<String, String>> getCacheCheckStates() => (super.noSuchMethod(
+  _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
+      (super.noSuchMethod(
         Invocation.method(
           #getCacheCheckStates,
           [],
         ),
-        returnValue: _i2.Future<Map<String, String>>.value(
-            _i4.dummyValue<Map<String, String>>(
+        returnValue: _i2.Future<_i8.HashMap<String, String>>.value(
+            _i4.dummyValue<_i8.HashMap<String, String>>(
           this,
           Invocation.method(
             #getCacheCheckStates,
             [],
           ),
         )),
-      ) as _i2.Future<Map<String, String>>);
+      ) as _i2.Future<_i8.HashMap<String, String>>);
 }
 
 /// A class which mocks [ChecklistDayFactory].
@@ -1634,20 +1635,21 @@ class MockChecklistCache extends _i1.Mock implements _i13.ChecklistCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<Map<String, String>> getCacheCheckStates() => (super.noSuchMethod(
+  _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
+      (super.noSuchMethod(
         Invocation.method(
           #getCacheCheckStates,
           [],
         ),
-        returnValue: _i2.Future<Map<String, String>>.value(
-            _i4.dummyValue<Map<String, String>>(
+        returnValue: _i2.Future<_i8.HashMap<String, String>>.value(
+            _i4.dummyValue<_i8.HashMap<String, String>>(
           this,
           Invocation.method(
             #getCacheCheckStates,
             [],
           ),
         )),
-      ) as _i2.Future<Map<String, String>>);
+      ) as _i2.Future<_i8.HashMap<String, String>>);
 }
 
 /// A class which mocks [ChecklistFactory].
@@ -2020,20 +2022,21 @@ class MockWorksiteCache extends _i1.Mock implements _i16.WorksiteCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<Map<String, String>> getCacheCheckStates() => (super.noSuchMethod(
+  _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
+      (super.noSuchMethod(
         Invocation.method(
           #getCacheCheckStates,
           [],
         ),
-        returnValue: _i2.Future<Map<String, String>>.value(
-            _i4.dummyValue<Map<String, String>>(
+        returnValue: _i2.Future<_i8.HashMap<String, String>>.value(
+            _i4.dummyValue<_i8.HashMap<String, String>>(
           this,
           Invocation.method(
             #getCacheCheckStates,
             [],
           ),
         )),
-      ) as _i2.Future<Map<String, String>>);
+      ) as _i2.Future<_i8.HashMap<String, String>>);
 }
 
 /// A class which mocks [WorksiteFactory].
@@ -2380,20 +2383,21 @@ class MockItemCache extends _i1.Mock implements _i17.ItemCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<Map<String, String>> getCacheCheckStates() => (super.noSuchMethod(
+  _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
+      (super.noSuchMethod(
         Invocation.method(
           #getCacheCheckStates,
           [],
         ),
-        returnValue: _i2.Future<Map<String, String>>.value(
-            _i4.dummyValue<Map<String, String>>(
+        returnValue: _i2.Future<_i8.HashMap<String, String>>.value(
+            _i4.dummyValue<_i8.HashMap<String, String>>(
           this,
           Invocation.method(
             #getCacheCheckStates,
             [],
           ),
         )),
-      ) as _i2.Future<Map<String, String>>);
+      ) as _i2.Future<_i8.HashMap<String, String>>);
 }
 
 /// A class which mocks [ItemFactory].

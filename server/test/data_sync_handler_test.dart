@@ -64,13 +64,13 @@ void main() {
 
       // Mock the getCacheCheckStates() methods
       when(mockWorksiteCache.getCacheCheckStates()).thenAnswer((_) async =>
-          Map.from({'worksite1': 'checksum1', 'worksite2': 'checksum2'}));
+          HashMap.from({'worksite1': 'checksum1', 'worksite2': 'checksum2'}));
       when(mockChecklistCache.getCacheCheckStates()).thenAnswer((_) async =>
-          Map.from({'checklist1': 'checksum3', 'checklist3': 'checksum4'}));
-      when(mockChecklistDayCache.getCacheCheckStates()).thenAnswer(
-          (_) async => Map.from({'day1': 'checksum5', 'day3': 'checksum6'}));
-      when(mockItemCache.getCacheCheckStates()).thenAnswer(
-          (_) async => Map.from({'item2': 'checksum7', 'item3': 'checksum8'}));
+          HashMap.from({'checklist1': 'checksum3', 'checklist3': 'checksum4'}));
+      when(mockChecklistDayCache.getCacheCheckStates()).thenAnswer((_) async =>
+          HashMap.from({'day1': 'checksum5', 'day3': 'checksum6'}));
+      when(mockItemCache.getCacheCheckStates()).thenAnswer((_) async =>
+          HashMap.from({'item2': 'checksum7', 'item3': 'checksum8'}));
 
       // Act
       final result = await dataSync.handleCheckCacheSync(request);
@@ -121,13 +121,13 @@ void main() {
 
       // Mock the getCacheCheckStates() methods
       when(mockWorksiteCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map.from({'worksite1': 'checksum1'}));
+          .thenAnswer((_) async => HashMap.from({'worksite1': 'checksum1'}));
       when(mockChecklistCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map.from({'checklist1': 'checksum3'}));
+          .thenAnswer((_) async => HashMap.from({'checklist1': 'checksum3'}));
       when(mockChecklistDayCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map.from({'day1': 'checksum5'}));
+          .thenAnswer((_) async => HashMap.from({'day1': 'checksum5'}));
       when(mockItemCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map.from({'item1': 'checksum7'}));
+          .thenAnswer((_) async => HashMap.from({'item1': 'checksum7'}));
 
       // Act
       final result = await dataSync.handleCheckCacheSync(request);
@@ -183,12 +183,13 @@ void main() {
 
       // Mock the getCacheCheckStates() methods to return empty maps
       when(mockWorksiteCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map());
+          .thenAnswer((_) async => HashMap());
       when(mockChecklistCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map());
+          .thenAnswer((_) async => HashMap());
       when(mockChecklistDayCache.getCacheCheckStates())
-          .thenAnswer((_) async => Map());
-      when(mockItemCache.getCacheCheckStates()).thenAnswer((_) async => Map());
+          .thenAnswer((_) async => HashMap());
+      when(mockItemCache.getCacheCheckStates())
+          .thenAnswer((_) async => HashMap());
 
       // Act
       final result = await dataSync.handleCheckCacheSync(request);

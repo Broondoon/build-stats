@@ -31,11 +31,12 @@ COPY ./app /app
 COPY ./shared /shared
 
 # Pre-download Flutter dependencies and run doctor
-RUN flutter precache --no-version-check && flutter doctor --no-version-check
+RUN flutter precache --web --no-version-check
+RUN flutter doctor --no-version-check
 
 # Install Flutter dependencies
+COPY ./app/pubspec.* /app/
 RUN flutter pub get
-
 # Build the Flutter app (assuming it's a web app)
 RUN flutter build web
 
