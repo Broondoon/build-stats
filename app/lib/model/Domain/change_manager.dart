@@ -61,11 +61,13 @@ class ChangeManager {
     return await _worksiteCache.getById(id);
   }
 
-  Future<Worksite> createWorksite() async {
+  Future<Worksite> createWorksite(User user) async {
     String tempId =
         "${ID_TempIDPrefix}${ID_WorksitePrefix}${DateTime.now().millisecondsSinceEpoch.toString()}";
     Worksite worksite = Worksite(
         id: tempId,
+        ownerId: user.id,
+        companyId: user.companyId,
         dateCreated: DateTime.now().toUtc(),
         dateUpdated: DateTime.now().toUtc());
     await _worksiteCache.store(tempId, worksite);
