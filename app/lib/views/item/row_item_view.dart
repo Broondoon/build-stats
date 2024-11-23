@@ -7,21 +7,14 @@ import 'package:injector/injector.dart';
 class RowItem extends StatefulWidget {
   const RowItem({
     super.key,
-    this.item,
-    this.checklistDay,
-    // required this.pageDay,
-    this.pageDay, //TODO: tech debt, not sure effects of making not required but I did for bandaid
-    // required this.unit,
-    // required this.desc,
-    // required this.result,
+    required this.item,
+    required this.checklistDay,
+    required this.pageDay,
   });
 
-  final Item? item;
-  final ChecklistDay? checklistDay;
-  final DateTime? pageDay;
-  // final String unit;
-  // final String desc;
-  // final String result;
+  final Item item;
+  final ChecklistDay checklistDay;
+  final DateTime pageDay;
 
   @override
   State<RowItem> createState() => _RowItemState();
@@ -30,6 +23,7 @@ class RowItem extends StatefulWidget {
 class _RowItemState extends State<RowItem> {
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
+  late Item _item;
   late String _unit;
   late String _desc;
   late String _result;
@@ -41,10 +35,10 @@ class _RowItemState extends State<RowItem> {
   @override
   void initState() {
     super.initState();
-    // _item = widget.item;
-    _unit = ''; //_item.unit ?? "";
-    _desc = ''; //_item.desc ?? "";
-    _result = ''; //= _item.result ?? "";
+    _item = widget.item;
+    _unit = _item.unit ?? '';
+    _desc = _item.desc ?? '';
+    _result = _item.result ?? '';
 
     unitEdit.text = _unit;
     descEdit.text = _desc;
@@ -61,15 +55,16 @@ class _RowItemState extends State<RowItem> {
   }
 
   Future<void> _saveItemChanges() async {
-    // _item = await widget.changeManager.updateItem(_item, widget.checklistDay, widget.pageDay);
-    _unit = ''; //_item.unit ?? "";
-    _desc = '';//_item.desc ?? "";
-    _result = '';//_item.result ?? "";
+    print('HELLO WE ARE UPDATING ITEM');
+    _item = await changeManager.updateItem(_item, widget.checklistDay, widget.pageDay);
+    _unit = _item.unit ?? '';
+    _desc = _item.desc ?? '';
+    _result = _item.result ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 40,
       // decoration: BoxDecoration(
       //     border: Border.all(

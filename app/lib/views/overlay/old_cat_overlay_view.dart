@@ -43,32 +43,16 @@ class _OldCatState extends State<OldCat> {
   void initState() {
     super.initState();
     _idList = widget.catIds;
-    
-    // TODO: load from DB
-    _itemList = [];
-    // _itemList = [
-    //   RowItem(
-    //     item: null,
-    //     checklistDay: widget.checklistDay,
-    //     pageDay: widget.pageDay,
-    //   ),
-      // Flexible(
-      //   child: ListView.builder(
-      //     shrinkWrap: true,
-      //     itemCount: _itemList.length,
-      //     itemBuilder: (context, index) {
-      //       return _itemList[index];
-      //     },
-      //   ),
-      // ),
-    // ];
+    _loadItems();
   }
 
   Future<void> _loadItems() async {
     _itemList = [];
 
     for (String id in _idList) {
+      print('LOADING ITEM BY ID $id');
       Item? item = await changeManager.getItemById(id);
+      print('ITEM: \n\n$item');
       if (item != null) {
         _itemList.add(
           RowItem(
@@ -78,22 +62,22 @@ class _OldCatState extends State<OldCat> {
           )
         );
       }
+      else {
+        print('COULD NOT FIND ITEM BY ID');
+      }
     }
   }
 
-  // Future<void> _addItem() async {
-  void _addItem() {
-    // Item newItem = await changeManager.createItem(
-    //   widget.checklistDay, 
-    //   widget.catTitle
-    // );
-
-    print('Adding!');
+  Future<void> _addItem() async {
+    Item newItem = await changeManager.createItem(
+      widget.checklistDay, 
+      widget.catTitle
+    );
 
     setState(() {
       _itemList.add(
         RowItem(
-          item: null, //newItem,
+          item: newItem,
           checklistDay: widget.checklistDay,
           pageDay: widget.pageDay,
         )

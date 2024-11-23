@@ -57,7 +57,7 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
         _elemList.add(
           RowItem(
             item: item,
-            checklistDay: widget.checklistDay,
+            checklistDay: widget.checklistDay!,
             pageDay: widget.pageDay,
           )
         );
@@ -78,8 +78,8 @@ class _CategoryExpansionTileState extends State<CategoryExpansionTile> {
       // _elemList.add(RowItem());
       _elemList.add(
         RowItem(
-          item: newItem,
-          checklistDay: widget.checklistDay,
+          item: newItem!,
+          checklistDay: widget.checklistDay!,
           pageDay: widget.pageDay,
         )
       );

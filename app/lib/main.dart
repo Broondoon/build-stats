@@ -368,8 +368,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   Future<void> _loadEverything() async {    
     List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
 
-    if (userWorksites.length == 0) {
-      currWorksite = await changeManager.createWorksite();
+    if (userWorksites.isEmpty) {
+      currWorksite = await changeManager.createWorksite(currUser);
     }
     else {
       // TODO: actually load the right one
@@ -377,11 +377,16 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       currWorksite = userWorksites.first;
     }
 
-    currChecklist = await changeManager.getChecklistById(currWorksite!.checklistIds!.first)
-      ?? await changeManager.createChecklist(currWorksite!);
+    List<String> checklistIds = currWorksite!.checklistIds ?? [];
+
+    if (checklistIds.isEmpty) {
+      currChecklist = await changeManager.createChecklist(currWorksite!);
+    }
+    else {
+      currChecklist = await changeManager.getChecklistById(checklistIds.first);
+    }
 
     currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
-      // ?? await changeManager.createChecklistDay(currChecklist!, null, currUser.dateUpdated);
   }
 
   // setState(() {
@@ -463,7 +468,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
           return Scaffold (
             body: Text(
               'Error: ${snapshot.error}',  // Display the error
-              style: TextStyle(color: Colors.red),
+              style: const TextStyle(
+                color: Colors.red
+              ),
             ),
           );
         } else if (snapshot.connectionState == ConnectionState.done) {
@@ -507,7 +514,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
             ),
           );
         } else {
-          return Text("Nope, nada");
+          return const Text('Nope, nada');
         }
       }
     );

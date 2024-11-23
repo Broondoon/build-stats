@@ -33,24 +33,21 @@ class _CatRowState extends State<CatRow> {
               widget.catTitle,
               style: MyAppStyle.regularFont,
             ),
-            // SizedBox(
-            //   width: 200,
-            // ),
-            Spacer(),
+            const Spacer(),
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.flag_circle_outlined,
-                  color: const Color.fromARGB(255, 211, 211, 211),
+                  color: Color.fromARGB(255, 211, 211, 211),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 4,
                 ),
                 Container (
                   width: 30,
                   height: 30,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(
+                    borderRadius: const BorderRadius.all(
                       Radius.circular(5),
                     ),
                     border: Border.all(
@@ -58,8 +55,8 @@ class _CatRowState extends State<CatRow> {
                       width: 1,
                     ),
                   ),
-                  child: Center(
-                    child: Text("12"),
+                  child: const Center(
+                    child: Text('12'),
                   ),
                 ),
               ],

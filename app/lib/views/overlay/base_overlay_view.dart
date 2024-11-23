@@ -1,4 +1,5 @@
 // View Imports:
+import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
@@ -7,6 +8,7 @@ import 'package:build_stats_flutter/views/overlay/new_worksite_overlay_view.dart
 import 'package:build_stats_flutter/views/overlay/old_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:injector/injector.dart';
 
 // A key failure of this BaseOverlay system is the
 // need for certain params which don't get used.
@@ -109,15 +111,24 @@ class BaseOverlay extends StatelessWidget {
       case overlayChoice.newcategory:
         return NewCat();
       case overlayChoice.category:
-        return OldCat(
-          catTitle: catTitle!,
-          catIds: const [], //TODO: This shouldn't be like this
-          pageDay: pageday!,
-          checklistDay: checklistDay!,
-        );
+        return buildOldCatOverlay();
       case overlayChoice.worksite:
         return NewWorksite();
     }
+  }
+
+  OverlayImpInterface buildOldCatOverlay() {
+    // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+    List<String> ids = checklistDay!.getItemsByCategory(catTitle!);
+    
+    print('Building old cat!');
+
+    return OldCat(
+      catTitle: catTitle!,
+      catIds: ids,
+      pageDay: pageday!,
+      checklistDay: checklistDay!,
+    );
   }
 
   @override
