@@ -1,20 +1,22 @@
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
+import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 
 class RowItem extends StatefulWidget {
   const RowItem({
     super.key,
     required this.item,
-    required this.checklistDay,
-    required this.pageDay,
+    // required this.checklistDay,
+    // required this.pageDay,
   });
 
   final Item item;
-  final ChecklistDay checklistDay;
-  final DateTime pageDay;
+  // final ChecklistDay checklistDay;
+  // final DateTime pageDay;
 
   @override
   State<RowItem> createState() => _RowItemState();
@@ -56,7 +58,23 @@ class _RowItemState extends State<RowItem> {
 
   Future<void> _saveItemChanges() async {
     print('HELLO WE ARE UPDATING ITEM');
-    _item = await changeManager.updateItem(_item, widget.checklistDay, widget.pageDay);
+
+    // ChecklistDay currChecklistDay = Provider.of<MyAppState>(
+    //   context, 
+    //   listen: false
+    // ).currChecklistDay!;
+
+    // DateTime pageday = Provider.of<MyAppState>(
+    //   context, 
+    //   listen: false
+    // ).pageDay;
+
+    // _item = await changeManager.updateItem(_item, _currChecklistDay, _pageday);
+    _item = await Provider.of<MyAppState>(
+      context, 
+      listen: false
+    ).updateItem(_item);
+    
     _unit = _item.unit ?? '';
     _desc = _item.desc ?? '';
     _result = _item.result ?? '';

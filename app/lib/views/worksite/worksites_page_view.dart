@@ -52,53 +52,56 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
       worksiteList.add(
         // TODO: TELL BACKEND TO CREATE NEW WORKSITE
         WorksiteItem(
-            context: context, numWorksites: numWorksites, currDay: currDay),
-      );
-    });
+          context: context, numWorksites: numWorksites, currDay: currDay),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const TopBar(
-          appBarText: 'Worksites',
-          worksiteDate: null,
-        ),
-        body: Material(
-          clipBehavior: Clip.hardEdge,
-          child: Padding(
-            // Padding because the button at bottom felt a little too close to bottom edge
-            padding: const EdgeInsets.fromLTRB(0.8, 0.8, 0.8, 8.0),
-            child: Column(
-              children: [
-                Flexible(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    // physics: NeverScrollableScrollPhysics(),
-                    itemCount: worksiteList.length,
-                    itemBuilder: (context, index) {
-                      return worksiteList[index];
-                    },
+      appBar: const TopBar(
+        // appBarText: 'Worksites',
+        // worksiteDate: null,
+        whichAppBar: topBarChoice.worksitelist,
+      ),
+      body: Material(
+        clipBehavior: Clip.hardEdge,
+        child: Padding(
+          // Padding because the button at bottom felt a little too close to bottom edge
+          padding: const EdgeInsets.fromLTRB(0.8, 0.8, 0.8, 8.0),
+          child: Column(
+            children: [
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  // physics: NeverScrollableScrollPhysics(),
+                  itemCount: worksiteList.length,
+                  itemBuilder: (context, index) {
+                    return worksiteList[index];
+                  },
+                ),
+              ),
+              // Spacer(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: TextButton(
+                  style: MyAppStyle.buttonStyle,
+                  onPressed: () {
+                    showNewWorksiteOverlay();
+                    // addWorksite();
+                  },
+                  child: const Text(
+                    'Create New Worksite',
+                    style: MyAppStyle.regularFont,
                   ),
                 ),
-                // Spacer(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                  child: TextButton(
-                    style: MyAppStyle.buttonStyle,
-                    onPressed: () {
-                      showNewWorksiteOverlay();
-                      // addWorksite();
-                    },
-                    child: const Text(
-                      'Create New Worksite',
-                      style: MyAppStyle.regularFont,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

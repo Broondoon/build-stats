@@ -1,29 +1,30 @@
 // View Imports:
-
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:build_stats_flutter/views/item/row_item_view.dart';
 import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
+import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 
 class OldCat extends StatefulWidget implements OverlayImpInterface {
   const OldCat({
     super.key,
     required this.catTitle,
-    required this.catIds,
-    required this.checklistDay,
-    required this.pageDay,
+    // required this.catIds,
+    // required this.checklistDay,
+    // required this.pageDay,
   });
 
   final String catTitle;
-  final List<String> catIds;
-  final ChecklistDay checklistDay;
-  final DateTime pageDay;
+  // final List<String> catIds;
+  // final ChecklistDay checklistDay;
+  // final DateTime pageDay;
 
-  // TODO: make this work
+  // TODO: DEPRECATED; LONGER NEEDED
   @override
   void timeToClose() {
     // ...suposedly implemented by the State class?
@@ -42,11 +43,14 @@ class _OldCatState extends State<OldCat> {
   @override
   void initState() {
     super.initState();
-    _idList = widget.catIds;
     _loadItems();
   }
 
   Future<void> _loadItems() async {
+    _idList = Provider.of<MyAppState>(
+      context, 
+      listen: false
+    ).currItemsIdsByCat ?? [];
     _itemList = [];
 
     for (String id in _idList) {
@@ -58,8 +62,8 @@ class _OldCatState extends State<OldCat> {
           _itemList.add(
             RowItem(
               item: item,
-              checklistDay: widget.checklistDay,
-              pageDay: widget.pageDay,
+              // checklistDay: widget.checklistDay,
+              // pageDay: widget.pageDay,
             )
           );
         });
@@ -73,7 +77,11 @@ class _OldCatState extends State<OldCat> {
 
   Future<void> _addItem() async {
     Item newItem = await changeManager.createItem(
-      widget.checklistDay, 
+      // widget.checklistDay, 
+      Provider.of<MyAppState>(
+        context, 
+        listen: false
+      ).currChecklistDay!,
       widget.catTitle
     );
 
@@ -81,8 +89,8 @@ class _OldCatState extends State<OldCat> {
       _itemList.add(
         RowItem(
           item: newItem,
-          checklistDay: widget.checklistDay,
-          pageDay: widget.pageDay,
+          // checklistDay: widget.checklistDay,
+          // pageDay: widget.pageDay,
         )
       );
     });
@@ -98,7 +106,6 @@ class _OldCatState extends State<OldCat> {
         ),
         Flexible(
           child: ListView.builder(
-            // itemCount: _itemList.length,
             itemCount: _itemList.length,
             itemBuilder: (context, index) {
               return _itemList[index];
@@ -107,9 +114,6 @@ class _OldCatState extends State<OldCat> {
         ),
         TextButton(
           style: MyAppStyle.buttonStyle,
-          // onPressed: () async {
-          //   await _addItem(asd);
-          // },
           onPressed: _addItem,
           child: const Text(
             'Add New Item',

@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types, constant_identifier_names
+
 enum HttpResponse implements Comparable<HttpResponse> {
   NotFound(code: 404, message: 'Not Found'),
   BadRequest(code: 400, message: 'Bad Request'),
@@ -13,10 +15,14 @@ enum HttpResponse implements Comparable<HttpResponse> {
   int compareTo(HttpResponse other) => code.compareTo(other.code);
 }
 
-// ignore: camel_case_types
 enum overlayChoice {
   comments,
   newcategory,
   category,
   worksite,
+}
+
+enum topBarChoice {
+  worksitelist,
+  checklist,
 }
