@@ -130,17 +130,20 @@ class Cache<T extends Entity> implements CacheInterface<T> {
   }
 
   @override
-  Future<void> setCacheSyncFlags(
+  Future<bool> setCacheSyncFlags(
       HashMap<String, String> serverCheckSums) async {
     return await _m.protectWrite(() async {
+      bool anyUnsynced = false;
       serverCheckSums.forEach((key, value) async {
         if (value == EntityState.deleted.toString()) {
           await deleteUnprotected(key);
           cacheCheckSums.remove(key);
         } else if (cacheCheckSums[key] != value) {
           cacheSyncFlags[key] = false;
+          anyUnsynced = true;
         }
       });
+      return anyUnsynced;
     });
   }
 

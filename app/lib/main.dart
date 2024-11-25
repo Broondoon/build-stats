@@ -239,8 +239,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Need to access the app state in the unit cache to potentially update units on data sync. 
+    //so regestring it as a singleton to grab it when needed.
+    Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState());
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (context) => Injector.appInstance.get<MyAppState>(),//MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'SiteReady',

@@ -617,10 +617,6 @@ class ChangeManager {
     return await _unitCache.getById(id);
   }
 
-  Future<HashMap<String, String>> getUnitMap() async {
-    return _unitCache.getUnitIdPairs();
-  }
-
   Future<Unit> createUnit(User user) async {
     String tempId =
         "${ID_TempIDPrefix}${ID_UnitPrefix}${DateTime.now().millisecondsSinceEpoch.toString()}";

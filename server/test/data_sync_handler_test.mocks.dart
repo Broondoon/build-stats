@@ -177,7 +177,7 @@ class MockUnitCache extends _i1.Mock implements _i3.UnitCache {
       ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> setCacheSyncFlags(
+  _i6.Future<bool> setCacheSyncFlags(
           _i4.HashMap<String, String>? serverCheckSums) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -186,7 +186,7 @@ class MockUnitCache extends _i1.Mock implements _i3.UnitCache {
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+      ) as _i6.Future<bool>);
 
   @override
   _i6.Future<_i4.HashMap<String, String>> getCacheCheckStates() =>

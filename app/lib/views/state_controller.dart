@@ -1,6 +1,9 @@
+import 'dart:collection';
+
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
+import 'package:build_stats_flutter/model/entity/unit.dart';
 import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,7 @@ class MyAppState extends ChangeNotifier {
   List<String>? currItemsIdsByCat = [];
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
+  late HashMap<String, String> units = HashMap<String, String>();
   // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
   // This is a micro getter function???
@@ -28,6 +32,8 @@ class MyAppState extends ChangeNotifier {
 
   Future<void> loadEverything() async {
     ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+    setUnits( await changeManager.getCompanyUnits(currUser) ?? []);
+
 
     List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
 
@@ -113,5 +119,26 @@ class MyAppState extends ChangeNotifier {
 
   Future<void> flicker() async {
     await loadEverything();
+  }
+
+  //Units are a bit of a pain, as they arn't gathered like everything else, meaning that the caches can't actually detect if they're out of date unless it's done during data sync. 
+  //so we need methods to set and get them from the app state.
+  //additionally, since they won't change most of the time, we don't want to keep grabbinbg them from the cache, as that requires using a lot of async code, which means rebuilding a bunch of other crap
+  //so instead we set them here, and then update them via the data sync when neccessary.
+  //If someone else can find a better way to do this, I'm all ears.
+  HashMap<String, String> getUnits() {
+    return units;
+  }
+
+  void setUnits(List<Unit> newUnits) {
+    HashMap<String, String> unitIdPairs = HashMap<String, String>.fromIterable(
+        newUnits,
+        key: (e) => e.id,
+        value: (e) => e.name);
+    unitIdPairs.addEntries([
+      const MapEntry("", ""),
+    ]);
+    units = unitIdPairs;
+    notifyListeners();
   }
 }

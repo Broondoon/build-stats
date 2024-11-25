@@ -1,22 +1,21 @@
-import 'package:build_stats_flutter/model/Domain/change_manager.dart';
-import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
-import 'package:build_stats_flutter/model/entity/unit.dart';
+import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 
-//for item change handler await changeManager.getUnitMap();
+//Drop down for selecting units
+//the controller handles the change handler for the item so we use that.
 class UnitDropdown extends StatefulWidget {
   const UnitDropdown({
     super.key,
     required this.item,
-    required this.unitHashMap,
-    required this.itemChangeHandler,
+    required this.controller,
+    this.hintText,
   });
 
   final Item item;
-  final Map<String, String> unitHashMap;
-  final Future<void> Function() itemChangeHandler;
+  final TextEditingController controller;
+  final String? hintText;
 
   @override
   State<UnitDropdown> createState() => _UnitDropdownState();
@@ -30,19 +29,18 @@ class _UnitDropdownState extends State<UnitDropdown> {
     dropdownValue = widget.item.unitId ?? '';
     return DropdownMenu<String>(
       initialSelection: widget.item.unitId ?? '',
+      controller: widget.controller,
+      hintText: widget.hintText,
       onSelected: (String? value) {
-        if (value == widget.item.unitId) {
-          return;
-        }
-        // This is called when the user selects an item.
+        if (value == widget.item.unitId) return;
         widget.item.unitId = value;
-        // await widget.itemChangeHandler();
         setState(() {
           dropdownValue = value!;
         });
       },
+      //can probably make this a thing somewhere else, and only call it once. But this isolates it from other front end stuff for now.
       dropdownMenuEntries:
-          widget.unitHashMap.entries.map<DropdownMenuEntry<String>>((entry) {
+          Provider.of<MyAppState>(context, listen: false).getUnits().entries.map<DropdownMenuEntry<String>>((entry) {
         return DropdownMenuEntry<String>(value: entry.key, label: entry.value);
       }).toList(),
     );

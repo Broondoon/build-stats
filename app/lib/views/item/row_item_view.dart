@@ -2,6 +2,7 @@ import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/views/state_controller.dart';
+import 'package:build_stats_flutter/views/units/unit_dropdown_view.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:provider/provider.dart';
@@ -92,19 +93,22 @@ class _RowItemState extends State<RowItem> {
         children: [
           SizedBox(
               width: 100,
-              child: TextFormField(
-                controller: unitEdit,
-                decoration: const InputDecoration(
-                  // border: InputBorder.none,
-                  // border: OutlineInputBorder(
-                  //   borderSide: BorderSide(
-                  //   width: 1,
-                  // ),
-                  //   borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  // ),
-                  hintText: 'Units',
-                ),
-              )),
+              child: UnitDropdown(item: _item, controller: unitEdit, hintText:'Units')
+              
+              // TextFormField(
+              //   controller: unitEdit,
+              //   decoration: const InputDecoration(
+              //     // border: InputBorder.none,
+              //     // border: OutlineInputBorder(
+              //     //   borderSide: BorderSide(
+              //     //   width: 1,
+              //     // ),
+              //     //   borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              //     // ),
+              //     hintText: 'Units',
+              //   ),
+              // )
+              ),
           const VerticalDivider(
             thickness: 0.5,
           ),
