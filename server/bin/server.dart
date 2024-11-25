@@ -6,14 +6,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:Server/entity/checklist.dart';
 import 'package:Server/entity/item.dart';
+import 'package:Server/entity/unit.dart';
 import 'package:Server/entity/worksite.dart';
 import 'package:Server/handlers/checklistDay_handler.dart';
 import 'package:Server/handlers/checklist_handler.dart';
 import 'package:Server/handlers/data_sync_handler.dart';
 import 'package:Server/handlers/item_handler.dart';
+import 'package:Server/handlers/unit_handler.dart';
 import 'package:Server/handlers/worksite_handler.dart';
 import 'package:Server/storage/checklist_cache.dart';
 import 'package:Server/storage/item_cache.dart';
+import 'package:Server/storage/unit_cache.dart';
 import 'package:Server/storage/worksite_cache.dart';
 import 'package:injector/injector.dart';
 import 'package:mutex/mutex.dart';
@@ -85,16 +88,82 @@ Future<void> main() async {
     return ItemHandler(itemCache, parser);
   });
 
+  injector.registerSingleton<UnitCache>(() {
+    final parser = injector.get<UnitFactory>();
+    final storage = injector.get<LocalStorage>();
+    final m = ReadWriteMutex();
+    return UnitCache(parser, storage, m);
+  });
+
+  injector.registerDependency<UnitHandler>(() {
+    final unitCache = injector.get<UnitCache>();
+    final parser = injector.get<UnitFactory>();
+    return UnitHandler(unitCache, parser);
+  });
+
   injector.registerDependency<DataSync>(() {
     final worksiteCache = injector.get<WorksiteCache>();
     final checklistCache = injector.get<ChecklistCache>();
     final checklistDayCache = injector.get<ChecklistDayCache>();
     final itemCache = injector.get<ItemCache>();
+    final unitCache = injector.get<UnitCache>();
     return DataSync(
-        worksiteCache, checklistCache, checklistDayCache, itemCache);
+        worksiteCache, checklistCache, checklistDayCache, itemCache, unitCache);
   });
 
   // DEFAULT VALUE CREATION
+  //units
+  List<String> unitNames = [
+    'm',
+    'm2',
+    'm3',
+    'cm',
+    'cm2',
+    'cm3',
+    'mm',
+    'mm2',
+    'mm3',
+    'km',
+    'km2',
+    'ft',
+    'ft2',
+    'ft3',
+    'in',
+    'in2',
+    'in3',
+    'yd',
+    'yd2',
+    'yd3',
+    'mi',
+    'men',
+    'days',
+    'used',
+    'L',
+    'gal',
+    'kg',
+    't',
+    'lb',
+    'oz',
+    'g',
+    'bags',
+    'boxes',
+    'pallets',
+    'pieces',
+    'rolls',
+    'sheets',
+    'units',
+    'other'
+  ];
+  for (String unitName in unitNames) {
+    Unit unit = Unit(
+        id: ID_UnitPrefix + unitName,
+        name: unitName,
+        companyId: ID_CompanyPrefix + "1",
+        dateCreated: DateTime.now().toUtc(),
+        dateUpdated: DateTime.now().toUtc());
+    injector.get<UnitCache>().store(unit.id, unit);
+  }
+
   Worksite worksiteTest = Worksite(
     id: ID_WorksitePrefix + "1",
     companyId: ID_CompanyPrefix + "1",
@@ -120,7 +189,7 @@ Future<void> main() async {
   Item itemTest = Item(
       id: ID_ItemPrefix + "1",
       checklistDayId: ID_ChecklistDayPrefix + "1",
-      unit: "test unit",
+      unitId: ID_UnitPrefix + "m",
       desc: "test desc",
       result: "test result",
       comment: 'test',
@@ -173,6 +242,8 @@ final _staticHandler =
 
 // Router instance to handler requests.
 final _router = shelf_router.Router()
+  ..post(
+      API_DataSync, Injector.appInstance.get<DataSync>().handleCheckCacheSync)
   ..get(API_Worksite + '/<id>',
       (Injector.appInstance.get<WorksiteHandler>()).handleGet)
   ..get(API_WorksiteUserVisible + '/<companyId>/<userId>',
@@ -244,5 +315,8 @@ final _router = shelf_router.Router()
     API_Item,
     Injector.appInstance.get<ItemHandler>().handleDelete,
   )
-  ..post(
-      API_DataSync, Injector.appInstance.get<DataSync>().handleCheckCacheSync);
+  ..get(API_Unit + '/<id>', Injector.appInstance.get<UnitHandler>().handleGet)
+  ..get(API_UnitsAll + '/<companyId>',
+      Injector.appInstance.get<UnitHandler>().handleGetAll)
+  ..post(API_Unit, Injector.appInstance.get<UnitHandler>().handlePost)
+  ..put(API_Unit, Injector.appInstance.get<UnitHandler>().handlePut);

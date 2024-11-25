@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:Server/storage/checklist_cache.dart';
 import 'package:Server/storage/item_cache.dart';
+import 'package:Server/storage/unit_cache.dart';
 import 'package:Server/storage/worksite_cache.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shelf/shelf.dart';
@@ -12,9 +13,10 @@ class DataSync {
   final ChecklistCache _checklistCache;
   final ChecklistDayCache _checklistDayCache;
   final ItemCache _itemCache;
+  final UnitCache _unitCache;
 
   DataSync(this._worksiteCache, this._checklistCache, this._checklistDayCache,
-      this._itemCache);
+      this._itemCache, this._unitCache);
 
   final jsonHeaders = {
     'content-type': 'application/json',
@@ -31,6 +33,8 @@ class DataSync {
           json[API_DataObject_ChecklistDayStateList]?.cast<String>() ?? [];
       List<String> jsonItemIds =
           json[API_DataObject_ItemStateList]?.cast<String>() ?? [];
+      List<String> jsonUnitIds =
+          json[API_DataObject_UnitStateList]?.cast<String>() ?? [];
       String userId = json[API_DataObject_UserId];
       String companyId = json[API_DataObject_CompanyId];
 
@@ -53,11 +57,16 @@ class DataSync {
           await _itemCache.getCacheCheckStates();
       itemCheckSums.removeWhere((key, value) => !jsonItemIds.contains(key));
 
+      Map<String, String> unitCheckSums =
+          await _unitCache.getCacheCheckStates();
+      unitCheckSums.removeWhere((key, value) => !jsonUnitIds.contains(key));
+
       dynamic returnData = {
         API_DataObject_WorksiteStateList: worksiteCheckSums,
         API_DataObject_ChecklistStateList: checklistCheckSums,
         API_DataObject_ChecklistDayStateList: checklistDayCheckSums,
-        API_DataObject_ItemStateList: itemCheckSums
+        API_DataObject_ItemStateList: itemCheckSums,
+        API_DataObject_UnitStateList: unitCheckSums,
       };
 
       return Response.ok(jsonEncode(returnData), headers: {...jsonHeaders});

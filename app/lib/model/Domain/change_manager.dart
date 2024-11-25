@@ -6,10 +6,12 @@ import 'package:build_stats_flutter/model/Domain/Service/data_connection_service
 import 'package:build_stats_flutter/model/Domain/Service/file_IO_service.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
+import 'package:build_stats_flutter/model/entity/unit.dart';
 import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
+import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:shared/app_strings.dart';
@@ -20,36 +22,44 @@ class ChangeManager {
   final DataConnectionService<Checklist> _checklistDataConnectionService;
   final DataConnectionService<ChecklistDay> _checklistDayDataConnectionService;
   final DataConnectionService<Item> _itemDataConnectionService;
+  final DataConnectionService<Unit> _unitDataConnectionService;
   final WorksiteCache _worksiteCache;
   final ChecklistCache _checklistCache;
   final ChecklistDayCache _checklistDayCache;
   final ItemCache _itemCache;
+  final UnitCache _unitCache;
   final FileIOService<Worksite> _worksiteFileIOService;
   final FileIOService<Checklist> _checklistFileIOService;
   final FileIOService<ChecklistDay> _checklistDayFileIOService;
   final FileIOService<Item> _itemFileIOService;
+  final FileIOService<Unit> _unitFileIOService;
   final EntityFactory<Worksite> _worksiteFactory;
   final EntityFactory<Checklist> _checklistFactory;
   final EntityFactory<ChecklistDay> _checklistDayFactory;
   final EntityFactory<Item> _itemFactory;
+  final EntityFactory<Unit> _unitFactory;
 
   ChangeManager(
     this._worksiteDataConnectionService,
     this._checklistDataConnectionService,
     this._checklistDayDataConnectionService,
     this._itemDataConnectionService,
+    this._unitDataConnectionService,
     this._worksiteCache,
     this._checklistCache,
     this._checklistDayCache,
     this._itemCache,
+    this._unitCache,
     this._worksiteFileIOService,
     this._checklistFileIOService,
     this._checklistDayFileIOService,
     this._itemFileIOService,
+    this._unitFileIOService,
     this._worksiteFactory,
     this._checklistFactory,
     this._checklistDayFactory,
     this._itemFactory,
+    this._unitFactory,
   );
 
   //No automatic detection for deleting desynced entities currently exists. Will implment in Milestone 3
@@ -433,7 +443,6 @@ class ChangeManager {
   Future<Item?> getItemById(String id) async {
     print("Getting item by ID: $id");
     print(">>>>>> BRNEDNA SAYS HI");
-    print((await _itemCache.getAll((x) async => null))?.map((e) => e.id));
     return await _itemCache.getById(id);
   }
 
@@ -446,7 +455,7 @@ class ChangeManager {
         checklistDayId: item.checklistDayId,
         dateCreated: DateTime.now().toUtc(),
         dateUpdated: DateTime.now().toUtc(),
-        unit: item.unit,
+        unitId: item.unitId,
         desc: item.desc,
         result: item.result,
         comment: item.comment,
@@ -462,7 +471,7 @@ class ChangeManager {
         checklistDayId: checklistDay.checklistId,
         dateCreated: DateTime.now().toUtc(),
         dateUpdated: DateTime.now().toUtc(),
-        unit: "",
+        unitId: "",
         desc: "",
         result: "",
         comment: "",
@@ -486,7 +495,7 @@ class ChangeManager {
     }
     if (item.id.startsWith(ID_TempIDPrefix)) {
       if ((item.desc?.isNotEmpty ?? false) &&
-          (item.unit?.isNotEmpty ?? false)) {
+          (item.unitId?.isNotEmpty ?? false)) {
         //ensure checklist day exists
         if (checklistDay.id.startsWith(ID_TempIDPrefix)) {
           checklistDay = await updateChecklistDay(checklistDay, date);
@@ -598,5 +607,65 @@ class ChangeManager {
     } else {
       await updateChecklistDay(checklistDay, date);
     }
+  }
+
+  Future<List<Unit>?> getCompanyUnits(User user) async {
+    return await _unitCache.getCompanyUnits(user);
+  }
+
+  Future<Unit?> getUnitById(String id) async {
+    return await _unitCache.getById(id);
+  }
+
+  Future<HashMap<String, String>> getUnitMap() async {
+    return _unitCache.getUnitIdPairs();
+  }
+
+  Future<Unit> createUnit(User user) async {
+    String tempId =
+        "${ID_TempIDPrefix}${ID_UnitPrefix}${DateTime.now().millisecondsSinceEpoch.toString()}";
+    Unit unit = Unit(
+        id: tempId,
+        name: "",
+        companyId: user.companyId,
+        dateCreated: DateTime.now().toUtc(),
+        dateUpdated: DateTime.now().toUtc());
+    await _unitCache.store(tempId, unit);
+    return unit;
+  }
+
+  Future<Unit> updateUnits(Unit unit) async {
+    if (unit.id.startsWith(ID_TempIDPrefix)) {
+      try {
+        Unit updatedUnit = _unitFactory.fromJson(jsonDecode(
+            await _unitDataConnectionService.post(API_UnitPath, unit)));
+        _unitFileIOService.deleteFromDataFile(Dir_UnitFileString, [unit.id]);
+        unit = await _unitCache.store(
+            unit.id, updatedUnit); //replace the temp version
+      } on HttpException catch (e) {
+        switch (e.response) {
+          default:
+            break;
+        }
+      } finally {
+        _unitFileIOService.saveDataFile(Dir_UnitFileString, [unit]);
+      }
+    } else if (unit.getChecksum() !=
+        (await _unitCache.getById(unit.id))!.getChecksum()) {
+      try {
+        unit = await _unitCache.store(
+            unit.id,
+            _unitFactory.fromJson(jsonDecode(
+                await _unitDataConnectionService.put(API_UnitPath, unit))));
+      } on HttpException catch (e) {
+        switch (e.response) {
+          default:
+            break;
+        }
+      } finally {
+        _unitFileIOService.saveDataFile(Dir_UnitFileString, [unit]);
+      }
+    }
+    return unit;
   }
 }

@@ -1,13 +1,17 @@
+import 'dart:collection';
+
 import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
+import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 import 'package:to_csv/to_csv.dart' as exportCSV;
 import 'package:injector/injector.dart';
 
 class ToCSV {
   // ignore: non_constant_identifier_names
-  static WorksiteToCSV(String worksiteId) async {
+  static WorksiteToCSV(User user, String worksiteId) async {
     List<String> headers = [
       'ChecklistName',
       'Date',
@@ -33,6 +37,12 @@ class ToCSV {
     }
     final checklistDaysCache = injector.get<ChecklistDayCache>();
     final itemCache = injector.get<ItemCache>();
+    final unitCache = injector.get<UnitCache>();
+    HashMap<String, String> units = HashMap.from(await unitCache
+        .getCompanyUnits(user)
+        .then((value) => Map<String, String>.fromEntries(
+            value!.map((e) => MapEntry(e.id, e.name)))));
+    units.addEntries([const MapEntry('', '')]);
     for (Checklist checklist in checklists) {
       final checklistDays =
           await checklistDaysCache.getChecklistDaysForChecklist(checklist);
@@ -47,7 +57,7 @@ class ToCSV {
               checklist.name ?? '',
               checklistDay.date.toIso8601String(),
               catagory,
-              item.unit ?? '',
+              units[item.unitId ?? ''] ?? '',
               item.desc ?? '',
               item.result ?? '',
               item.verified.toString(),

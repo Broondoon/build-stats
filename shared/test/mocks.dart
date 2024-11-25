@@ -275,10 +275,10 @@ class MockBaseItem extends _i1.Mock implements _i7.BaseItem {
       );
 
   @override
-  set unit(String? _unit) => super.noSuchMethod(
+  set unitId(String? _unitId) => super.noSuchMethod(
         Invocation.setter(
-          #unit,
-          _unit,
+          #unitId,
+          _unitId,
         ),
         returnValueForMissingStub: null,
       );

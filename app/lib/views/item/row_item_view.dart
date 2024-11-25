@@ -36,7 +36,7 @@ class _RowItemState extends State<RowItem> {
   void initState() {
     super.initState();
     _item = widget.item;
-    _unit = _item.unit ?? '';
+    _unit = _item.unitId ?? '';
     _desc = _item.desc ?? '';
     _result = _item.result ?? '';
 
@@ -49,15 +49,16 @@ class _RowItemState extends State<RowItem> {
     resultEdit.addListener(_onTextChanged);
   }
 
-  // TODO: Test if we can 
+  // TODO: Test if we can
   void _onTextChanged() {
     _saveItemChanges();
   }
 
   Future<void> _saveItemChanges() async {
     print('HELLO WE ARE UPDATING ITEM');
-    _item = await changeManager.updateItem(_item, widget.checklistDay, widget.pageDay);
-    _unit = _item.unit ?? '';
+    _item = await changeManager.updateItem(
+        _item, widget.checklistDay, widget.pageDay);
+    _unit = _item.unitId ?? '';
     _desc = _item.desc ?? '';
     _result = _item.result ?? '';
   }
@@ -73,53 +74,42 @@ class _RowItemState extends State<RowItem> {
       child: Row(
         children: [
           SizedBox(
-            width: 100,
-            child: TextFormField(
-              controller: unitEdit,
-              decoration: const InputDecoration(
-                // border: InputBorder.none,
-                // border: OutlineInputBorder(
-                //   borderSide: BorderSide(
-                //   width: 1,
-                // ),
-                //   borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                // ),
-                hintText: 'Units',
-              ),
-            )
-          ),
-
+              width: 100,
+              child: TextFormField(
+                controller: unitEdit,
+                decoration: const InputDecoration(
+                  // border: InputBorder.none,
+                  // border: OutlineInputBorder(
+                  //   borderSide: BorderSide(
+                  //   width: 1,
+                  // ),
+                  //   borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  // ),
+                  hintText: 'Units',
+                ),
+              )),
           const VerticalDivider(
             thickness: 0.5,
           ),
-
           Expanded(
-            child: TextFormField(
-              controller: descEdit,
-              decoration: const InputDecoration(
+              child: TextFormField(
+            controller: descEdit,
+            decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
                 // border: InputBorder.none,
-                hintText: 'Description'
-              ),
-            )
-          ),
-
-          const VerticalDivider(
-
-          ),
-
+                hintText: 'Description'),
+          )),
+          const VerticalDivider(),
           SizedBox(
-            width: 100,
-            child: TextFormField(
-              // readOnly: true,
-              controller: resultEdit,
-              decoration: const InputDecoration(
-                // border: OutlineInputBorder(),
-                // border: InputBorder.none,
-                hintText: 'Value'
-              ),
-            )
-          ),
+              width: 100,
+              child: TextFormField(
+                // readOnly: true,
+                controller: resultEdit,
+                decoration: const InputDecoration(
+                    // border: OutlineInputBorder(),
+                    // border: InputBorder.none,
+                    hintText: 'Value'),
+              )),
         ],
       ),
     );

@@ -4,7 +4,7 @@ class Item extends BaseItem {
   Item({
     required super.id,
     required super.checklistDayId,
-    super.unit,
+    super.unitId,
     super.desc,
     super.result,
     super.comment,

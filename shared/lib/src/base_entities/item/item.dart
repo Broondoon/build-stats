@@ -3,7 +3,7 @@ import 'package:shared/src/base_entities/entity/entity.dart';
 
 class BaseItem extends Entity {
   late String checklistDayId;
-  late String? unit;
+  late String? unitId;
   late String? desc;
   late String? result;
   late String? comment;
@@ -13,7 +13,7 @@ class BaseItem extends Entity {
   BaseItem({
     required super.id,
     required this.checklistDayId,
-    this.unit,
+    this.unitId,
     this.desc,
     this.result,
     this.comment,
@@ -32,7 +32,7 @@ class BaseItem extends Entity {
           flagForDeletion: item.flagForDeletion,
         ) {
     checklistDayId = item.checklistDayId;
-    unit = item.unit;
+    unitId = item.unitId;
     desc = item.desc;
     result = item.result;
     comment = item.comment;
@@ -45,7 +45,7 @@ class BaseItem extends Entity {
     return {
       'id': id,
       'checklistDayId': checklistDayId,
-      'unit': unit,
+      'unitId': unitId,
       'desc': desc,
       'result': result,
       'comment': comment,
@@ -62,7 +62,7 @@ class BaseItem extends Entity {
     return {
       'id': id,
       'checklistDayId': checklistDayId,
-      'unit': unit,
+      'unitId': unitId,
       'desc': desc,
       'result': result,
       'comment': comment,
@@ -78,7 +78,7 @@ class BaseItem extends Entity {
     return [
       id,
       checklistDayId,
-      unit ?? '',
+      unitId ?? '',
       desc ?? '',
       result ?? '',
       comment ?? '',
@@ -96,7 +96,7 @@ class BaseItemFactory<T extends BaseItem> extends EntityFactory<T> {
     return BaseItem(
         id: json['id'],
         checklistDayId: json['checklistDayId'],
-        unit: json['unit'],
+        unitId: json['unitId'],
         desc: json['desc'],
         result: json['result'],
         comment: json['comment'],

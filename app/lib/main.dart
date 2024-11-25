@@ -1,5 +1,7 @@
 // View Imports:
+import 'package:build_stats_flutter/model/entity/unit.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/to_CSV.dart';
+import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
 import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
 import 'package:build_stats_flutter/views/date/date_row_view.dart';
@@ -55,6 +57,7 @@ void main() async {
   injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
   injector.registerDependency<ChecklistDayFactory>(() => ChecklistDayFactory());
   injector.registerDependency<ItemFactory>(() => ItemFactory());
+  injector.registerDependency<UnitFactory>(() => UnitFactory());
 
   injector.registerDependency<DataConnection<Worksite>>(
       () => DataConnection<Worksite>());
@@ -65,6 +68,8 @@ void main() async {
       () => DataConnection<ChecklistDay>());
   injector
       .registerDependency<DataConnection<Item>>(() => DataConnection<Item>());
+  injector
+      .registerDependency<DataConnection<Unit>>(() => DataConnection<Unit>());
 
   injector.registerSingleton<JsonFileAccess<Worksite>>(() {
     final parser = injector.get<WorksiteFactory>();
@@ -84,6 +89,11 @@ void main() async {
   injector.registerSingleton<JsonFileAccess<Item>>(() {
     final parser = injector.get<ItemFactory>();
     return JsonFileAccess<Item>(parser);
+  });
+
+  injector.registerSingleton<JsonFileAccess<Unit>>(() {
+    final parser = injector.get<UnitFactory>();
+    return JsonFileAccess<Unit>(parser);
   });
 
   injector.registerSingleton<WorksiteCache>(() {
@@ -123,41 +133,58 @@ void main() async {
     return ItemCache(dataConnection, fileIOService, parser, storage, m);
   });
 
+  injector.registerSingleton<UnitCache>(() {
+    final dataConnection = injector.get<DataConnection<Unit>>();
+    final fileIOService = injector.get<JsonFileAccess<Unit>>();
+    final parser = injector.get<UnitFactory>();
+    final storage = injector.get<LocalStorage>();
+    final m = ReadWriteMutex();
+    return UnitCache(dataConnection, fileIOService, parser, storage, m);
+  });
+
   injector.registerDependency<ChangeManager>(() {
     final _worksiteDataConnection = injector.get<DataConnection<Worksite>>();
     final _checklistDataConnection = injector.get<DataConnection<Checklist>>();
     final _checklistDayDataConnection =
         injector.get<DataConnection<ChecklistDay>>();
     final _itemDataConnection = injector.get<DataConnection<Item>>();
+    final _unitDataConnection = injector.get<DataConnection<Unit>>();
     final _worksiteCache = injector.get<WorksiteCache>(); // <-- err
     final _checklistCache = injector.get<ChecklistCache>();
     final _checklistDayCache = injector.get<ChecklistDayCache>();
     final _itemCache = injector.get<ItemCache>();
+    final _unitCache = injector.get<UnitCache>();
     final _worksiteFileIOS = injector.get<JsonFileAccess<Worksite>>();
     final _checklistFileIOS = injector.get<JsonFileAccess<Checklist>>();
     final _checklistDayFileIOS = injector.get<JsonFileAccess<ChecklistDay>>();
     final _itemFileIOS = injector.get<JsonFileAccess<Item>>();
+    final _unitFileIOS = injector.get<JsonFileAccess<Unit>>();
     final _worksiteParser = injector.get<WorksiteFactory>();
     final _checklistParser = injector.get<ChecklistFactory>();
     final _checklistDayParser = injector.get<ChecklistDayFactory>();
     final _itemParser = injector.get<ItemFactory>();
+    final _unitParser = injector.get<UnitFactory>();
     return ChangeManager(
       _worksiteDataConnection,
       _checklistDataConnection,
       _checklistDayDataConnection,
       _itemDataConnection,
+      _unitDataConnection,
       _worksiteCache,
       _checklistCache,
       _checklistDayCache,
       _itemCache,
+      _unitCache,
       _worksiteFileIOS,
       _checklistFileIOS,
       _checklistDayFileIOS,
       _itemFileIOS,
+      _unitFileIOS,
       _worksiteParser,
       _checklistParser,
       _checklistDayParser,
       _itemParser,
+      _unitParser,
     );
   });
 
@@ -367,6 +394,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   }
 
   Future<void> _loadEverything() async {
+    List<Unit> units = await changeManager.getCompanyUnits(currUser) ?? [];
     List<Worksite> userWorksites =
         await changeManager.getUserWorksites(currUser) ?? [];
 

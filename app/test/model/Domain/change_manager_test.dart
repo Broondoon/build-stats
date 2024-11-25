@@ -589,7 +589,7 @@ void main() {
       when(item.id).thenReturn(tempItemId);
       when(item.checklistDayId).thenReturn(ID_ChecklistDayPrefix + '123');
       when(item.desc).thenReturn('Item Description');
-      when(item.unit).thenReturn('Unit');
+      when(item.unitId).thenReturn('Unit');
       when(item.getChecksum()).thenReturn('checksum1');
 
       final checklistDay = MockChecklistDay();
@@ -681,7 +681,7 @@ void main() {
       final existingItem = MockItem();
       when(existingItem.checklistDayId)
           .thenReturn(ID_ChecklistDayPrefix + '123');
-      when(existingItem.unit).thenReturn('Unit');
+      when(existingItem.unitId).thenReturn('Unit');
       when(existingItem.desc).thenReturn('Description');
       when(existingItem.result).thenReturn('Result');
       when(existingItem.comment).thenReturn('Comment');
@@ -695,7 +695,7 @@ void main() {
       expect(result, isNotNull);
       expect(result.id, startsWith(ID_TempIDPrefix + ID_ItemPrefix));
       expect(result.checklistDayId, equals(ID_ChecklistDayPrefix + '123'));
-      expect(result.unit, equals('Unit'));
+      expect(result.unitId, equals('Unit'));
       expect(result.desc, equals('Description'));
       expect(result.result, equals('Result'));
       expect(result.comment, equals('Comment'));

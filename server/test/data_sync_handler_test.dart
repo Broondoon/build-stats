@@ -2,8 +2,12 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:Server/handlers/data_sync_handler.dart';
+import 'package:Server/storage/unit_cache.dart';
+import 'package:mockito/annotations.dart';
+import 'package:shared/app_strings.dart';
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
+import 'data_sync_handler_test.mocks.dart';
 import 'mocks.dart';
 
 // Constants from app_strings.dart
@@ -19,18 +23,20 @@ const Map<String, String> jsonHeaders = {
 };
 
 // // Generate mocks for the dependencies
-// @GenerateMocks([
-//   WorksiteCache,
-//   ChecklistCache,
-//   ChecklistDayCache,
-//   ItemCache,
-// ])
+@GenerateMocks([
+  UnitCache,
+])
 void main() {
   group('DataSync', () {
+    provideDummy<HashMap<String, String>>(HashMap<String, String>());
+    provideDummy<HashMap<String, List<String>>>(
+        HashMap<String, List<String>>());
+
     late MockWorksiteCache mockWorksiteCache;
     late MockChecklistCache mockChecklistCache;
     late MockChecklistDayCache mockChecklistDayCache;
     late MockItemCache mockItemCache;
+    late MockUnitCache mockUnitCache;
     late DataSync dataSync;
     late MockRequest request;
 
@@ -39,12 +45,9 @@ void main() {
       mockChecklistCache = MockChecklistCache();
       mockChecklistDayCache = MockChecklistDayCache();
       mockItemCache = MockItemCache();
-      dataSync = DataSync(
-        mockWorksiteCache,
-        mockChecklistCache,
-        mockChecklistDayCache,
-        mockItemCache,
-      );
+      mockUnitCache = MockUnitCache();
+      dataSync = DataSync(mockWorksiteCache, mockChecklistCache,
+          mockChecklistDayCache, mockItemCache, mockUnitCache);
     });
 
     test('handleCheckCacheSync returns correct response when given valid input',
@@ -55,6 +58,7 @@ void main() {
         API_DataObject_ChecklistStateList: ['checklist1', 'checklist2'],
         API_DataObject_ChecklistDayStateList: ['day1', 'day2'],
         API_DataObject_ItemStateList: ['item1', 'item2'],
+        API_DataObject_UnitStateList: ['unit1', 'unit2'],
         API_DataObject_UserId: 'user123',
         API_DataObject_CompanyId: 'company456',
       });
@@ -71,6 +75,8 @@ void main() {
           HashMap.from({'day1': 'checksum5', 'day3': 'checksum6'}));
       when(mockItemCache.getCacheCheckStates()).thenAnswer((_) async =>
           HashMap.from({'item2': 'checksum7', 'item3': 'checksum8'}));
+      when(mockUnitCache.getCacheCheckStates()).thenAnswer((_) async =>
+          HashMap.from({'unit1': 'checksum9', 'unit3': 'checksum10'}));
 
       // Act
       final result = await dataSync.handleCheckCacheSync(request);
@@ -102,6 +108,11 @@ void main() {
           equals({
             'item2': 'checksum7',
           }));
+      expect(
+          responseData[API_DataObject_UnitStateList],
+          equals({
+            'unit1': 'checksum9',
+          }));
     });
 
     test('handleCheckCacheSync returns empty maps when no matching IDs',
@@ -112,6 +123,7 @@ void main() {
         API_DataObject_ChecklistStateList: ['unknownChecklist'],
         API_DataObject_ChecklistDayStateList: ['unknownDay'],
         API_DataObject_ItemStateList: ['unknownItem'],
+        API_DataObject_UnitStateList: ['unknownUnit'],
         API_DataObject_UserId: 'user123',
         API_DataObject_CompanyId: 'company456',
       });
@@ -128,6 +140,8 @@ void main() {
           .thenAnswer((_) async => HashMap.from({'day1': 'checksum5'}));
       when(mockItemCache.getCacheCheckStates())
           .thenAnswer((_) async => HashMap.from({'item1': 'checksum7'}));
+      when(mockUnitCache.getCacheCheckStates())
+          .thenAnswer((_) async => HashMap.from({'unit1': 'checksum9'}));
 
       // Act
       final result = await dataSync.handleCheckCacheSync(request);
@@ -150,6 +164,7 @@ void main() {
         API_DataObject_ChecklistStateList: ['checklist1'],
         API_DataObject_ChecklistDayStateList: ['day1'],
         API_DataObject_ItemStateList: ['item1'],
+        API_DataObject_UnitStateList: ['unit1'],
         API_DataObject_UserId: 'user123',
         API_DataObject_CompanyId: 'company456',
       });
@@ -189,6 +204,8 @@ void main() {
       when(mockChecklistDayCache.getCacheCheckStates())
           .thenAnswer((_) async => HashMap());
       when(mockItemCache.getCacheCheckStates())
+          .thenAnswer((_) async => HashMap());
+      when(mockUnitCache.getCacheCheckStates())
           .thenAnswer((_) async => HashMap());
 
       // Act

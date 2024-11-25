@@ -11,7 +11,7 @@ void main() {
       final baseItem = BaseItem(
         id: '123',
         checklistDayId: '456',
-        unit: 'UnitTest',
+        unitId: 'UnitTest',
         desc: 'Test description',
         result: 'Pass',
         comment: 'No issues',
@@ -24,7 +24,7 @@ void main() {
 
       expect(baseItem.id, '123');
       expect(baseItem.checklistDayId, '456');
-      expect(baseItem.unit, 'UnitTest');
+      expect(baseItem.unitId, 'UnitTest');
       expect(baseItem.desc, 'Test description');
       expect(baseItem.result, 'Pass');
       expect(baseItem.comment, 'No issues');
@@ -42,7 +42,7 @@ void main() {
       final originalItem = BaseItem(
         id: '123',
         checklistDayId: '456',
-        unit: 'UnitTest',
+        unitId: 'UnitTest',
         desc: 'Test description',
         result: 'Pass',
         comment: 'No issues',
@@ -57,7 +57,7 @@ void main() {
 
       expect(copiedItem.id, originalItem.id);
       expect(copiedItem.checklistDayId, originalItem.checklistDayId);
-      expect(copiedItem.unit, originalItem.unit);
+      expect(copiedItem.unitId, originalItem.unitId);
       expect(copiedItem.desc, originalItem.desc);
       expect(copiedItem.result, originalItem.result);
       expect(copiedItem.comment, originalItem.comment);
@@ -75,7 +75,7 @@ void main() {
       final baseItem = BaseItem(
         id: '123',
         checklistDayId: '456',
-        unit: 'UnitTest',
+        unitId: 'UnitTest',
         desc: 'Test description',
         result: 'Pass',
         comment: 'No issues',
@@ -110,7 +110,7 @@ void main() {
       final baseItem = BaseItem(
         id: '123',
         checklistDayId: '456',
-        unit: 'UnitTest',
+        unitId: 'UnitTest',
         desc: 'Test description',
         result: 'Pass',
         comment: 'No issues',
@@ -143,7 +143,7 @@ void main() {
       final baseItem = BaseItem(
         id: '123',
         checklistDayId: '456',
-        unit: 'UnitTest',
+        unitId: 'UnitTest',
         desc: 'Test description',
         result: 'Pass',
         comment: 'No issues',
@@ -181,7 +181,7 @@ void main() {
 
       expect(baseItem.id, '123');
       expect(baseItem.checklistDayId, '456');
-      expect(baseItem.unit, 'UnitTest');
+      expect(baseItem.unitId, 'UnitTest');
       expect(baseItem.desc, 'Test description');
       expect(baseItem.result, 'Pass');
       expect(baseItem.comment, 'No issues');
@@ -205,7 +205,7 @@ void main() {
 
       expect(baseItem.id, '123');
       expect(baseItem.checklistDayId, '456');
-      expect(baseItem.unit, isNull);
+      expect(baseItem.unitId, isNull);
       expect(baseItem.desc, isNull);
       expect(baseItem.result, isNull);
       expect(baseItem.comment, isNull);
