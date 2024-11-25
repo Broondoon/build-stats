@@ -25,6 +25,7 @@ import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
+import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:build_stats_flutter/views/worksite/worksites_page_view.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared/app_strings.dart';
@@ -254,27 +255,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// TODO: Actually implement the changenotifier
-// Because HOT DANG is it a pain to change things across views
-class MyAppState extends ChangeNotifier {
-  Worksite? currWorksite;
-  Checklist? currChecklist;
-
-  void setWorksite(Worksite worksite) {
-    currWorksite = worksite;
-  }
-
-  void setChecklist(Checklist checklist) {
-    currChecklist = checklist;
-  }
-
-  // About to be deprecated
-  // void newItem(List<Widget> currItems) {
-  //   currItems.add(RowItem());
-  //   notifyListeners();
-  // }
-}
-
 class MyLandingPage extends StatelessWidget {
   const MyLandingPage({super.key});
 
@@ -350,73 +330,57 @@ class MyChecklistPage extends StatefulWidget {
 }
 
 class _MyChecklistPageState extends State<MyChecklistPage> {
-  ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+  // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
-  User currUser = User(
-    id: '${ID_UserPrefix}1',
-    companyId: '${ID_CompanyPrefix}1',
-    dateCreated: DateTime.now(),
-    dateUpdated: DateTime.now(),
-  );
-
-  Worksite? currWorksite; // = Worksite(
-  //   id: '1',
-  //   dateCreated: DateTime.now(),
-  //   dateUpdated: DateTime.now(),
+  // User currUser = User(
+  //       id: '${ID_UserPrefix}1',
+  //       companyId: '${ID_CompanyPrefix}1',
+  //       dateCreated: DateTime.now(),
+  //       dateUpdated: DateTime.now(),
   // );
 
-  Checklist? currChecklist; // = Checklist(
-  //   id: '1',
-  //   worksiteId: '1',
-  //   dateCreated: DateTime.now(),
-  //   dateUpdated: DateTime.now(),
-  // );
-
-  ChecklistDay? currChecklistDay; // = ChecklistDay(
-  //   id: '1',
-  //   checklistId: '1',
-  //   date: DateTime.now(),
-  //   dateCreated: DateTime.now(),
-  //   dateUpdated: DateTime.now()
-  // );
-
-  List<List<String>>? currItemsByCat = [];
-
-  DateTime pageDay = DateTime.now();
-  late DateTime startDay = pageDay;
-
+  // Worksite? currWorksite;
+  // Checklist? currChecklist;
+  // ChecklistDay? currChecklistDay;
+  // List<List<String>>? currItemsByCat = [];
+  // DateTime pageDay = DateTime.now();
+  // late DateTime startDay = pageDay;
   OverlayEntry? _overlayEntry;
+  late Future<void> serverFuture;
 
   @override
   void initState() {
     super.initState();
     // _loadEverything();
+    serverFuture = Provider.of<MyAppState>(
+      context,
+      listen: false,
+    ).loadEverything();
   }
 
-  Future<void> _loadEverything() async {
-    List<Unit> units = await changeManager.getCompanyUnits(currUser) ?? [];
-    List<Worksite> userWorksites =
-        await changeManager.getUserWorksites(currUser) ?? [];
+  // Future<void> _loadEverything() async {    
+  //   List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
 
-    if (userWorksites.isEmpty) {
-      currWorksite = await changeManager.createWorksite(currUser);
-    } else {
-      // TODO: actually load the right one
-      // But for now, just load the first one
-      currWorksite = userWorksites.first;
-    }
+  //   if (userWorksites.isEmpty) {
+  //     currWorksite = await changeManager.createWorksite(currUser);
+  //   }
+  //   else {
+  //     // TODO: actually load the right one
+  //     // But for now, just load the first one
+  //     currWorksite = userWorksites.first;
+  //   }
 
-    List<String> checklistIds = currWorksite!.checklistIds ?? [];
+  //   List<String> checklistIds = currWorksite!.checklistIds ?? [];
 
-    if (checklistIds.isEmpty) {
-      currChecklist = await changeManager.createChecklist(currWorksite!);
-    } else {
-      currChecklist = await changeManager.getChecklistById(checklistIds.first);
-    }
+  //   if (checklistIds.isEmpty) {
+  //     currChecklist = await changeManager.createChecklist(currWorksite!);
+  //   }
+  //   else {
+  //     currChecklist = await changeManager.getChecklistById(checklistIds.first);
+  //   }
 
-    currChecklistDay =
-        await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
-  }
+  //   currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+  // }
 
   // setState(() {
   // getItemsByCategory() gives ids
@@ -434,18 +398,6 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   // });
   // });
 
-  Future<void> _saveChanges() async {
-    // Save when you've added checklistIds to this day
-    currChecklistDay = await changeManager.updateChecklistDay(
-        currChecklistDay!, currChecklistDay!.date);
-
-    currChecklist = await changeManager.updateChecklist(currChecklist!);
-
-    // changeManager.updateItem(item, currChecklistDay!, pageDay);
-
-    changeManager.updateWorksite(currWorksite!);
-  }
-
   // TODO: Untangle this mess so that we can actually refactor it into a view
   void _showCommentOverlay(BuildContext context) {
     // TODO: LOAD COMMENTS WHEN RAN
@@ -457,8 +409,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
         overlayRef: _overlayEntry!,
         // choice: overlayChoice.comments,
         comments: comments,
-        pageday: pageDay,
-        checklistDay: currChecklistDay,
+        // pageday: pageDay,
+        // checklistDay: currChecklistDay,
       ),
     );
 
@@ -476,71 +428,79 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     });
   }
 
-  void _updatePageDay(DateTime newDay) {
-    setState(() {
-      pageDay = newDay;
-    });
-  }
+  // void _updatePageDay(DateTime newDay) {
+  //   setState(() {
+  //     pageDay = newDay;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
-    return FutureBuilder<void>(
-        // future: testFutureBuilderWithDelay(),
-        future: _loadEverything(),
-        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(body: Text('Waiting...'));
-          } else if (snapshot.hasError) {
-            return Scaffold(
-              body: Text(
-                'Error: ${snapshot.error}', // Display the error
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            return Scaffold(
-              // backgroundColor: Colors.transparent,
-              appBar: TopBar(
-                //TODO: TEST THIS WORKS
-                appBarText: currChecklist?.name ?? 'Worksite 1',
-                worksiteDate: startDay,
-              ),
-
-              bottomNavigationBar: const NavBottomBar(),
-
-              body: Column(
-                children: [
-                  DateRow(
-                    startDay: startDay,
-                    pageDay: pageDay,
-                    onDateChange: _updatePageDay,
+    // return Consumer<MyAppState>(
+    //   builder: (
+    //     context, 
+    //     appState, 
+    //     child,
+    //   ) {
+        return FutureBuilder<void>(
+          // future: testFutureBuilderWithDelay(),
+          // future: appState.loadEverything(),
+          future: serverFuture,
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Text('Waiting...')
+              );
+            } else if (snapshot.hasError) {
+              return Scaffold (
+                body: Text(
+                  'Error: ${snapshot.error}',  // Display the error
+                  style: const TextStyle(
+                    color: Colors.red
                   ),
-
-                  CategoryList(
-                    pageday: pageDay,
-                    checklistDay: currChecklistDay!,
-                  ),
-
-                  // CommentCard(),
-
-                  ButtonRow(
-                    editFunct: () {},
-                    saveFunct: () {},
-                    commentFunct: () {
-                      _showCommentOverlay(context);
-                    },
-                  ),
-
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return const Text('Nope, nada');
+                ),
+              );
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              return Scaffold(
+                // backgroundColor: Colors.transparent,
+                appBar: const TopBar(
+                  whichAppBar: topBarChoice.checklist,
+                ),
+              
+                bottomNavigationBar: const NavBottomBar(),
+              
+                body: Column(
+                  children: [
+                    const DateRow(),
+              
+                    const CategoryList(
+                      // pageday: pageDay,
+                      // checklistDay: currChecklistDay!,
+                    ),
+              
+                    // CommentCard(),
+              
+                    ButtonRow(
+                      editFunct: () {},
+                      saveFunct: () {},
+                      commentFunct: () {
+                        _showCommentOverlay(context);
+                      },
+                    ),
+              
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return const Text('Nope, nada');
+            }
           }
-        });
+        );
+    //   },
+    // );
   }
 }

@@ -1,22 +1,20 @@
-// View Imports:
-
-// import 'package:build_stats_flutter/main.dart';
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
-import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/views/categories/cat_row_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
+import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
+import 'package:provider/provider.dart';
 
 class CategoryList extends StatefulWidget {
   const CategoryList({
     super.key,
-    required this.pageday,
-    required this.checklistDay,
+    // required this.pageday,
+    // required this.checklistDay,
   });
 
-  final DateTime pageday;
-  final ChecklistDay checklistDay;
+  // final DateTime pageday;
+  // final ChecklistDay checklistDay;
 
   @override
   State<CategoryList> createState() => _CategoryListState();
@@ -37,7 +35,12 @@ class _CategoryListState extends State<CategoryList> {
 
   Future<void> _loadCats() async {
     _catList = [];
-    catTitles = widget.checklistDay.getCategories();
+    catTitles = Provider.of<MyAppState>(
+      context, 
+      listen: false
+    ).currChecklistDay!.getCategories();
+    
+    // widget.checklistDay.getCategories();
 
     print('LENGTH OF TITLES: ${catTitles.length}');
 
@@ -71,8 +74,8 @@ class _CategoryListState extends State<CategoryList> {
       builder: (context) => BaseOverlay.newCat(
         overlayRef: _catOverlayEntry!,
         closefunct: createNewCat,
-        pageday: widget.pageday,
-        checklistDay: widget.checklistDay,
+        // pageday: widget.pageday,
+        // checklistDay: widget.checklistDay,
       ),
     );
 
@@ -92,8 +95,8 @@ class _CategoryListState extends State<CategoryList> {
         overlayRef: _catOverlayEntry!,
         closefunct: _removeOldCatOverlay,
         catTitle: catTitle,
-        pageday: widget.pageday,
-        checklistDay: widget.checklistDay,
+        // pageday: widget.pageday,
+        // checklistDay: widget.checklistDay,
       ),
     );
 
@@ -107,11 +110,14 @@ class _CategoryListState extends State<CategoryList> {
   // OF NOTE: There is no checking for duplicate category titles, which will probably break backend
   // FORBIDDEN TECHNIQUE: OSTRICH BURIES INTO SAND
   Future<void> addNewCat(String newCatTitle) async {
-    // TODO: actually have input from overlay
-    // String newCatTitle = "";
 
-    print('ADDING NEW CAT $newCatTitle');
-    await changeManager.addCategory(widget.checklistDay, newCatTitle);
+    Provider.of<MyAppState>(
+      context, 
+      listen: false
+    ).addNewCat(newCatTitle);
+
+    // print('ADDING NEW CAT $newCatTitle');
+    // await changeManager.addCategory(widget.checklistDay, newCatTitle);
 
     setState(() {
       if (_catList.isNotEmpty) {
