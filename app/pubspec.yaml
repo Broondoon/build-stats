@@ -43,6 +43,7 @@ dependencies:
     path: ../shared
   http: ^1.2.2
   injector: ^4.0.0
+  to_csv: ^4.0.4
     
  
 dev_dependencies:

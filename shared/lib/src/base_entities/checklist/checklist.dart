@@ -62,7 +62,7 @@ class BaseChecklist extends Entity {
       'checklistIdsByDate': checklistIdsByDate,
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion,
+      'flagForDeletion': flagForDeletion.toString(),
     };
   }
 
@@ -105,7 +105,7 @@ class BaseChecklistFactory<T extends BaseChecklist> extends EntityFactory<T> {
       name: json['name'],
       dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] ?? false,
+      flagForDeletion: json['flagForDeletion'] == "true",
     );
 
     result.checklistIdsByDate = HashMap<String, String>.from(
@@ -204,7 +204,7 @@ class BaseChecklistDay extends Entity {
       'itemsByCatagory': itemsByCatagory,
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion,
+      'flagForDeletion': flagForDeletion.toString(),
     };
   }
 
@@ -251,7 +251,7 @@ class BaseChecklistDayFactory<T extends BaseChecklistDay>
       comment: json['comment'],
       dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] ?? false,
+      flagForDeletion: json['flagForDeletion'] == "true",
     );
 
     Map<String, dynamic> itemsByCatagory = json['itemsByCatagory'] ?? {};

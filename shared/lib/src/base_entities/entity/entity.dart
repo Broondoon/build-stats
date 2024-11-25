@@ -17,7 +17,7 @@ class Entity implements EntityInterface {
         'id': id,
         'dateCreated': dateCreated.toUtc().toIso8601String(),
         'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-        'flagForDeletion': flagForDeletion
+        'flagForDeletion': flagForDeletion.toString()
       };
   @override
   toJsonTransfer() => {
@@ -25,6 +25,10 @@ class Entity implements EntityInterface {
         'dateCreated': dateCreated.toUtc().toIso8601String(),
         'dateUpdated': dateUpdated.toUtc().toIso8601String()
       };
+
+  @override
+  toParamStringList() => (toJson().keys.toList(), toJson().values.toList());
+
   @override
   joinData() => [
         id,

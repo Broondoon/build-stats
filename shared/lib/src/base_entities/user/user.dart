@@ -28,7 +28,7 @@ class BaseUser extends Entity {
       'companyId': companyId,
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion,
+      'flagForDeletion': flagForDeletion.toString(),
     };
   }
 
@@ -61,7 +61,7 @@ class BaseUserFactory<T extends BaseUser> extends EntityFactory<T> {
       companyId: json['companyId'],
       dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] ?? false,
+      flagForDeletion: json['flagForDeletion'] == "true",
     );
 
     return user;

@@ -41,7 +41,7 @@ class BaseWorksite extends Entity {
       'checklistIds': checklistIds,
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion,
+      'flagForDeletion': flagForDeletion.toString(),
     };
   }
 
@@ -84,7 +84,7 @@ class BaseWorksiteFactory<T extends BaseWorksite> extends EntityFactory<T> {
       checklistIds: List<String>.from(json['checklistIds'] ?? <String>[]),
       dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
       dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] ?? false,
+      flagForDeletion: json['flagForDeletion'] == "true",
     );
     return worksite;
   }

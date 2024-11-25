@@ -50,10 +50,10 @@ class BaseItem extends Entity {
       'result': result,
       'comment': comment,
       'creatorId': creatorId,
-      'verified': verified,
+      'verified': verified?.toString() ?? "",
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion,
+      'flagForDeletion': flagForDeletion.toString(),
     };
   }
 
@@ -101,11 +101,11 @@ class BaseItemFactory<T extends BaseItem> extends EntityFactory<T> {
         result: json['result'],
         comment: json['comment'],
         creatorId: json['creatorId'],
-        verified: json['verified'],
+        verified: json['verified'] == "true",
         dateCreated:
             DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
         dateUpdated:
             DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-        flagForDeletion: json['flagForDeletion'] ?? false);
+        flagForDeletion: json['flagForDeletion'] == "true");
   }
 }

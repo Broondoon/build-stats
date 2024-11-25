@@ -1,4 +1,5 @@
 // View Imports:
+import 'package:build_stats_flutter/model/storage/local_storage/to_CSV.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
 import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
 import 'package:build_stats_flutter/views/date/date_row_view.dart';
@@ -325,30 +326,30 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
   User currUser = User(
-        id: '${ID_UserPrefix}1',
-        companyId: '${ID_CompanyPrefix}1',
-        dateCreated: DateTime.now(),
-        dateUpdated: DateTime.now(),
+    id: '${ID_UserPrefix}1',
+    companyId: '${ID_CompanyPrefix}1',
+    dateCreated: DateTime.now(),
+    dateUpdated: DateTime.now(),
   );
 
   Worksite? currWorksite; // = Worksite(
-  //   id: '1', 
-  //   dateCreated: DateTime.now(), 
+  //   id: '1',
+  //   dateCreated: DateTime.now(),
   //   dateUpdated: DateTime.now(),
   // );
 
   Checklist? currChecklist; // = Checklist(
-  //   id: '1', 
-  //   worksiteId: '1', 
-  //   dateCreated: DateTime.now(), 
+  //   id: '1',
+  //   worksiteId: '1',
+  //   dateCreated: DateTime.now(),
   //   dateUpdated: DateTime.now(),
   // );
 
   ChecklistDay? currChecklistDay; // = ChecklistDay(
   //   id: '1',
-  //   checklistId: '1', 
-  //   date: DateTime.now(), 
-  //   dateCreated: DateTime.now(), 
+  //   checklistId: '1',
+  //   date: DateTime.now(),
+  //   dateCreated: DateTime.now(),
   //   dateUpdated: DateTime.now()
   // );
 
@@ -365,13 +366,13 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     // _loadEverything();
   }
 
-  Future<void> _loadEverything() async {    
-    List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
+  Future<void> _loadEverything() async {
+    List<Worksite> userWorksites =
+        await changeManager.getUserWorksites(currUser) ?? [];
 
     if (userWorksites.isEmpty) {
       currWorksite = await changeManager.createWorksite(currUser);
-    }
-    else {
+    } else {
       // TODO: actually load the right one
       // But for now, just load the first one
       currWorksite = userWorksites.first;
@@ -381,29 +382,29 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
     if (checklistIds.isEmpty) {
       currChecklist = await changeManager.createChecklist(currWorksite!);
-    }
-    else {
+    } else {
       currChecklist = await changeManager.getChecklistById(checklistIds.first);
     }
 
-    currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
+    currChecklistDay =
+        await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
   }
 
   // setState(() {
-      // getItemsByCategory() gives ids
-      // getItemById() gives the item I want
+  // getItemsByCategory() gives ids
+  // getItemById() gives the item I want
 
-      // List<String> categories = currChecklistDay!.getCategories();
-      // currItemsByCat = [];
+  // List<String> categories = currChecklistDay!.getCategories();
+  // currItemsByCat = [];
 
-      // categories.forEach((cat) {
-      //   print("CETORGY:");
-      //   print(cat);
+  // categories.forEach((cat) {
+  //   print("CETORGY:");
+  //   print(cat);
 
-      //   List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
-      //   currItemsByCat!.add(catIds);
-      // });
-    // });
+  //   List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
+  //   currItemsByCat!.add(catIds);
+  // });
+  // });
 
   Future<void> _saveChanges() async {
     // Save when you've added checklistIds to this day
@@ -457,66 +458,61 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   Widget build(BuildContext context) {
     // var appState = context.watch<MyAppState>();
     return FutureBuilder<void>(
-      // future: testFutureBuilderWithDelay(),
-      future: _loadEverything(),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Text('Waiting...')
-          );
-        } else if (snapshot.hasError) {
-          return Scaffold (
-            body: Text(
-              'Error: ${snapshot.error}',  // Display the error
-              style: const TextStyle(
-                color: Colors.red
+        // future: testFutureBuilderWithDelay(),
+        future: _loadEverything(),
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(body: Text('Waiting...'));
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              body: Text(
+                'Error: ${snapshot.error}', // Display the error
+                style: const TextStyle(color: Colors.red),
               ),
-            ),
-          );
-        } else if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            // backgroundColor: Colors.transparent,
-            appBar: TopBar(
-              //TODO: TEST THIS WORKS
-              appBarText: currChecklist?.name ?? 'Worksite 1',
-              worksiteDate: startDay,
-            ),
-          
-            bottomNavigationBar: const NavBottomBar(),
-          
-            body: Column(
-              children: [
-                DateRow(
-                  startDay: startDay,
-                  pageDay: pageDay,
-                  onDateChange: _updatePageDay,
-                ),
-          
-                CategoryList(
-                  pageday: pageDay,
-                  checklistDay: currChecklistDay!,
-                ),
-          
-                // CommentCard(),
-          
-                ButtonRow(
-                  editFunct: () {},
-                  saveFunct: () {},
-                  commentFunct: () {
-                    _showCommentOverlay(context);
-                  },
-                ),
-          
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
-          );
-        } else {
-          return const Text('Nope, nada');
-        }
-      }
-    );
+            );
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            return Scaffold(
+              // backgroundColor: Colors.transparent,
+              appBar: TopBar(
+                //TODO: TEST THIS WORKS
+                appBarText: currChecklist?.name ?? 'Worksite 1',
+                worksiteDate: startDay,
+              ),
+
+              bottomNavigationBar: const NavBottomBar(),
+
+              body: Column(
+                children: [
+                  DateRow(
+                    startDay: startDay,
+                    pageDay: pageDay,
+                    onDateChange: _updatePageDay,
+                  ),
+
+                  CategoryList(
+                    pageday: pageDay,
+                    checklistDay: currChecklistDay!,
+                  ),
+
+                  // CommentCard(),
+
+                  ButtonRow(
+                    editFunct: () {},
+                    saveFunct: () {},
+                    commentFunct: () {
+                      _showCommentOverlay(context);
+                    },
+                  ),
+
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Text('Nope, nada');
+          }
+        });
   }
 }
