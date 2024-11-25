@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 class NewCat extends StatefulWidget implements OverlayImpInterface {
   const NewCat({
     super.key,
+    required this.changeNewCatName
   });
+
+  final Function changeNewCatName;
 
   // TODO: fix this so that it actually does somthing, because as now it's BROKEN
   @override
@@ -24,12 +27,13 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
 
   @override
   void initState() {
-    catName = "";
+    catName = '';
     catNameEdit.addListener(_saveCatChanges);
   }
 
   void _saveCatChanges() {
     catName = catNameEdit.text;
+    widget.changeNewCatName(catName);
   }
   
   @override
@@ -39,30 +43,30 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
       children: [
         // SizedBox(),
 
-        SizedBox(
+        const SizedBox(
           width: 200,
           height: 40,
           // child: Card(
             child: Center(
               child: Text(
-                "New Category",
+                'New Category',
                 style: MyAppStyle.largeFont,
               ),
             ),
           // ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 4,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           
           children: [
-            Text(
-              "Name:",
+            const Text(
+              'Name:',
               style: MyAppStyle.regularFont,
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             SizedBox(
@@ -83,7 +87,7 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
           ],
         ),
 
-        SizedBox(),
+        const SizedBox(),
       ],
     );
   }

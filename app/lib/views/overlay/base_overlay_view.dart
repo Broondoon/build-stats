@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 // I didn't expect it to become such a big thing, but as the system grows it turns out
 // that I don't really know how to integrate it into broader system design.
 // Probably should have researched it / watched a few videos...
-class BaseOverlay extends StatelessWidget {
+class BaseOverlay extends StatefulWidget {
   const BaseOverlay({
     // Not sure the diff between in and out
     super.key,
@@ -54,7 +54,6 @@ class BaseOverlay extends StatelessWidget {
       overlayRef: overlayRef,
       choice: overlayChoice.category,
       closefunct: closefunct,
-      // comments: '',
       catTitle: catTitle,
       pageday: pageday,
       checklistDay: checklistDay,
@@ -76,7 +75,6 @@ class BaseOverlay extends StatelessWidget {
 
   factory BaseOverlay.comment({
     required OverlayEntry overlayRef,
-    // required overlayChoice choice,
     required Function closefunct,
     required String comments,
     String? catTitle,
@@ -88,26 +86,29 @@ class BaseOverlay extends StatelessWidget {
       choice: overlayChoice.comments,
       closefunct: closefunct,
       comments: comments,
-      // catTitle: catTitle,
-      // pageday: DateTime.now(),
-      // checklistDay: ChecklistDay(
-      //   id: '', 
-      //   checklistId: '', 
-      //   date: DateTime.now(), 
-      //   dateCreated: DateTime.now(), 
-      //   dateUpdated: DateTime.now(),
-      // ),
     );
 
+  @override
+  State<BaseOverlay> createState() => _BaseOverlayState();
+}
+
+class _BaseOverlayState extends State<BaseOverlay> {
+
+  String newCatName = '';
+
+  void changeNewCatName(String newName) {
+    newCatName = newName;
+  }
+
   // This feels a little silly, and against OOP principles
-  // Some kind of inheritance could serve me better, possibly
-  // BUT I already made this, and need to move on to other things
   OverlayImpInterface getOverlay(overlayChoice yourChoice) {
     switch (yourChoice) {
       case overlayChoice.comments:
         return CommentSection();
       case overlayChoice.newcategory:
-        return NewCat();
+        return NewCat(
+          changeNewCatName: changeNewCatName,
+        );
       case overlayChoice.category:
         return buildOldCatOverlay();
       case overlayChoice.worksite:
@@ -117,21 +118,23 @@ class BaseOverlay extends StatelessWidget {
 
   OverlayImpInterface buildOldCatOverlay() {
     // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
-    List<String> ids = checklistDay!.getItemsByCategory(catTitle!);
-    
+    print('Getting list of ids for cat \"${widget.catTitle}\"');
+    List<String> ids = widget.checklistDay!.getItemsByCategory(widget.catTitle!);
+    print('List of hashd things:\n${widget.checklistDay!.itemsByCatagory}\n');
+
     print('Building old cat!');
 
     return OldCat(
-      catTitle: catTitle!,
+      catTitle: widget.catTitle!,
       catIds: ids,
-      pageDay: pageday!,
-      checklistDay: checklistDay!,
+      pageDay: widget.pageday!,
+      checklistDay: widget.checklistDay!,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    OverlayImpInterface overlay = getOverlay(choice);
+    OverlayImpInterface overlay = getOverlay(widget.choice);
 
     return Stack(
       children: [
@@ -168,7 +171,13 @@ class BaseOverlay extends StatelessWidget {
 
   // Close the overlay
   void _removeOverlay() {
-    closefunct();
-    overlayRef.remove();
+    if (widget.choice == overlayChoice.newcategory) {
+      widget.closefunct(newCatName);
+    }
+    else {
+      widget.closefunct();
+    }
+
+    widget.overlayRef.remove();
   } 
 }

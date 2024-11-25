@@ -29,7 +29,6 @@ class _CategoryListState extends State<CategoryList> {
   OverlayEntry? _catOverlayEntry;
 
   @override
-  // TODO: declare this as async?
   void initState() {
     print('CATEGORYLIST STATE INIT');
     super.initState();
@@ -71,7 +70,7 @@ class _CategoryListState extends State<CategoryList> {
     _catOverlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay.newCat(
         overlayRef: _catOverlayEntry!,
-        closefunct: _removeNewCatOverlay,
+        closefunct: createNewCat,
         pageday: widget.pageday,
         checklistDay: widget.checklistDay,
       ),
@@ -82,9 +81,9 @@ class _CategoryListState extends State<CategoryList> {
 
   // TODO: I WANT THE OVERLAY TO GIVE ME INFO?
   // THERE ARE OTHER WAYS THAN CURSED FUNCTION JUGGLING I KNOW IT
-  void _removeNewCatOverlay(String newCatTitle) {
+  void createNewCat(String newCatTitle) {
     // _catOverlayEntry?.remove();
-    addNewCat('Labour');
+    addNewCat(newCatTitle);
   }
 
   void showOldCatOverlay(String catTitle) {
