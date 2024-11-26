@@ -31,7 +31,7 @@ class _RowItemState extends State<RowItem> {
   late String _desc;
   late String _result;
 
-  TextEditingController unitEdit = TextEditingController();
+  // TextEditingController unitEdit = TextEditingController();
   TextEditingController descEdit = TextEditingController();
   TextEditingController resultEdit = TextEditingController();
 
@@ -43,17 +43,24 @@ class _RowItemState extends State<RowItem> {
     _desc = _item.desc ?? '';
     _result = _item.result ?? '';
 
-    unitEdit.text = _unit;
+    // unitEdit.text = _unit;
     descEdit.text = _desc;
     resultEdit.text = _result;
 
-    unitEdit.addListener(_onTextChanged);
+    // unitEdit.addListener(_onTextChanged);
     descEdit.addListener(_onTextChanged);
     resultEdit.addListener(_onTextChanged);
   }
 
+  // void unitChanged(String newUnit) {
+  //   print('DO THEY MATCH? ${_item.unitId} VS $newUnit');
+    // Author's note: yes they did
+    // _unit = newUnit;
+  // }
+
   // TODO: Test if we can
   void _onTextChanged() {
+    // _item.unitId
     _saveItemChanges();
   }
 
@@ -92,8 +99,12 @@ class _RowItemState extends State<RowItem> {
       child: Row(
         children: [
           SizedBox(
-              width: 100,
-              child: UnitDropdown(item: _item, controller: unitEdit, hintText:'Units')
+              width: 125,
+              child: UnitDropdown(
+                item: _item, 
+                changedFunction: _saveItemChanges, 
+                hintText: 'Units'
+              ),
               
               // TextFormField(
               //   controller: unitEdit,
@@ -108,7 +119,7 @@ class _RowItemState extends State<RowItem> {
               //     hintText: 'Units',
               //   ),
               // )
-              ),
+            ),
           const VerticalDivider(
             thickness: 0.5,
           ),

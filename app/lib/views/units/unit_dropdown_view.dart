@@ -9,12 +9,14 @@ class UnitDropdown extends StatefulWidget {
   const UnitDropdown({
     super.key,
     required this.item,
-    required this.controller,
+    // required this.controller,
+    required this.changedFunction,
     this.hintText,
   });
 
   final Item item;
-  final TextEditingController controller;
+  // final TextEditingController controller;
+  final Function changedFunction;
   final String? hintText;
 
   @override
@@ -22,21 +24,24 @@ class UnitDropdown extends StatefulWidget {
 }
 
 class _UnitDropdownState extends State<UnitDropdown> {
-  String dropdownValue = "";
+  String dropdownValue = '';
 
   @override
   Widget build(BuildContext context) {
     dropdownValue = widget.item.unitId ?? '';
     return DropdownMenu<String>(
       initialSelection: widget.item.unitId ?? '',
-      controller: widget.controller,
+      // controller: widget.controller,
       hintText: widget.hintText,
       onSelected: (String? value) {
         if (value == widget.item.unitId) return;
+        print('NEW ITEM ID: $value');
         widget.item.unitId = value;
         setState(() {
           dropdownValue = value!;
         });
+
+        widget.changedFunction();
       },
       //can probably make this a thing somewhere else, and only call it once. But this isolates it from other front end stuff for now.
       dropdownMenuEntries:

@@ -18,6 +18,7 @@ class MyAppState extends ChangeNotifier {
         dateUpdated: DateTime.now(),
   );
 
+  ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
   Worksite? currWorksite;
   Checklist? currChecklist;
   ChecklistDay? currChecklistDay;
@@ -31,7 +32,7 @@ class MyAppState extends ChangeNotifier {
   // DateTime get padeDay => _pageDay; 
 
   Future<void> loadEverything() async {
-    ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+    // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
     setUnits( await changeManager.getCompanyUnits(currUser) ?? []);
 
 
@@ -58,6 +59,15 @@ class MyAppState extends ChangeNotifier {
     currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
 
     notifyListeners();
+  }
+
+  Future<List<String>> loadItemsFromCat(String catName) async {
+    // currItemsIdsByCat = await changeManager.get
+
+    // TODO: see if this is totally catastrophic
+    await loadEverything();
+
+    return currChecklistDay!.getItemsByCategory(catName);
   }
 
   Future<void> saveChanges() async {

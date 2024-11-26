@@ -37,8 +37,8 @@ class OldCat extends StatefulWidget implements OverlayImpInterface {
 
 class _OldCatState extends State<OldCat> {
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
-  late List<Widget> _itemList;
-  late List<String> _idList;
+  List<Widget> _itemList = [];
+  List<String> _idList = [];
 
   @override
   void initState() {
@@ -47,11 +47,16 @@ class _OldCatState extends State<OldCat> {
   }
 
   Future<void> _loadItems() async {
-    _idList = Provider.of<MyAppState>(
+    
+    print('LOADING ITEMS!');
+
+    _idList = await Provider.of<MyAppState>(
       context, 
       listen: false
-    ).currItemsIdsByCat ?? [];
+    ).loadItemsFromCat(widget.catTitle);
     _itemList = [];
+
+    print('\nLIST OF IDS:\n$_idList\n');
 
     for (String id in _idList) {
       Item? item = await changeManager.getItemById(id);
