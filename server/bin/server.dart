@@ -35,6 +35,7 @@ Future<void> main() async {
   injector.registerDependency<ChecklistFactory>(() => ChecklistFactory());
   injector.registerDependency<ChecklistDayFactory>(() => ChecklistDayFactory());
   injector.registerDependency<ItemFactory>(() => ItemFactory());
+  injector.registerDependency<UnitFactory>(() => UnitFactory());
 
   injector.registerSingleton<WorksiteCache>(() {
     final parser = injector.get<WorksiteFactory>();
