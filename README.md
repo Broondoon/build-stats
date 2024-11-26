@@ -1,4 +1,4 @@
-# SiteReady v0.9
+# SiteReady v0.98
 SENG 480A Startup Programming project repository. SiteReady - bridging the construction communication gap between office and worksite.
 
 The **Project Page** can be found [here](https://sitereadycommunication.wordpress.com/).
