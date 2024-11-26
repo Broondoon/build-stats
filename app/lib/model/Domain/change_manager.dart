@@ -468,7 +468,7 @@ class ChangeManager {
         "${ID_TempIDPrefix}${ID_ItemPrefix}${DateTime.now().millisecondsSinceEpoch.toString()}";
     Item item = Item(
         id: tempId,
-        checklistDayId: checklistDay.checklistId,
+        checklistDayId: checklistDay.id,
         dateCreated: DateTime.now().toUtc(),
         dateUpdated: DateTime.now().toUtc(),
         unitId: "",

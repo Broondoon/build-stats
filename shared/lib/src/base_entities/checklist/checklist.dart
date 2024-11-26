@@ -191,7 +191,7 @@ class BaseChecklistDay extends Entity {
         return key;
       }
     }
-    return null;
+    return "";
   }
 
   @override
