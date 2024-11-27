@@ -6,6 +6,7 @@ import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/unit.dart';
 import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
+import 'package:build_stats_flutter/model/storage/data_sync/data_sync.dart';
 import 'package:flutter/material.dart';
 import 'package:injector/injector.dart';
 import 'package:shared/app_strings.dart';
@@ -26,12 +27,18 @@ class MyAppState extends ChangeNotifier {
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
   late HashMap<String, String> units = HashMap<String, String>();
+  bool dataSyncing = false; //just a quick flag to ensure we only start the data sync once.
   // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
   // This is a micro getter function???
   // DateTime get padeDay => _pageDay; 
 
   Future<void> loadEverything() async {
+    // If we haven't started data syncing yet, start it now. Load Everything might be called after this again, so ensure we only do this once.
+    if(!dataSyncing){
+      Injector.appInstance.get<DataSync>().startDataSyncTimer();// Start the data sync timer so we can keep the app synced to the Server.
+      dataSyncing = true;
+    }
     // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
     setUnits( await changeManager.getCompanyUnits(currUser) ?? []);
 

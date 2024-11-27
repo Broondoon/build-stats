@@ -1,5 +1,8 @@
 // View Imports:
+import 'dart:async';
+
 import 'package:build_stats_flutter/model/entity/unit.dart';
+import 'package:build_stats_flutter/model/storage/data_sync/data_sync.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/to_CSV.dart';
 import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
@@ -143,6 +146,15 @@ void main() async {
     return UnitCache(dataConnection, fileIOService, parser, storage, m);
   });
 
+  injector.registerDependency<DataSync>(() => DataSync(
+        injector.get<WorksiteCache>(),
+        injector.get<ChecklistCache>(),
+        injector.get<ChecklistDayCache>(),
+        injector.get<ItemCache>(),
+        injector.get<UnitCache>(),
+        null,
+      ));
+
   injector.registerDependency<ChangeManager>(() {
     final _worksiteDataConnection = injector.get<DataConnection<Worksite>>();
     final _checklistDataConnection = injector.get<DataConnection<Checklist>>();
@@ -150,7 +162,7 @@ void main() async {
         injector.get<DataConnection<ChecklistDay>>();
     final _itemDataConnection = injector.get<DataConnection<Item>>();
     final _unitDataConnection = injector.get<DataConnection<Unit>>();
-    final _worksiteCache = injector.get<WorksiteCache>(); // <-- err
+    final _worksiteCache = injector.get<WorksiteCache>();
     final _checklistCache = injector.get<ChecklistCache>();
     final _checklistDayCache = injector.get<ChecklistDayCache>();
     final _itemCache = injector.get<ItemCache>();
@@ -189,6 +201,8 @@ void main() async {
     );
   });
 
+  
+
   try {
     runApp(const MyApp()
         // const ProviderScope(child: MyApp()),
@@ -205,6 +219,8 @@ void main() async {
   //   exit(1);
   // }
 }
+
+
 
 // Future<void> initTestStorage() async {
 //   Worksite testWorksite = Worksite(
