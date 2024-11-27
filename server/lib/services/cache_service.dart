@@ -40,7 +40,7 @@ class CacheService<T extends Entity> extends Cache<T> {
     // var test = await super.get([key], (x) async => await loadById(x?.first));
     return (await super
             .get([key], (x) async => null)) //await loadById(x?.first)))
-        ?.first;
+        ?.firstOrNull;
   }
 
   // @override

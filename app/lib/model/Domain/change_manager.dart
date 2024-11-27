@@ -410,7 +410,7 @@ class ChangeManager {
             .saveDataFile(API_ChecklistDayPath, [checklistDay]);
       }
     } else if (checklistDay.getChecksum() !=
-        (await _checklistCache.getById(checklistDay.id))!.getChecksum()) {
+        (await _checklistDayCache.getById(checklistDay.id))!.getChecksum()) {
       try {
         checklistDay = await _checklistDayCache.store(
             checklistDay.id,

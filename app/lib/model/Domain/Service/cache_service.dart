@@ -41,7 +41,7 @@ class CacheService<T extends Entity> extends Cache<T> {
       : super(_parser, _cacheLocalStorage, _m, _idPrefix);
 
   Future<T?> getById(String key) async {
-    return (await super.get([key], (x) async => await loadById(x?.first)))
+    return (await super.get([key], (x) async => await loadById(x?.firstOrNull)))
         ?.firstOrNull;
   }
 
