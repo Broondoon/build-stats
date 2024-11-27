@@ -407,7 +407,7 @@ class ChangeManager {
         }
       } finally {
         _checklistDayFileIOService
-            .saveDataFile(API_ChecklistDayPath, [checklistDay]);
+            .saveDataFile(Dir_ChecklistDayFileString, [checklistDay]);
       }
     } else if (checklistDay.getChecksum() !=
         (await _checklistDayCache.getById(checklistDay.id))!.getChecksum()) {
@@ -424,7 +424,7 @@ class ChangeManager {
         }
       } finally {
         _checklistDayFileIOService
-            .saveDataFile(API_ChecklistDayPath, [checklistDay]);
+            .saveDataFile(Dir_ChecklistDayFileString, [checklistDay]);
       }
     }
     return checklistDay;
