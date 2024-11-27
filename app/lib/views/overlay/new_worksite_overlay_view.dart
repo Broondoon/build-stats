@@ -47,12 +47,12 @@ class _NewWorksiteState extends State<NewWorksite> {
     newPersonTitleEdit.addListener(canWeSave);
     newPersonNameEdit.addListener(canWeSave);
 
-    peopleEdit.add((newPersonNameEdit, newPersonTitleEdit));
+    peopleEdit.add((newPersonTitleEdit, newPersonNameEdit));
     peopleWidgets.add(
       NewWorksitePersonRow(
         newPersonTitleEdit: newPersonTitleEdit,
         newPersonNameEdit: newPersonNameEdit, 
-        titleHint: 'Foreman', 
+        titleHint: 'Title', 
         nameHint: 'Name',
       )
     );
