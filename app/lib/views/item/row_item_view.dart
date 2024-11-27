@@ -34,6 +34,9 @@ class _RowItemState extends State<RowItem> {
   // TextEditingController unitEdit = TextEditingController();
   TextEditingController descEdit = TextEditingController();
   TextEditingController resultEdit = TextEditingController();
+  FocusNode descEditFocusNode = FocusNode();
+  FocusNode resultEditFocusNode = FocusNode();
+
 
   @override
   void initState() {
@@ -47,9 +50,12 @@ class _RowItemState extends State<RowItem> {
     descEdit.text = _desc;
     resultEdit.text = _result;
 
+
     // unitEdit.addListener(_onTextChanged);
-    descEdit.addListener(_onTextChanged);
-    resultEdit.addListener(_onTextChanged);
+    //descEdit.addListener(_onTextChanged);
+    //resultEdit.addListener(_onTextChanged);
+    descEditFocusNode.addListener(_handleFocusChange);
+    resultEditFocusNode.addListener(_handleFocusChange);
   }
 
   // void unitChanged(String newUnit) {
@@ -58,9 +64,25 @@ class _RowItemState extends State<RowItem> {
     // _unit = newUnit;
   // }
 
-  // TODO: Test if we can
-  void _onTextChanged() {
+  // // TODO: Test if we can
+  // void _onTextChanged() {
+  //   // _item.unitId
+  //   if(_item.desc == descEdit.text && _item.result == resultEdit.text) {
+  //     return;
+  //   }
+  //   _item.desc = descEdit.text;
+  //   _item.result = resultEdit.text;
+  //   _saveItemChanges();
+  // }
+
+   // TODO: Test if we can
+  void _handleFocusChange() {
     // _item.unitId
+    if(_item.desc == descEdit.text && _item.result == resultEdit.text) {
+      return;
+    }
+    _item.desc = descEdit.text;
+    _item.result = resultEdit.text;
     _saveItemChanges();
   }
 
@@ -126,6 +148,7 @@ class _RowItemState extends State<RowItem> {
           Expanded(
               child: TextFormField(
             controller: descEdit,
+            focusNode: descEditFocusNode,
             decoration: const InputDecoration(
                 // border: OutlineInputBorder(),
                 // border: InputBorder.none,
@@ -137,6 +160,7 @@ class _RowItemState extends State<RowItem> {
               child: TextFormField(
                 // readOnly: true,
                 controller: resultEdit,
+                focusNode: resultEditFocusNode,
                 decoration: const InputDecoration(
                     // border: OutlineInputBorder(),
                     // border: InputBorder.none,

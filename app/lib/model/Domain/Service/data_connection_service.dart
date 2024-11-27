@@ -37,7 +37,7 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
     try {
       print("POST: " + path);
       http.Response response =
-          await client.post(Uri.parse(path), body: value.toJson());
+          await client.post(Uri.parse(path), body: jsonEncode(value.toJsonTransfer()));
       if (response.statusCode == 200) {
         return response.body;
       } else {
@@ -55,7 +55,7 @@ class DataConnection<T extends Entity> implements DataConnectionService<T> {
     try {
       print("PUT: " + path);
       http.Response response =
-          await client.put(Uri.parse(path), body: value.toJson());
+          await client.put(Uri.parse(path), body: jsonEncode(value.toJsonTransfer()));
       if (response.statusCode == 200) {
         return response.body;
       } else {
