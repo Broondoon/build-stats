@@ -255,9 +255,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //Need to access the app state in the unit cache to potentially update units on data sync. 
-    //so regestring it as a singleton to grab it when needed.
-    Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState());
+    // Need to access the app state in the unit cache to potentially update units on data sync. 
+    // so regestring it as a singleton to grab it when needed.
+    // Brendan fix: We intentionally provoke an exception
+    try {
+      Injector.appInstance.get<MyAppState>();
+    } catch (e) {
+      Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState());
+    }
+    
     return ChangeNotifierProvider(
       create: (context) => Injector.appInstance.get<MyAppState>(),//MyAppState(),
       child: MaterialApp(

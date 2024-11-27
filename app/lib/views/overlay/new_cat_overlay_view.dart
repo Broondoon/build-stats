@@ -27,6 +27,8 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
 
   @override
   void initState() {
+    super.initState();
+    
     catName = '';
     catNameEdit.addListener(_saveCatChanges);
   }

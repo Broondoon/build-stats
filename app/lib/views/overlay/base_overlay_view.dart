@@ -96,11 +96,34 @@ class BaseOverlay extends StatefulWidget {
 }
 
 class _BaseOverlayState extends State<BaseOverlay> {
-
+  
+  // TODO: How do we avoid this?
+  // New Category overlay:
   String newCatName = '';
+
+  //New worksite overlay:
+  bool minimumReqsToSave = false;
+  String workname = '';
+  String intID = '';
+  String contractor = '';
+  List<(String, String)> people = [];
 
   void changeNewCatName(String newName) {
     newCatName = newName;
+  }
+
+  void changeWorksiteInfo(
+    bool reqsSatisfied,
+    String newWorkname, 
+    String newIntId, 
+    String newContractor,
+    List<(String, String)> newpeople,
+  ) {
+    minimumReqsToSave = reqsSatisfied; // This is particularly heinous naming convention
+    workname = newWorkname;
+    intID = newIntId;
+    contractor = newContractor;
+    people = newpeople;
   }
 
   // This feels a little silly, and against OOP principles
@@ -120,7 +143,10 @@ class _BaseOverlayState extends State<BaseOverlay> {
           // checklistDay: widget.checklistDay!,
         );
       case overlayChoice.worksite:
-        return NewWorksite();
+        return NewWorksite(
+          changeInfoFunct: changeWorksiteInfo,
+          removeOverlayFunct: _removeOverlay,
+        );
     }
   }
 
@@ -190,6 +216,18 @@ class _BaseOverlayState extends State<BaseOverlay> {
   void _removeOverlay() {
     if (widget.choice == overlayChoice.newcategory) {
       widget.closefunct(newCatName);
+    }
+    else if (widget.choice == overlayChoice.worksite) {
+      print('CLOSING NEW WORKSITE OVERLAY');
+      if (minimumReqsToSave) {
+        print('SAVING NEW WORKSITE BECAUSE FORMS FILLED');
+        widget.closefunct(
+          workname,
+          intID,
+          contractor,
+          people,
+        );
+      }
     }
     else {
       widget.closefunct();

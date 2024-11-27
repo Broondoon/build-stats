@@ -37,7 +37,12 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void addWorksite() {
+  void addWorksite(
+    String workname, 
+    String newIntId, 
+    String newContractor,
+    List<(String, String)> newpeople,
+  ) {
     setState(() {
       numWorksites++;
 
@@ -49,13 +54,21 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
         );
       }
 
-      worksiteList.add(
         // TODO: TELL BACKEND TO CREATE NEW WORKSITE
+      worksiteList.add(
         WorksiteItem(
-          context: context, numWorksites: numWorksites, currDay: currDay),
-        );
-      },
+          context: context, 
+          // numWorksites: numWorksites, 
+          currDay: currDay,
+          workname: workname,
+          intId: newIntId,
+          contractor: newContractor,
+          people: newpeople,
+        ),
+      );
+    },
     );
+    // Just hwat is this indenting
   }
 
   @override
