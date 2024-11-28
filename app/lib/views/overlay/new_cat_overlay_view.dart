@@ -43,20 +43,18 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
     return Column(
       // mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // SizedBox(),
-
-        const SizedBox(
-          width: 200,
-          height: 40,
-          // child: Card(
-            child: Center(
-              child: Text(
-                'New Category',
-                style: MyAppStyle.largeFont,
-              ),
-            ),
-          // ),
-        ),
+        // const SizedBox(
+        //   width: 200,
+        //   height: 40,
+        //   // child: Card(
+        //     child: Center(
+        //       child: Text(
+        //         'New Category',
+        //         style: MyAppStyle.largeFont,
+        //       ),
+        //     ),
+        //   // ),
+        // ),
         const SizedBox(
           height: 4,
         ),

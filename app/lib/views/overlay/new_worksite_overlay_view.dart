@@ -174,10 +174,10 @@ class _NewWorksiteState extends State<NewWorksite> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
-          'New Worksite',
-          style: MyAppStyle.largeFont,
-        ),
+        // const Text(
+        //   'New Worksite',
+        //   style: MyAppStyle.largeFont,
+        // ),
         const SizedBox(
           height: 20,
         ),

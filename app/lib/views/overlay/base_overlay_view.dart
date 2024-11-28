@@ -9,6 +9,7 @@ import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
 import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:build_stats_flutter/resources/app_style.dart';
 
 // A key failure of this BaseOverlay system is the
 // need for certain params which don't get used.
@@ -97,6 +98,14 @@ class BaseOverlay extends StatefulWidget {
 
 class _BaseOverlayState extends State<BaseOverlay> {
   
+  late String overlayTitle;
+
+  @override
+  void initState() {
+    super.initState();
+    overlayTitle = getOverlayTitle();
+  }
+
   // TODO: How do we avoid this?
   // New Category overlay:
   String newCatName = '';
@@ -107,6 +116,7 @@ class _BaseOverlayState extends State<BaseOverlay> {
   String intID = '';
   String contractor = '';
   List<(String, String)> people = [];
+  
 
   void changeNewCatName(String newName) {
     newCatName = newName;
@@ -150,66 +160,80 @@ class _BaseOverlayState extends State<BaseOverlay> {
     }
   }
 
-  // OverlayImpInterface buildOldCatOverlay() {
-  //   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
-  //   print('Getting list of ids for cat \"${widget.catTitle}\"');
-  //   List<String> ids = widget.checklistDay!.getItemsByCategory(widget.catTitle!);
-
-  //   print('List of hashd things:\n${widget.checklistDay!.itemsByCatagory}\n');
-
-  //   print('Building old cat!');
-
-  //   return OldCat(
-  //     catTitle: widget.catTitle!,
-  //     catIds: ids,
-  //     pageDay: widget.pageday!,
-  //     checklistDay: widget.checklistDay!,
-  //   );
-  // }
+  // Doing this as a function because I'm too tired to refactor everyone that calls baseoverlay
+  String getOverlayTitle() {
+    switch (widget.choice) {
+      case overlayChoice.comments:
+        return 'Comments';
+      case overlayChoice.newcategory:
+        return 'New Category';
+      case overlayChoice.category:
+        return widget.catTitle!;
+      case overlayChoice.worksite:
+        return 'New Worksite';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     OverlayImpInterface overlay = getOverlay(widget.choice);
     
-    // return Consumer<MyAppState>(
-    //   builder: (
-    //     context, 
-    //     appState, 
-    //     child,
-    //   ) {
-        return Stack(
-          children: [
-            GestureDetector(
-              onTap: () {
-                overlay.timeToClose();
-                _removeOverlay();
-              },
-              child: Container(
-                color: Colors.black54,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-            
-            Positioned( // needed to have overlay from bottom
-              bottom: 0,
-              child: Material(  // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
-                child: SizedBox(  // ignoring the VS Code suggestion
-                  width: MediaQuery.of(context).size.width, // * 0.6,
-                  height: MediaQuery.of(context).size.height * 0.86,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: overlay,
-                    // child: CommentSection(),
-                    // child: NewWorksite()
-                  ),
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () {
+            overlay.timeToClose();
+            _removeOverlay();
+          },
+          child: Container(
+            color: Colors.black54,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+        ),
+        
+        Positioned( // needed to have overlay from bottom
+          bottom: 0,
+          child: Material(  // material may or may not be needed EDIT: IT IS VERY MUCH NEEDED
+            child: SizedBox(  // ignoring the VS Code suggestion
+              width: MediaQuery.of(context).size.width, // * 0.6,
+              height: MediaQuery.of(context).size.height * 0.86,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                // child: overlay,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Spacer(),
+                        const SizedBox(
+                          width: 40,
+                        ),
+                        Text(
+                          overlayTitle,
+                          style: MyAppStyle.largeFont,
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: justCloseOverlay,
+                          icon: const Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    Flexible(
+                      child: overlay
+                    ),
+                  ],
                 ),
+                // child: CommentSection(),
+                // child: NewWorksite()
               ),
             ),
-          ],
-        );
-      // };
-    // );
+          ),
+        ),
+      ],
+    );
   }
 
   // Close the overlay
@@ -234,5 +258,9 @@ class _BaseOverlayState extends State<BaseOverlay> {
     }
 
     widget.overlayRef.remove();
-  } 
+  }
+
+  void justCloseOverlay() {
+    widget.overlayRef.remove();
+  }
 }
