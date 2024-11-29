@@ -12,6 +12,7 @@ class Item extends BaseItem {
     super.verified,
     required super.dateCreated,
     required super.dateUpdated,
+    super.prevId,
     super.flagForDeletion = false,
   });
 

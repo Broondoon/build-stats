@@ -109,7 +109,7 @@ class CacheService<T extends Entity> extends Cache<T> {
       ids.toSet().toList().forEach((id) async {
         int localIndex = localEntities.indexWhere((e) => e.id == id);
         if (localIndex == -1) {
-          entities.add(remoteEntities.firstWhere((e) => e.id == id));
+          entities.add(remoteEntities.firstWhere((e) => e.id == id ));
         } else {
           int remoteIndex = remoteEntities.indexWhere((e) => e.id == id);
           if (remoteIndex == -1) {

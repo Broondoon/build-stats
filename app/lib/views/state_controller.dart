@@ -74,7 +74,7 @@ class MyAppState extends ChangeNotifier {
     // TODO: see if this is totally catastrophic
     await loadEverything();
 
-    return currChecklistDay!.getItemsByCategory(catName);
+    return changeManager.getChecklistDayCategoryItems(currChecklistDay!, catName);
   }
 
   Future<void> saveChanges() async {

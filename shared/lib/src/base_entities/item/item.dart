@@ -9,6 +9,7 @@ class BaseItem extends Entity {
   late String? comment;
   late String? creatorId;
   late bool? verified;
+  String? prevId;
 
   BaseItem({
     required super.id,
@@ -22,6 +23,7 @@ class BaseItem extends Entity {
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
+    this.prevId = null,
   });
 
   BaseItem.fromBaseItem({required BaseItem item})
@@ -38,6 +40,7 @@ class BaseItem extends Entity {
     comment = item.comment;
     creatorId = item.creatorId;
     verified = item.verified;
+    prevId = item.prevId;
   }
 
   @override
@@ -53,6 +56,7 @@ class BaseItem extends Entity {
       'verified': verified?.toString() ?? "",
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
+      'prevId': prevId ?? "",
       'flagForDeletion': flagForDeletion.toString(),
     };
   }
@@ -70,6 +74,7 @@ class BaseItem extends Entity {
       'verified': verified,
       'dateCreated': dateCreated.toUtc().toIso8601String(),
       'dateUpdated': dateUpdated.toUtc().toIso8601String(),
+      'prevId': prevId,
     };
   }
 
@@ -86,6 +91,7 @@ class BaseItem extends Entity {
       verified?.toString() ?? '',
       dateCreated.toUtc().toIso8601String(),
       dateUpdated.toUtc().toIso8601String(),
+      prevId ?? '',
     ].join('|');
   }
 }
@@ -106,6 +112,7 @@ class BaseItemFactory<T extends BaseItem> extends EntityFactory<T> {
             DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
         dateUpdated:
             DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
+        prevId: json['prevId'],
         flagForDeletion: json['flagForDeletion'] == "true");
   }
 }

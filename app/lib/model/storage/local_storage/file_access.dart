@@ -141,7 +141,9 @@ class JsonFileAccess<T extends Entity> implements FileIOService<T> {
       return null;
     }
     try {
-      return entities.firstWhere((element) => element.id == key);
+      return entities.firstWhere((element) => element.id == key, orElse: () {
+        throw Exception("Element not found");
+      });
     } catch (e) {
       // If no element is found, return null
       return null;

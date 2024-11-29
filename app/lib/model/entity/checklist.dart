@@ -23,23 +23,7 @@ class Checklist extends BaseChecklist {
     } else if (checklistIdsByDate.containsKey(dateKey)) {
       return (true, checklistIdsByDate[dateKey]);
     } else {
-      List<String> keys = checklistIdsByDate.keys.toList();
-      keys.sort();
-      for (String key in keys.reversed) {
-        print(key);
-        if (DateTime.parse(key)
-            .toUtc()
-            .isBefore(DateTime.parse(dateKey).toUtc())) {
-          return (
-            checklistIdsByDate[key] == ID_DefaultBlankChecklistDayID,
-            checklistIdsByDate[key]
-          );
-        }
-      }
-      return (
-        checklistIdsByDate[keys.last] == ID_DefaultBlankChecklistDayID,
-        checklistIdsByDate[keys.last]
-      );
+      return (false, ID_DefaultBlankChecklistDayID);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
@@ -14,6 +15,7 @@ import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shared/entity.dart';
 
@@ -95,9 +97,11 @@ class ChangeManager {
             .forEach((id) async {
           //Assumption here. The only checklists we should be updating here are temporary checklists, thus stored in the cache or file.
           //If they were real checklists, then this worksite would have been updated already. Thus, we can assume that the checklist is only local.
-          Checklist checklist = (await _checklistCache.getById(id))!;
-          checklist.worksiteId = updatedWorksite.id;
-          await _checklistCache.store(checklist.id, checklist);
+          Checklist? checklist = (await _checklistCache.getById(id));
+          if(checklist != null){
+            checklist.worksiteId = updatedWorksite.id;
+            await _checklistCache.store(checklist.id, checklist);
+          };
         });
         _worksiteFileIOService
             .deleteFromDataFile(Dir_WorksiteFileString, [worksite.id]);
@@ -218,9 +222,11 @@ class ChangeManager {
             .forEach((id) async {
           //Assumption here. The only checklistsDays we should be updating here are temporary checklistsDays, thus stored in the cache or file.
           //If they were real checklists, then this worksite would have been updated already. Thus, we can assume that the checklist is only local.
-          ChecklistDay checklistDay = (await _checklistDayCache.getById(id))!;
-          checklistDay.checklistId = updatedChecklist.id;
-          await _checklistDayCache.store(checklistDay.id, checklistDay);
+          ChecklistDay? checklistDay = (await _checklistDayCache.getById(id));
+          if(checklistDay != null){
+            checklistDay.checklistId = updatedChecklist.id;
+            await _checklistDayCache.store(checklistDay.id, checklistDay);
+          }
         });
 
         //update worksite with new checklist ID
@@ -311,8 +317,9 @@ class ChangeManager {
 
   Future<ChecklistDay> createChecklistDay(
       Checklist checklist, ChecklistDay? checklistDay, DateTime date) async {
-    String tempId = ID_DefaultBlankChecklistDayID;
-    ChecklistDay newChecklistDay = ChecklistDay(
+        String tempId =
+        "${ID_TempIDPrefix}${ID_ChecklistDayPrefix}${DateTime.now().millisecondsSinceEpoch.toString()}";
+            ChecklistDay newChecklistDay = ChecklistDay(
         id: tempId,
         checklistId: checklistDay?.checklistId ?? checklist.id,
         date: date,
@@ -344,10 +351,23 @@ class ChangeManager {
       }
       //copy from an existing day, and give it the temp ID. This will be updated later.
       else {
+        //grab all the keys, create date times of them.
+        //iterate through the list, and find the closest date to the given date.
+        if (checklist.checklistIdsByDate.isEmpty) {
+          return await createChecklistDay(checklist, null, date);
+        }
+        List<DateTime> dates = checklist.checklistIdsByDate.keys
+            .map((e) => DateTime.parse(e))
+            .toList();
+        dates.sort((a, b) => a.compareTo(b));
+        DateTime? closestDate = dates.firstWhere(
+            (element) => element.compareTo(date) <= 0,
+            orElse: () => dates.last);
+        (exists, id) = checklist.getChecklistDayID(closestDate);
         return await createChecklistDay(
             checklist,
             (await _checklistDayCache
-                .getById(checklist.checklistIdsByDate.values.last))!,
+                .getById(id!))!,
             date);
       }
     }
@@ -356,13 +376,11 @@ class ChangeManager {
   Future<ChecklistDay> updateChecklistDay(
       ChecklistDay checklistDay, DateTime date) async {
     if (checklistDay.id.startsWith(ID_TempIDPrefix)) {
+      Checklist checklist =
+          (await _checklistCache.getById(checklistDay.checklistId))!;
       if (checklistDay.date != date) {
         checklistDay.date = date;
       }
-
-      Checklist checklist =
-          (await _checklistCache.getById(checklistDay.checklistId))!;
-
       //ensure checklist exists
       if (checklistDay.checklistId.startsWith(ID_TempIDPrefix)) {
         checklist = await updateChecklist(checklist);
@@ -381,14 +399,17 @@ class ChangeManager {
             .forEach((id) async {
           //Assumption here. The only items we should be updating here are temporary items, thus stored in the cache or file.
           //If they were real items, then this checklist day would have been updated already. Thus, we can assume that the checklist is only local.
-          Item item = (await _itemCache.getById(id))!;
-          item.checklistDayId = updatedChecklistDay.id;
-          await _itemCache.store(item.id, item);
+          Item? item = (await _itemCache.getById(id));
+          if(item != null){
+            item.checklistDayId = updatedChecklistDay.id;
+            await _itemCache.store(item.id, item);
+          }
         });
 
         //update parent checklist with new checklistDay ID
         checklist.addChecklistDay(updatedChecklistDay, null, null);
         checklist = await updateChecklist(checklist);
+        checklistDay.checklistId = checklist.id;
 
         //update checklist Day
         checklistDay = await _checklistDayCache.store(
@@ -440,6 +461,37 @@ class ChangeManager {
     return itemIds;
   }
 
+    //due to how we store items and item ids on checklist days, we need to grab all items from all checklist days, and then only return the latest version of each item.s
+  Future<List<String>> getChecklistDayCategoryItems(ChecklistDay checklistDay, String category) async {
+    //get all items for this checklist day.
+    //then iterate back through the checklist day, and grab any prior items that are not in the list.'
+    Checklist checklist = (await _checklistCache.getById(checklistDay.checklistId))!;
+    List<ChecklistDay>? checklistDays = await _checklistDayCache.getChecklistDaysForChecklist(checklist);
+    if(checklistDays == null){
+      return [];
+    }
+    //sort in reverse order
+    checklistDays.sort((a, b) => -(b.date.compareTo(a.date)));
+    int test = checklistDays.indexWhere((element) => element.id == checklistDay.id);
+    checklistDays = checklistDays.sublist(checklistDays.indexWhere((element) => element.id == checklistDay.id), checklistDays.length-1);
+    List<String> items = [];
+    List<String> avoidItemIds = [];
+    for (ChecklistDay day in checklistDays) {
+      HashMap<String, List<Item>> dayItems = await _itemCache.getItemsForChecklistDay(day);
+      List<Item>? dayItemsForCategory = dayItems[category];
+      if(dayItemsForCategory != null){
+        for (Item item in dayItemsForCategory) {
+          if(!avoidItemIds.contains(item.id)){
+            items.add(item.id);
+            avoidItemIds.add(item.id);
+          }
+          if(item.prevId?.isNotEmpty ?? false) avoidItemIds.add(item.prevId!);
+        }
+      }
+    }
+    return items;
+  }
+
   Future<Item?> getItemById(String id) async {
     print("Getting item by ID: $id");
     print(">>>>>> BRNEDNA SAYS HI");
@@ -460,7 +512,8 @@ class ChangeManager {
         result: item.result,
         comment: item.comment,
         creatorId: item.creatorId,
-        verified: item.verified);
+        verified: item.verified,
+        prevId: item.id);
   }
 
   Future<Item> createItem(ChecklistDay checklistDay, String category) async {
@@ -511,6 +564,7 @@ class ChangeManager {
           checklistDay.removeItem(itemCategory, item);
           checklistDay.addItem(itemCategory, updatedItem);
           checklistDay = await updateChecklistDay(checklistDay, date);
+          item.checklistDayId = checklistDay.id;
 
           //update item
           item = await _itemCache.store(
