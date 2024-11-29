@@ -8,18 +8,29 @@ void main() {
     setUp(() {
       entity = Entity(
         id: '123',
+        name: "testEntity",
         dateCreated: DateTime.parse('2023-01-01T00:00:00.000Z'),
         dateUpdated: DateTime.parse('2023-01-02T00:00:00.000Z'),
       );
+    });
+
+    test('fromEntity should return correct entity', () {
+      final entityFromEntity = Entity.fromEntity(entity: entity);
+      expect(entityFromEntity.id, '123');
+      expect(entityFromEntity.name, 'testEntity');
+      expect(entityFromEntity.dateCreated, DateTime.parse('2023-01-01T00:00:00.000Z'));
+      expect(entityFromEntity.dateUpdated, DateTime.parse('2023-01-02T00:00:00.000Z'));
+      expect(entityFromEntity.flagForDeletion, false);
     });
 
     test('toJson should return correct map', () {
       final json = entity.toJson();
       expect(json, {
         'id': '123',
+        'name': 'testEntity',
         'dateCreated': '2023-01-01T00:00:00.000Z',
         'dateUpdated': '2023-01-02T00:00:00.000Z',
-        'flagForDeletion': false,
+        'flagForDeletion': 'false',
       });
     });
 
@@ -27,6 +38,7 @@ void main() {
       final jsonTransfer = entity.toJsonTransfer();
       expect(jsonTransfer, {
         'id': '123',
+        'name': 'testEntity',
         'dateCreated': '2023-01-01T00:00:00.000Z',
         'dateUpdated': '2023-01-02T00:00:00.000Z',
       });
@@ -35,13 +47,13 @@ void main() {
     test('joinData should return correct string', () {
       final joinedData = entity.joinData();
       expect(
-          joinedData, '123|2023-01-01T00:00:00.000Z|2023-01-02T00:00:00.000Z');
+          joinedData, '123|testEntity|2023-01-01T00:00:00.000Z|2023-01-02T00:00:00.000Z');
     });
 
     test('getChecksum should return correct hash', () {
       final checksum = entity.getChecksum();
       expect(checksum,
-          'ca2c1330'); // This value might need to be updated based on the actual hash
+          'ea26cf41'); // This value might need to be updated based on the actual hash
     });
   });
 }

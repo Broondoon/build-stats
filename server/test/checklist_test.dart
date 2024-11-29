@@ -68,12 +68,12 @@ void main() {
 
       expect(json, {
         'id': 'checklist1',
-        'worksiteId': 'worksite123',
         'name': 'Daily Checklist',
+        'worksiteId': 'worksite123',
         'checklistIdsByDate': {'2021-01-01': 'day1'},
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       });
     });
 
@@ -94,7 +94,7 @@ void main() {
       final joinedData = checklist.joinData();
 
       expect(joinedData,
-          'checklist1|worksite123|Daily Checklist|2021-01-01,day1|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z');
+          'checklist1|Daily Checklist|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z|worksite123|2021-01-01,day1');
     });
   });
 
@@ -107,7 +107,7 @@ void main() {
         'checklistIdsByDate': {'2021-01-01': 'day1'},
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       };
 
       final factory = ChecklistFactory();
@@ -191,6 +191,7 @@ void main() {
 
       expect(json, {
         'id': 'day1',
+        'name': '',
         'checklistId': 'checklist1',
         'date': '2021-01-01T00:00:00.000Z',
         'comment': 'No issues',
@@ -199,7 +200,7 @@ void main() {
         },
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       });
     });
 
@@ -220,7 +221,7 @@ void main() {
       final joinedData = checklistDay.joinData();
 
       expect(joinedData,
-          'day1|checklist1|2021-01-01T00:00:00.000Z|No issues|Safety,item1|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z');
+          'day1||2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z|checklist1|2021-01-01T00:00:00.000Z|No issues|Safety,item1');
     });
   });
 
@@ -236,7 +237,7 @@ void main() {
         },
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       };
 
       final factory = ChecklistDayFactory();

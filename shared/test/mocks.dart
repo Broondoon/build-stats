@@ -45,6 +45,16 @@ class _FakeFuture_1<T1> extends _i1.SmartFake implements _i2.Future<T1> {
         );
 }
 
+class _FakeEntity_0 extends _i1.SmartFake implements _i3.Entity {
+  _FakeEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Entity].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -153,19 +163,19 @@ class MockEntity extends _i1.Mock implements _i3.Entity {
       ) as String);
 
   @override
-  dynamic toJson() => (super.noSuchMethod(
+   Map<String, dynamic> toJson() => (super.noSuchMethod(
         Invocation.method(
           #toJson,
           [],
         ),
-        returnValue: _i4.dummyValue<Map<String, String>>(
+        returnValue: _i4.dummyValue<Map<String, dynamic>>(
           this,
           Invocation.method(
             #toJson,
             [],
           ),
         ),
-      ) as Map<String, String>);
+      ) as Map<String, dynamic>);
 }
 
 /// A class which mocks [LocalStorage].
@@ -241,11 +251,19 @@ class MockEntityFactory<T extends _i3.Entity> extends _i1.Mock
   }
 
   @override
-  dynamic fromJson(Map<String, dynamic>? json) =>
-      super.noSuchMethod(Invocation.method(
-        #fromJson,
-        [json],
-      ));
+  _i3.Entity fromJson(Map<String, dynamic>? json) => (super.noSuchMethod(
+        Invocation.method(
+          #fromJson,
+          [json],
+        ),
+        returnValue: _FakeEntity_0(
+          this,
+          Invocation.method(
+            #fromJson,
+            [json],
+          ),
+        ),
+      ) as _i3.Entity);
 }
 
 /// A class which mocks [BaseItem].

@@ -28,6 +28,7 @@ class MyAppState extends ChangeNotifier {
   late DateTime startDay = pageDay;
   late HashMap<String, String> units = HashMap<String, String>();
   bool dataSyncing = false; //just a quick flag to ensure we only start the data sync once.
+  bool localDataLoaded = false; //just a quick flag to ensure we only load Local Data Once.
   // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
   // This is a micro getter function???
@@ -39,6 +40,12 @@ class MyAppState extends ChangeNotifier {
       Injector.appInstance.get<DataSync>().startDataSyncTimer();// Start the data sync timer so we can keep the app synced to the Server.
       dataSyncing = true;
     }
+
+    if(!localDataLoaded){
+      await changeManager.loadLocalData();// Load the local data, so we can get the app up and running.
+      localDataLoaded = true;
+    }
+
     // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
     setUnits( await changeManager.getCompanyUnits(currUser) ?? []);
 

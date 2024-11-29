@@ -3,6 +3,7 @@ import 'package:shared/user.dart';
 class User extends BaseUser {
   User({
     required super.id,
+    super.name,
     required super.companyId,
     required super.dateCreated,
     required super.dateUpdated,

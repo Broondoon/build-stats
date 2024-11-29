@@ -69,4 +69,4 @@ String ID_DefaultBlankChecklistDayID =
 String Default_FallbackDate = "1969-07-20";
 
 //Datasync Timer length
-int DataSyncTimerDurationSeconds = 60;
+int DataSyncTimerDurationSeconds = 2;

@@ -13,6 +13,7 @@ class BaseItem extends Entity {
 
   BaseItem({
     required super.id,
+    super.name,
     required this.checklistDayId,
     this.unitId,
     this.desc,
@@ -23,65 +24,46 @@ class BaseItem extends Entity {
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
-    this.prevId = null,
+    this.prevId,
   });
 
-  BaseItem.fromBaseItem({required BaseItem item})
-      : super(
-          id: item.id,
-          dateCreated: item.dateCreated,
-          dateUpdated: item.dateUpdated,
-          flagForDeletion: item.flagForDeletion,
-        ) {
-    checklistDayId = item.checklistDayId;
-    unitId = item.unitId;
-    desc = item.desc;
-    result = item.result;
-    comment = item.comment;
-    creatorId = item.creatorId;
-    verified = item.verified;
-    prevId = item.prevId;
-  }
+  BaseItem.fromBaseItem({required BaseItem item}) : this.fromEntity(entity: item, checklistDayId: item. checklistDayId, unitId: item.unitId, desc: item.desc, result: item.result, comment: item.comment, creatorId: item.creatorId, verified: item.verified, prevId: item.prevId);
+
+  BaseItem.fromEntity({required super.entity, required this.checklistDayId, this.unitId, this.desc, this.result, this.comment, this.creatorId, this.verified, this.prevId})
+      : super.fromEntity();
 
   @override
   toJson() {
-    return {
-      'id': id,
-      'checklistDayId': checklistDayId,
-      'unitId': unitId,
-      'desc': desc,
-      'result': result,
-      'comment': comment,
-      'creatorId': creatorId,
-      'verified': verified?.toString() ?? "",
-      'dateCreated': dateCreated.toUtc().toIso8601String(),
-      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'prevId': prevId ?? "",
-      'flagForDeletion': flagForDeletion.toString(),
-    };
+        Map<String, dynamic> map = super.toJson();
+    map['checklistDayId'] = checklistDayId;
+    map['unitId'] = unitId;
+    map['desc'] = desc;
+    map['result'] = result;
+    map['comment'] = comment;
+    map['creatorId'] = creatorId;
+    map['verified'] = verified?.toString() ?? "";
+    map['prevId'] = prevId ?? "";
+    map['flagForDeletion'] = flagForDeletion.toString();
+    return map;
   }
 
   @override
   toJsonTransfer() {
-    return {
-      'id': id,
-      'checklistDayId': checklistDayId,
-      'unitId': unitId,
-      'desc': desc,
-      'result': result,
-      'comment': comment,
-      'creatorId': creatorId,
-      'verified': verified,
-      'dateCreated': dateCreated.toUtc().toIso8601String(),
-      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'prevId': prevId,
-    };
+        Map<String, dynamic> map = super.toJsonTransfer();
+    map['checklistDayId'] = checklistDayId;
+    map['unitId'] = unitId;
+    map['desc'] = desc;
+    map['result'] = result;
+    map['comment'] = comment;
+    map['creatorId'] = creatorId;
+    map['verified'] = verified?.toString() ?? "";
+    map['prevId'] = prevId ?? "";
+    return map;
   }
 
   @override
   joinData() {
-    return [
-      id,
+    return super.joinData() + '|' + ([
       checklistDayId,
       unitId ?? '',
       desc ?? '',
@@ -89,18 +71,16 @@ class BaseItem extends Entity {
       comment ?? '',
       creatorId?.toString() ?? '',
       verified?.toString() ?? '',
-      dateCreated.toUtc().toIso8601String(),
-      dateUpdated.toUtc().toIso8601String(),
       prevId ?? '',
-    ].join('|');
+    ].join('|'));
   }
 }
 
 class BaseItemFactory<T extends BaseItem> extends EntityFactory<T> {
   @override
   BaseItem fromJson(Map<String, dynamic> json) {
-    return BaseItem(
-        id: json['id'],
+    return BaseItem.fromEntity(
+        entity: super.fromJson(json),
         checklistDayId: json['checklistDayId'],
         unitId: json['unitId'],
         desc: json['desc'],
@@ -108,11 +88,7 @@ class BaseItemFactory<T extends BaseItem> extends EntityFactory<T> {
         comment: json['comment'],
         creatorId: json['creatorId'],
         verified: json['verified'] == "true",
-        dateCreated:
-            DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
-        dateUpdated:
-            DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
         prevId: json['prevId'],
-        flagForDeletion: json['flagForDeletion'] == "true");
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:shared/worksite.dart';
 class Worksite extends BaseWorksite {
   Worksite({
     required super.id,
+    super.name,
     super.ownerId,
     super.companyId,
     super.checklistIds,

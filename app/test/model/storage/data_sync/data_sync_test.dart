@@ -3,12 +3,15 @@
 import 'dart:collection';
 
 import 'package:build_stats_flutter/model/storage/data_sync/data_sync.dart';
+import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import '../../../mocks.dart';
+import 'data_sync_test.mocks.dart';
 
 // Import the classes under test and their dependencies
-
+@GenerateMocks([UnitCache])
 void main() {
   group('DataSync', () {
     provideDummy<HashMap<String, String>>(HashMap<String, String>());
@@ -19,6 +22,7 @@ void main() {
     late MockChecklistDayCache mockChecklistDayCache;
     late MockItemCache mockItemCache;
     late MockUser mockUser;
+    late MockUnitCache mockUnitCache;
 
     setUp(() {
       mockWorksiteCache = MockWorksiteCache();
@@ -26,12 +30,16 @@ void main() {
       mockChecklistDayCache = MockChecklistDayCache();
       mockItemCache = MockItemCache();
       mockUser = MockUser();
+      mockUnitCache = MockUnitCache();
+
 
       dataSync = DataSync(
         mockWorksiteCache,
         mockChecklistCache,
         mockChecklistDayCache,
         mockItemCache,
+        mockUnitCache,
+        null
       );
     });
 

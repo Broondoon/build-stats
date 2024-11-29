@@ -8,7 +8,7 @@ import 'package:shared/cache.dart';
 import 'package:shared/entity.dart';
 
 class CacheService<T extends Entity> extends Cache<T> {
-  final EntityFactory<T> _parser;
+  final EntityFactoryInterface<T> _parser;
   final HashMap<String, String> _cacheCheckSums = HashMap<String, String>();
   @visibleForTesting
   @override

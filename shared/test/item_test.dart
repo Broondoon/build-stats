@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:shared/app_strings.dart';
 import 'package:shared/src/base_entities/item/item.dart';
 import 'package:test/test.dart';
@@ -84,22 +86,25 @@ void main() {
         dateCreated: dateCreated,
         dateUpdated: dateUpdated,
         flagForDeletion: true,
+        prevId: 'previous123',
       );
 
       final json = baseItem.toJson();
 
       expect(json, {
         'id': '123',
+        'name': '',
         'checklistDayId': '456',
-        'unit': 'UnitTest',
+        'unitId': 'UnitTest',
         'desc': 'Test description',
         'result': 'Pass',
         'comment': 'No issues',
         'creatorId': 'creator123',
-        'verified': true,
+        'verified': 'true',
         'dateCreated': '2021-01-01T12:00:00.000Z',
         'dateUpdated': '2021-01-01T13:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
+        'prevId': 'previous123',
       });
     });
 
@@ -109,6 +114,7 @@ void main() {
 
       final baseItem = BaseItem(
         id: '123',
+        name: 'Test name',
         checklistDayId: '456',
         unitId: 'UnitTest',
         desc: 'Test description',
@@ -118,21 +124,24 @@ void main() {
         verified: true,
         dateCreated: dateCreated,
         dateUpdated: dateUpdated,
+        prevId: 'previous123',
       );
 
       final json = baseItem.toJsonTransfer();
 
       expect(json, {
         'id': '123',
+        'name': 'Test name',
         'checklistDayId': '456',
-        'unit': 'UnitTest',
+        'unitId': 'UnitTest',
         'desc': 'Test description',
         'result': 'Pass',
         'comment': 'No issues',
         'creatorId': 'creator123',
-        'verified': true,
+        'verified': 'true',
         'dateCreated': '2021-01-01T12:00:00.000Z',
         'dateUpdated': '2021-01-01T13:00:00.000Z',
+        'prevId': 'previous123',
       });
     });
 
@@ -151,12 +160,13 @@ void main() {
         verified: true,
         dateCreated: dateCreated,
         dateUpdated: dateUpdated,
+        prevId: 'previous123',
       );
 
       final joinedData = baseItem.joinData();
 
       expect(joinedData,
-          '123|456|UnitTest|Test description|Pass|No issues|creator123|true|2021-01-01T12:00:00.000Z|2021-01-01T13:00:00.000Z');
+          '123||2021-01-01T12:00:00.000Z|2021-01-01T13:00:00.000Z|456|UnitTest|Test description|Pass|No issues|creator123|true|previous123');
     });
   });
 
@@ -164,22 +174,25 @@ void main() {
     test('fromJson deserializes correctly', () {
       final json = {
         'id': '123',
+        'name': '',
         'checklistDayId': '456',
-        'unit': 'UnitTest',
+        'unitId': 'UnitTest',
         'desc': 'Test description',
         'result': 'Pass',
         'comment': 'No issues',
         'creatorId': 'creator123',
-        'verified': true,
+        'verified': 'true',
         'dateCreated': '2021-01-01T12:00:00.000Z',
         'dateUpdated': '2021-01-01T13:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
+        'prevId': 'previous123',
       };
 
       final factory = BaseItemFactory<BaseItem>();
       final baseItem = factory.fromJson(json);
 
       expect(baseItem.id, '123');
+      expect(baseItem.name, '');
       expect(baseItem.checklistDayId, '456');
       expect(baseItem.unitId, 'UnitTest');
       expect(baseItem.desc, 'Test description');
@@ -190,6 +203,7 @@ void main() {
       expect(baseItem.dateCreated, DateTime.parse('2021-01-01T12:00:00.000Z'));
       expect(baseItem.dateUpdated, DateTime.parse('2021-01-01T13:00:00.000Z'));
       expect(baseItem.flagForDeletion, true);
+      expect(baseItem.prevId, 'previous123');
     });
 
     test('fromJson handles missing optional fields', () {
@@ -204,16 +218,18 @@ void main() {
       final baseItem = factory.fromJson(json);
 
       expect(baseItem.id, '123');
+      expect(baseItem.name, '');
       expect(baseItem.checklistDayId, '456');
       expect(baseItem.unitId, isNull);
       expect(baseItem.desc, isNull);
       expect(baseItem.result, isNull);
       expect(baseItem.comment, isNull);
       expect(baseItem.creatorId, isNull);
-      expect(baseItem.verified, isNull);
+      expect(baseItem.verified, false);
       expect(baseItem.dateCreated, DateTime.parse('2021-01-01T12:00:00.000Z'));
       expect(baseItem.dateUpdated, DateTime.parse('2021-01-01T13:00:00.000Z'));
       expect(baseItem.flagForDeletion, false); // default value
+      expect(baseItem.prevId, isNull);
     });
 
     test('fromJson handles null dateCreated and dateUpdated', () {

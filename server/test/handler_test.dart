@@ -28,6 +28,7 @@ void main() {
       final entity = MockEntity();
       when(entity.id).thenReturn(id);
       when(entity.getChecksum()).thenReturn('checksum1');
+      when(entity.toJson()).thenReturn(testData);
       when(entity.toJsonTransfer()).thenReturn(testData);
       when(mockEntityFactory.fromJson({'id': id, 'data': 'data1'}))
           .thenReturn(entity);
@@ -78,6 +79,7 @@ void main() {
       // Arrange
       Entity entity = Entity(
           id: 'temp_test-id',
+          name: 'test-name',
           dateCreated: DateTime.now().toUtc(),
           dateUpdated: DateTime.now().toUtc());
 
@@ -103,9 +105,10 @@ void main() {
           body,
           equals(jsonEncode({
             'id': 'test-id',
+            'name': 'test-name',
             'dateCreated': entity.dateCreated.toIso8601String(),
             'dateUpdated': entity.dateUpdated.toIso8601String(),
-            "flagForDeletion": false
+            "flagForDeletion": 'false'
           })));
     });
 

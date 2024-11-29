@@ -35,11 +35,11 @@ class ChangeManager {
   final FileIOService<ChecklistDay> _checklistDayFileIOService;
   final FileIOService<Item> _itemFileIOService;
   final FileIOService<Unit> _unitFileIOService;
-  final EntityFactory<Worksite> _worksiteFactory;
-  final EntityFactory<Checklist> _checklistFactory;
-  final EntityFactory<ChecklistDay> _checklistDayFactory;
-  final EntityFactory<Item> _itemFactory;
-  final EntityFactory<Unit> _unitFactory;
+  final WorksiteFactory _worksiteFactory;
+  final ChecklistFactory _checklistFactory;
+  final ChecklistDayFactory _checklistDayFactory;
+  final ItemFactory _itemFactory;
+  final UnitFactory _unitFactory;
 
   ChangeManager(
     this._worksiteDataConnectionService,
@@ -63,6 +63,14 @@ class ChangeManager {
     this._itemFactory,
     this._unitFactory,
   );
+
+  Future<void> loadLocalData() async{
+    await _worksiteCache.LoadFromFileOnStartup();
+    await _checklistCache.LoadFromFileOnStartup();
+    await _checklistDayCache.LoadFromFileOnStartup();
+    await _itemCache.LoadFromFileOnStartup();
+    await _unitCache.LoadFromFileOnStartup();
+  }
 
   //No automatic detection for deleting desynced entities currently exists. Will implment in Milestone 3
   Future<List<Worksite>?> getUserWorksites(User user) async {
@@ -472,8 +480,8 @@ class ChangeManager {
     }
     //sort in reverse order
     checklistDays.sort((a, b) => -(b.date.compareTo(a.date)));
-    int test = checklistDays.indexWhere((element) => element.id == checklistDay.id);
-    checklistDays = checklistDays.sublist(checklistDays.indexWhere((element) => element.id == checklistDay.id), checklistDays.length-1);
+    int itemIndex = checklistDays.indexWhere((element) => element.id == checklistDay.id);
+    checklistDays = checklistDays.sublist(itemIndex, checklistDays.length-1 == itemIndex ? null: checklistDays.length-1 );
     List<String> items = [];
     List<String> avoidItemIds = [];
     for (ChecklistDay day in checklistDays) {

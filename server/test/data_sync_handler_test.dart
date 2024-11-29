@@ -22,10 +22,10 @@ const Map<String, String> jsonHeaders = {
   'content-type': 'application/json',
 };
 
-// // Generate mocks for the dependencies
-@GenerateMocks([
-  UnitCache,
-])
+// // // Generate mocks for the dependencies
+// @GenerateMocks([
+//   UnitCache,
+// ])
 void main() {
   group('DataSync', () {
     provideDummy<HashMap<String, String>>(HashMap<String, String>());

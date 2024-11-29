@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:shared/src/base_entities/user/user.dart';
 import 'package:shared/src/resources/app_strings.dart';
 import 'package:test/test.dart';
@@ -57,10 +59,11 @@ void main() {
 
       expect(json, {
         'id': 'user123',
-        'companyId': 'company456',
+        'name': '',
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
+        'companyId': 'company456',
       });
     });
 
@@ -79,6 +82,7 @@ void main() {
 
       expect(json, {
         'id': 'user123',
+        'name': '',
         'companyId': 'company456',
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
@@ -100,7 +104,7 @@ void main() {
 
       expect(
         joinedData,
-        'user123|company456|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z',
+        'user123||2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z|company456',
       );
     });
   });
@@ -109,16 +113,18 @@ void main() {
     test('fromJson deserializes correctly', () {
       final json = {
         'id': 'user123',
+        'name': '',
         'companyId': 'company456',
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       };
 
       final factory = BaseUserFactory<BaseUser>();
       final user = factory.fromJson(json);
 
       expect(user.id, 'user123');
+      expect(user.name, '');
       expect(user.companyId, 'company456');
       expect(
           user.dateCreated, DateTime.parse('2021-01-01T00:00:00.000Z').toUtc());

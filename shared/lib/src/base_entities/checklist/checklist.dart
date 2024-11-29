@@ -7,32 +7,23 @@ import 'package:shared/src/base_entities/item/item.dart';
 
 class BaseChecklist extends Entity {
   late String worksiteId;
-  late String? name;
   late HashMap<String, String> checklistIdsByDate;
 
   BaseChecklist({
     required super.id,
+    super.name,
     required this.worksiteId,
-    this.name,
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
   }) {
-    name ??= '';
     checklistIdsByDate = HashMap<String, String>();
   }
 
-  BaseChecklist.fromBaseChecklist({required BaseChecklist checklist})
-      : super(
-          id: checklist.id,
-          dateCreated: checklist.dateCreated,
-          dateUpdated: checklist.dateUpdated,
-          flagForDeletion: checklist.flagForDeletion,
-        ) {
-    worksiteId = checklist.worksiteId;
-    name = checklist.name;
-    checklistIdsByDate = checklist.checklistIdsByDate;
-  }
+  BaseChecklist.fromBaseChecklist({required BaseChecklist checklist}) : this.fromEntity(entity: checklist, worksiteId: checklist.worksiteId, checklistIdsByDate: checklist.checklistIdsByDate);
+
+  BaseChecklist.fromEntity({required super.entity, required this.worksiteId, required this.checklistIdsByDate})
+      : super.fromEntity();
 
   addChecklistDay(BaseChecklistDay? day, DateTime? date, String? id) {
     if (day == null && date == null && id == null) {
@@ -55,62 +46,43 @@ class BaseChecklist extends Entity {
 
   @override
   toJson() {
-    return {
-      'id': id,
-      'worksiteId': worksiteId,
-      'name': name,
-      'checklistIdsByDate': checklistIdsByDate,
-      'dateCreated': dateCreated.toUtc().toIso8601String(),
-      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion.toString(),
-    };
+    Map<String, dynamic> map = super.toJson() as Map<String, dynamic>;
+    map['worksiteId'] = worksiteId;
+    map['checklistIdsByDate'] = checklistIdsByDate;
+    return map;
   }
 
   @override
   toJsonTransfer() {
-    return {
-      'id': id,
-      'worksiteId': worksiteId,
-      'name': name,
-      'checklistIdsByDate': HashMap.fromEntries(checklistIdsByDate.entries
-          .where((e) => !e.value.startsWith(ID_TempIDPrefix))
-          .map((e) => MapEntry(e.key, e.value))),
-      'dateCreated': dateCreated.toUtc().toIso8601String(),
-      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-    };
+    Map<String, dynamic> map = super.toJsonTransfer() as Map<String, dynamic>;
+    map['worksiteId'] = worksiteId;
+    map['checklistIdsByDate'] = HashMap.fromEntries(checklistIdsByDate.entries
+        .where((e) => !e.value.startsWith(ID_TempIDPrefix))
+        .map((e) => MapEntry(e.key, e.value)));
+    return map;
   }
 
   @override
   joinData() {
-    return [
-      id,
+        return super.joinData() + '|' + ([
       worksiteId,
-      name ?? '',
       checklistIdsByDate.entries
           .where((e) => !e.value.startsWith(ID_TempIDPrefix))
           .map((e) => '${e.key},${e.value}')
           .join('|'),
-      dateCreated.toUtc().toIso8601String(),
-      dateUpdated.toUtc().toIso8601String(),
-    ].join('|');
+    ].join('|'));
   }
 }
 
 class BaseChecklistFactory<T extends BaseChecklist> extends EntityFactory<T> {
   @override
   BaseChecklist fromJson(Map<String, dynamic> json) {
-    BaseChecklist result = BaseChecklist(
-      id: json['id'],
+    BaseChecklist result = BaseChecklist.fromEntity(
+      entity: super.fromJson(json),
       worksiteId: json['worksiteId'],
-      name: json['name'],
-      dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
-      dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] == "true",
+      checklistIdsByDate: HashMap<String, String>.from(
+        json['checklistIdsByDate'] ?? <String, String>{})
     );
-
-    result.checklistIdsByDate = HashMap<String, String>.from(
-        json['checklistIdsByDate'] ?? <String, String>{});
-
     return result;
   }
 }
@@ -123,6 +95,7 @@ class BaseChecklistDay extends Entity {
 
   BaseChecklistDay({
     required super.id,
+    super.name,
     required this.checklistId,
     required this.date,
     this.comment,
@@ -134,18 +107,10 @@ class BaseChecklistDay extends Entity {
   }
 
   BaseChecklistDay.fromBaseChecklistDay(
-      {required BaseChecklistDay checklistDay})
-      : super(
-          id: checklistDay.id,
-          dateCreated: checklistDay.dateCreated,
-          dateUpdated: checklistDay.dateUpdated,
-          flagForDeletion: checklistDay.flagForDeletion,
-        ) {
-    checklistId = checklistDay.checklistId;
-    date = checklistDay.date;
-    comment = checklistDay.comment;
-    itemsByCatagory = checklistDay.itemsByCatagory;
-  }
+      {required BaseChecklistDay checklistDay}) : this.fromEntity(entity: checklistDay, checklistId: checklistDay.checklistId, date: checklistDay.date, comment: checklistDay.comment, itemsByCatagory: checklistDay.itemsByCatagory);
+
+  BaseChecklistDay.fromEntity({required super.entity, required this.checklistId, required this.date, this.comment, required this.itemsByCatagory})
+      : super.fromEntity();
 
   getCategories() {
     return itemsByCatagory.keys.toList();
@@ -196,37 +161,29 @@ class BaseChecklistDay extends Entity {
 
   @override
   toJson() {
-    return {
-      'id': id,
-      'checklistId': checklistId,
-      'date': date.toUtc().toIso8601String(),
-      'comment': comment,
-      'itemsByCatagory': itemsByCatagory,
-      'dateCreated': dateCreated.toUtc().toIso8601String(),
-      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-      'flagForDeletion': flagForDeletion.toString(),
-    };
+        Map<String, dynamic> map = super.toJson() as Map<String, dynamic>;
+    map['checklistId'] = checklistId;
+    map['date'] = date.toUtc().toIso8601String();
+    map['comment'] = comment;
+    map['itemsByCatagory'] = itemsByCatagory;
+    return map;
   }
 
   @override
   toJsonTransfer() {
-    return {
-      'id': id,
-      'checklistId': checklistId,
-      'date': date.toUtc().toIso8601String(),
-      'comment': comment,
-      'itemsByCatagory': HashMap.fromEntries(itemsByCatagory.entries.map((e) =>
-          MapEntry(e.key,
-              e.value.where((x) => !x.startsWith(ID_TempIDPrefix)).toList()))),
-      'dateCreated': dateCreated.toUtc().toIso8601String(),
-      'dateUpdated': dateUpdated.toUtc().toIso8601String(),
-    };
+    Map<String, dynamic> map = super.toJsonTransfer() as Map<String, dynamic>;
+    map['checklistId'] = checklistId;
+    map['date'] = date.toUtc().toIso8601String();
+    map['comment'] = comment;
+    map['itemsByCatagory'] = HashMap.fromEntries(itemsByCatagory.entries.map((e) =>
+        MapEntry(e.key,
+            e.value.where((x) => !x.startsWith(ID_TempIDPrefix)).toList())));
+    return map;
   }
 
   @override
   joinData() {
-    return [
-      id,
+    return super.joinData() + '|' + ([
       checklistId,
       date.toUtc().toIso8601String(),
       comment ?? '',
@@ -234,9 +191,7 @@ class BaseChecklistDay extends Entity {
           .map((e) =>
               '${e.key},${e.value.where((element) => !element.startsWith(ID_TempIDPrefix)).join(',')}')
           .join('|'),
-      dateCreated.toUtc().toIso8601String(),
-      dateUpdated.toUtc().toIso8601String(),
-    ].join('|');
+    ].join('|'));
   }
 }
 
@@ -244,14 +199,12 @@ class BaseChecklistDayFactory<T extends BaseChecklistDay>
     extends EntityFactory<T> {
   @override
   BaseChecklistDay fromJson(Map<String, dynamic> json) {
-    BaseChecklistDay result = BaseChecklistDay(
-      id: json['id'],
+    BaseChecklistDay result = BaseChecklistDay.fromEntity(
+      entity: super.fromJson(json),
       checklistId: json['checklistId'],
       date: DateTime.parse(json['date'] ?? Default_FallbackDate),
       comment: json['comment'],
-      dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
-      dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] == "true",
+      itemsByCatagory: HashMap<String, List<String>>()
     );
 
     Map<String, dynamic> itemsByCatagory = json['itemsByCatagory'] ?? {};

@@ -180,19 +180,33 @@ class MockEntity extends _i1.Mock implements _i3.Entity {
       ) as String);
 
   @override
-  dynamic toJson() => (super.noSuchMethod(
+  Map<String, dynamic> toJson() => (super.noSuchMethod(
         Invocation.method(
           #toJson,
           [],
         ),
-        returnValue: _i4.dummyValue<Map<String, String>>(
+        returnValue: _i4.dummyValue<Map<String, dynamic>>(
           this,
           Invocation.method(
             #toJson,
             [],
           ),
         ),
-      ) as Map<String, String>);
+      ) as Map<String, dynamic>);
+  @override
+  Map<String, dynamic> toJsonTransfer() => (super.noSuchMethod(
+        Invocation.method(
+          #toJsonTransfer,
+          [],
+        ),
+        returnValue: _i4.dummyValue<Map<String, dynamic>>(
+          this,
+          Invocation.method(
+            #toJsonTransfer,
+            [],
+          ),
+        ),
+      ) as Map<String, dynamic>);
 }
 
 /// A class which mocks [LocalStorage].
@@ -268,7 +282,7 @@ class MockEntityFactory<T extends _i3.Entity> extends _i1.Mock
   }
 
   @override
-  dynamic fromJson(Map<String, dynamic>? json) =>
+  _i3.Entity fromJson(Map<String, dynamic>? json) =>
       super.noSuchMethod(Invocation.method(
         #fromJson,
         [json],
@@ -1065,16 +1079,16 @@ class MockWorksiteCache extends _i1.Mock implements _i24.WorksiteCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<void> setCacheSyncFlags(
-          _i8.HashMap<String, String>? serverCheckSums) =>
+  _i2.Future<bool> setCacheSyncFlags(
+          _i8.HashMap<String, String> serverCheckSums) =>
       (super.noSuchMethod(
         Invocation.method(
           #setCacheSyncFlags,
           [serverCheckSums],
         ),
-        returnValue: _i2.Future<void>.value(),
-        returnValueForMissingStub: _i2.Future<void>.value(),
-      ) as _i2.Future<void>);
+        returnValue: _i2.Future<bool>.value(true),
+        returnValueForMissingStub: _i2.Future<bool>.value(true),
+      ) as _i2.Future<bool>);
 
   @override
   _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
@@ -1267,16 +1281,16 @@ class MockChecklistCache extends _i1.Mock implements _i22.ChecklistCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<void> setCacheSyncFlags(
+  _i2.Future<bool> setCacheSyncFlags(
           _i8.HashMap<String, String>? serverCheckSums) =>
       (super.noSuchMethod(
         Invocation.method(
           #setCacheSyncFlags,
           [serverCheckSums],
         ),
-        returnValue: _i2.Future<void>.value(),
-        returnValueForMissingStub: _i2.Future<void>.value(),
-      ) as _i2.Future<void>);
+        returnValue: _i2.Future<bool>.value(true),
+        returnValueForMissingStub: _i2.Future<bool>.value(true),
+      ) as _i2.Future<bool>);
 
   @override
   _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
@@ -1471,16 +1485,16 @@ class MockChecklistDayCache extends _i1.Mock implements _i22.ChecklistDayCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<void> setCacheSyncFlags(
+  _i2.Future<bool> setCacheSyncFlags(
           _i8.HashMap<String, String>? serverCheckSums) =>
       (super.noSuchMethod(
         Invocation.method(
           #setCacheSyncFlags,
           [serverCheckSums],
         ),
-        returnValue: _i2.Future<void>.value(),
-        returnValueForMissingStub: _i2.Future<void>.value(),
-      ) as _i2.Future<void>);
+        returnValue: _i2.Future<bool>.value(true),
+        returnValueForMissingStub: _i2.Future<bool>.value(true),
+      ) as _i2.Future<bool>);
 
   @override
   _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>
@@ -1709,16 +1723,16 @@ class MockItemCache extends _i1.Mock implements _i23.ItemCache {
       ) as _i2.Future<void>);
 
   @override
-  _i2.Future<void> setCacheSyncFlags(
+  _i2.Future<bool> setCacheSyncFlags(
           _i8.HashMap<String, String>? serverCheckSums) =>
       (super.noSuchMethod(
         Invocation.method(
           #setCacheSyncFlags,
           [serverCheckSums],
         ),
-        returnValue: _i2.Future<void>.value(),
-        returnValueForMissingStub: _i2.Future<void>.value(),
-      ) as _i2.Future<void>);
+        returnValue: _i2.Future<bool>.value(true),
+        returnValueForMissingStub: _i2.Future<bool>.value(true),
+      ) as _i2.Future<bool>);
 
   @override
   _i2.Future<_i8.HashMap<String, String>> getCacheCheckStates() =>

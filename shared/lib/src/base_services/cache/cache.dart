@@ -5,12 +5,12 @@ import 'dart:math';
 import 'package:meta/meta.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
-import 'package:shared/src/base_entities/entity/entity.dart';
+import 'package:shared/entity.dart';
 import 'package:shared/src/base_services/cache/cache_interface.dart';
 import 'package:shared/src/base_services/cache/localStorage.dart';
 
 class Cache<T extends Entity> implements CacheInterface<T> {
-  final EntityFactory<T> _parser;
+  final EntityFactoryInterface<T> _parser;
   final HashMap<String, String> cacheCheckSums = HashMap<String, String>();
   final HashMap<String, bool> cacheSyncFlags = HashMap<String, bool>();
   final ReadWriteMutex _m;

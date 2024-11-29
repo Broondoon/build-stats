@@ -41,7 +41,7 @@ class ToCSV {
     HashMap<String, String> units = HashMap.from(await unitCache
         .getCompanyUnits(user)
         .then((value) => Map<String, String>.fromEntries(
-            value!.map((e) => MapEntry(e.id, e.name)))));
+            value!.map((e) => MapEntry(e.id, e.name ?? '')))));
     units.addEntries([const MapEntry('', '')]);
     for (Checklist checklist in checklists) {
       final checklistDays =

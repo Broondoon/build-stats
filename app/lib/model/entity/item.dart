@@ -3,6 +3,7 @@ import 'package:shared/item.dart';
 class Item extends BaseItem {
   Item({
     required super.id,
+    super.name,
     required super.checklistDayId,
     super.unitId,
     super.desc,

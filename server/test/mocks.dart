@@ -76,6 +76,16 @@ class _FakeRequest_1 extends _i1.SmartFake implements _i10.Request {
         );
 }
 
+class _FakeEntity_0 extends _i1.SmartFake implements _i3.Entity {
+  _FakeEntity_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 class _FakeChecklist_0 extends _i1.SmartFake implements _i12.Checklist {
   _FakeChecklist_0(
     Object parent,
@@ -224,19 +234,34 @@ class MockEntity extends _i1.Mock implements _i3.Entity {
       ) as String);
 
   @override
-  dynamic toJson() => (super.noSuchMethod(
+   Map<String, dynamic> toJson() => (super.noSuchMethod(
         Invocation.method(
           #toJson,
           [],
         ),
-        returnValue: _i4.dummyValue<Map<String, String>>(
+        returnValue: _i4.dummyValue< Map<String, dynamic>>(
           this,
           Invocation.method(
             #toJson,
             [],
           ),
         ),
-      ) as Map<String, String>);
+      ) as  Map<String, dynamic>);
+  
+  @override
+    Map<String, dynamic> toJsonTransfer() => (super.noSuchMethod(
+          Invocation.method(
+            #toJsonTransfer,
+            [],
+          ),
+          returnValue: _i4.dummyValue< Map<String, dynamic>>(
+            this,
+            Invocation.method(
+              #toJsonTransfer,
+              [],
+            ),
+          ),
+        ) as  Map<String, dynamic>);
 }
 
 /// A class which mocks [LocalStorage].
@@ -311,12 +336,20 @@ class MockEntityFactory<T extends _i3.Entity> extends _i1.Mock
     _i1.throwOnMissingStub(this);
   }
 
-  @override
-  dynamic fromJson(Map<String, dynamic>? json) =>
-      super.noSuchMethod(Invocation.method(
-        #fromJson,
-        [json],
-      ));
+ @override
+  _i3.Entity fromJson(Map<String, dynamic>? json) => (super.noSuchMethod(
+        Invocation.method(
+          #fromJson,
+          [json],
+        ),
+        returnValue: _FakeEntity_0(
+          this,
+          Invocation.method(
+            #fromJson,
+            [json],
+          ),
+        ),
+      ) as _i3.Entity);
 }
 
 /// A class which mocks [BaseItem].

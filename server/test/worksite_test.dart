@@ -67,6 +67,7 @@ void main() {
 
       final worksite = Worksite(
         id: 'worksite123',
+        name: '',
         ownerId: 'owner456',
         companyId: 'company789',
         checklistIds: ['checklist1', 'checklist2'],
@@ -79,12 +80,13 @@ void main() {
 
       expect(json, {
         'id': 'worksite123',
+        'name': '',
         'ownerId': 'owner456',
         'companyId': 'company789',
         'checklistIds': ['checklist1', 'checklist2'],
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       });
     });
 
@@ -105,7 +107,7 @@ void main() {
 
       expect(
         joinedData,
-        'worksite123|owner456|company789|checklist1|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z',
+        'worksite123||2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z|owner456|company789|checklist1',
       );
     });
   });
@@ -114,12 +116,13 @@ void main() {
     test('fromJson deserializes correctly', () {
       final json = {
         'id': 'worksite123',
+        'name': '',
         'ownerId': 'owner456',
         'companyId': 'company789',
         'checklistIds': ['checklist1', 'checklist2'],
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       };
 
       final factory = WorksiteFactory();

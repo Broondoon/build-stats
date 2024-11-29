@@ -1,3 +1,4 @@
+import 'package:shared/entity.dart';
 import 'package:shared/src/base_entities/worksite/worksite.dart';
 import 'package:shared/src/resources/app_strings.dart';
 import 'package:test/test.dart';
@@ -10,6 +11,7 @@ void main() {
 
       final worksite = BaseWorksite(
         id: 'worksite123',
+        name: 'testWorksite',
         ownerId: 'owner456',
         companyId: 'company789',
         checklistIds: ['checklist1', 'checklist2'],
@@ -19,6 +21,7 @@ void main() {
       );
 
       expect(worksite.id, 'worksite123');
+      expect(worksite.name, 'testWorksite');
       expect(worksite.ownerId, 'owner456');
       expect(worksite.companyId, 'company789');
       expect(worksite.checklistIds, ['checklist1', 'checklist2']);
@@ -30,6 +33,7 @@ void main() {
     test('Constructor handles null checklistIds', () {
       final worksite = BaseWorksite(
         id: 'worksite123',
+        name: 'testWorksite',
         dateCreated: DateTime.now().toUtc(),
         dateUpdated: DateTime.now().toUtc(),
       );
@@ -40,6 +44,7 @@ void main() {
     test('fromBaseWorksite copies properties correctly', () {
       final originalWorksite = BaseWorksite(
         id: 'worksite123',
+        name: 'testWorksite',
         ownerId: 'owner456',
         companyId: 'company789',
         checklistIds: ['checklist1', 'checklist2'],
@@ -60,12 +65,38 @@ void main() {
       expect(copiedWorksite.flagForDeletion, originalWorksite.flagForDeletion);
     });
 
+    test('fromEntity copies properties correctly', () {
+      final originalEntity = Entity(
+        id: 'worksite123',
+        name: 'testWorksite',
+        dateCreated: DateTime.now().toUtc(),
+        dateUpdated: DateTime.now().toUtc(),
+        flagForDeletion: true,
+      );
+
+      String ownerId = 'owner456';
+      String companyId = 'company789';
+      List<String> checklistIds = ['checklist1', 'checklist2'];
+
+      final copiedWorksite =
+          BaseWorksite.fromEntity(entity: originalEntity, ownerId: ownerId, companyId: companyId, checklistIds: checklistIds);
+
+      expect(copiedWorksite.id, originalEntity.id);
+      expect(copiedWorksite.ownerId, ownerId);
+      expect(copiedWorksite.companyId, companyId);
+      expect(copiedWorksite.checklistIds, checklistIds);
+      expect(copiedWorksite.dateCreated, originalEntity.dateCreated);
+      expect(copiedWorksite.dateUpdated, originalEntity.dateUpdated);
+      expect(copiedWorksite.flagForDeletion, originalEntity.flagForDeletion);
+    });
+
     test('toJson serializes correctly', () {
       final dateCreated = DateTime.parse('2021-01-01T00:00:00.000Z').toUtc();
       final dateUpdated = DateTime.parse('2021-01-02T00:00:00.000Z').toUtc();
 
       final worksite = BaseWorksite(
         id: 'worksite123',
+        name: 'testWorksite',
         ownerId: 'owner456',
         companyId: 'company789',
         checklistIds: ['checklist1', 'checklist2'],
@@ -78,12 +109,13 @@ void main() {
 
       expect(json, {
         'id': 'worksite123',
+        'name': 'testWorksite',
         'ownerId': 'owner456',
         'companyId': 'company789',
         'checklistIds': ['checklist1', 'checklist2'],
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       });
     });
 
@@ -93,6 +125,7 @@ void main() {
 
       final worksite = BaseWorksite(
         id: 'worksite123',
+        name: 'testWorksite',
         ownerId: 'owner456',
         companyId: 'company789',
         checklistIds: ['checklist1', 'temp_checklist2'],
@@ -104,6 +137,7 @@ void main() {
 
       expect(json, {
         'id': 'worksite123',
+        'name': 'testWorksite',
         'ownerId': 'owner456',
         'companyId': 'company789',
         'checklistIds': ['checklist1'],
@@ -118,6 +152,7 @@ void main() {
 
       final worksite = BaseWorksite(
         id: 'worksite123',
+        name: 'testWorksite',
         ownerId: 'owner456',
         companyId: 'company789',
         checklistIds: ['checklist1', 'temp_checklist2'],
@@ -129,7 +164,7 @@ void main() {
 
       expect(
         joinedData,
-        'worksite123|owner456|company789|checklist1|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z',
+        'worksite123|testWorksite|2021-01-01T00:00:00.000Z|2021-01-02T00:00:00.000Z|owner456|company789|checklist1',
       );
     });
   });
@@ -138,18 +173,20 @@ void main() {
     test('fromJson deserializes correctly', () {
       final json = {
         'id': 'worksite123',
+        'name': 'testWorksite',
         'ownerId': 'owner456',
         'companyId': 'company789',
         'checklistIds': ['checklist1', 'checklist2'],
         'dateCreated': '2021-01-01T00:00:00.000Z',
         'dateUpdated': '2021-01-02T00:00:00.000Z',
-        'flagForDeletion': true,
+        'flagForDeletion': 'true',
       };
 
       final factory = BaseWorksiteFactory<BaseWorksite>();
       final worksite = factory.fromJson(json);
 
       expect(worksite.id, 'worksite123');
+      expect(worksite.name, 'testWorksite');
       expect(worksite.ownerId, 'owner456');
       expect(worksite.companyId, 'company789');
       expect(worksite.checklistIds, ['checklist1', 'checklist2']);

@@ -15,7 +15,7 @@ abstract class HandlerInterface<T extends Entity> {
 
 class RequestHandler<T extends Entity> implements HandlerInterface<T> {
   final CacheService<T> _cache;
-  final EntityFactory<T> _parser;
+  final EntityFactoryInterface<T> _parser;
 
   RequestHandler(this._cache, this._parser);
 

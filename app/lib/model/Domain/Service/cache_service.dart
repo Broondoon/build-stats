@@ -14,7 +14,7 @@ import 'package:shared/entity.dart';
 class CacheService<T extends Entity> extends Cache<T> {
   final DataConnectionService<T> _dataConnectionService;
   final FileIOService<T> _fileIOService;
-  final EntityFactory<T> _parser;
+  final EntityFactoryInterface<T> _parser;
   final String _apiPath;
   final String _filePath;
   final HashMap<String, String> _cacheCheckSums = HashMap<String, String>();
@@ -29,6 +29,24 @@ class CacheService<T extends Entity> extends Cache<T> {
   final LocalStorage _cacheLocalStorage;
   final String _idPrefix;
 
+  // static CacheService<T> create<T extends Entity>(
+  //     DataConnectionService<T> dataConnectionService,
+  //     FileIOService<T> fileIOService,
+  //     EntityFactoryInterface<T> parser,
+  //     LocalStorage cacheLocalStorage,
+  //     ReadWriteMutex m,
+  //     String idPrefix) {
+  //   return CacheService<T>(
+  //       dataConnectionService,
+  //       fileIOService,
+  //       parser,
+  //       apiPath,
+  //       filePath,
+  //       cacheLocalStorage,
+  //       m,
+  //       idPrefix);
+  // }
+
   CacheService(
       this._dataConnectionService,
       this._fileIOService,
@@ -39,6 +57,12 @@ class CacheService<T extends Entity> extends Cache<T> {
       this._m,
       this._idPrefix)
       : super(_parser, _cacheLocalStorage, _m, _idPrefix);
+
+  Future<void> LoadFromFileOnStartup() async {
+    await storeBulk(await _fileIOService.readDataFile(_filePath) ?? <T>[]);
+  }
+
+
 
   Future<T?> getById(String key) async {
     return (await super.get([key], (x) async => await loadById(x?.firstOrNull)))
