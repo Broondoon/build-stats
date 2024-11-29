@@ -84,7 +84,11 @@ class MyAppState extends ChangeNotifier {
     return changeManager.getChecklistDayCategoryItems(currChecklistDay!, catName);
   }
 
-  Future<void> saveChanges() async {
+  Future<List<Worksite>> loadUserWorksites() async {
+    return await changeManager.getUserWorksites(currUser) ?? [];
+  }
+
+  Future<void> saveAllChanges() async {
     ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
     // Save when you've added checklistIds to this day
@@ -100,6 +104,28 @@ class MyAppState extends ChangeNotifier {
     changeManager.updateWorksite(currWorksite!);
 
     notifyListeners();
+  }
+
+  Future<void> saveNewWorksite(
+    workname,
+    newIntId,
+    newContractor,
+    newpeople,
+  ) async {
+    ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
+
+    Worksite newWorksite = await changeManager.createWorksite(
+      currUser,
+    );
+
+    // TODO: Bug Kyle to add these params to backend
+    newWorksite.name = workname;
+    // newWorksite.intId = newIntId;
+    // newWorksite.people = newpeople;
+
+    newWorksite = await changeManager.updateWorksite(
+      newWorksite
+    );
   }
 
   void setPageDay(DateTime newDay) {

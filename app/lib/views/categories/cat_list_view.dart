@@ -35,7 +35,7 @@ class _CategoryListState extends State<CategoryList> {
 
   Future<void> _loadCats() async {
     _catList = [];
-    catTitles = Provider.of<MyAppState>(
+    catTitles = await Provider.of<MyAppState>(
       context, 
       listen: false
     ).currChecklistDay!.getCategories();

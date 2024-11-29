@@ -31,7 +31,10 @@ class WorksiteItem extends StatelessWidget {
     List<Widget> peopleWidgets = [];
     for ((String, String) person in people) {
       peopleWidgets.add(
-        Text('${person.$1}: ${person.$2}'),
+        Text(
+          '${person.$1}: ${person.$2}',
+          style: MyAppStyle.regularFont,
+        ),
       );
     }
 
@@ -56,13 +59,19 @@ class WorksiteItem extends StatelessWidget {
             // TODO: READ FROM WORKSITE
             Text(
               workname,
-              style: MyAppStyle.regularFont,
+              style: MyAppStyle.largeFont,
             ),
             Text(
               intId,
+              style: MyAppStyle.regularFont,
+            ),
+            Text(
+              'Contractor: $contractor',
+              style: MyAppStyle.regularFont,
             ),
             Text(
               'Start Date: ${currDay.year}-${currDay.month}-${currDay.day}',
+              style: MyAppStyle.regularFont,
             ),
             ListView.builder(
               shrinkWrap: true,
