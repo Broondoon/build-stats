@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 import 'package:build_stats_flutter/resources/app_enums.dart';
+import 'package:injector/injector.dart';
 import 'package:meta/meta.dart';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
@@ -10,6 +11,7 @@ import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shared/cache.dart';
 import 'package:shared/entity.dart';
+
 
 class CacheService<T extends Entity> extends Cache<T> {
   final DataConnectionService<T> _dataConnectionService;
@@ -77,7 +79,6 @@ class CacheService<T extends Entity> extends Cache<T> {
       T? entity;
       try {
         //Ensure we have the most recently edited version of the entity.
-        //This is a temp fix for noow, as we should let the user determine if they want to overwrite the local version.
         T? entityServer = (!(key.startsWith(ID_TempIDPrefix)))
             ? _parser.fromJson(
                 jsonDecode(await _dataConnectionService.get("$_apiPath/$key"))
@@ -86,6 +87,13 @@ class CacheService<T extends Entity> extends Cache<T> {
         T? entityLocal = await _fileIOService.readDataFileByKey(_filePath, key);
 
         if (entityLocal != null && entityServer != null) {
+          if(entityLocal.dateUpdated.isAfter(entityServer.dateUpdated)){
+            entity = _parser.fromJson(jsonDecode(
+              await _dataConnectionService.post(_apiPath, entityLocal)));
+          } else {
+            entity = entityServer;
+          }
+
           entity = (entityLocal.dateUpdated.isAfter(entityServer.dateUpdated))
               ? entityLocal
               : entityServer;
@@ -137,12 +145,23 @@ class CacheService<T extends Entity> extends Cache<T> {
         } else {
           int remoteIndex = remoteEntities.indexWhere((e) => e.id == id);
           if (remoteIndex == -1) {
-            entities.add(localEntities[localIndex]);
+            if(id.startsWith(ID_TempIDPrefix)){
+              //Potential for multiple temp entries to require pushing to the server. However... we can't distinguish if they should be updated yet, or not, and then calling the full update logic through the change mangaer. 
+              //issue we have here is simple. We need to update it on the server. But we need to do it through the change manager.
+              //My idea is this. Add a new method to the cache interface that app side only. Use this to update the server by calling the specific methods from the change manager here.
+              //Honestly, I'm not actually gonna fix this. This will be updated any time we need to get the entity in question as part of the upper load. 
+              //If we go any further with this app, then NOTE: This is a problem that needs to be fixed.      
+              entities.add(localEntities[localIndex]);
+            } else {
+              await delete(id);
+            }
           } else {
             if (localEntities[localIndex]
                 .dateUpdated
                 .isAfter(remoteEntities[remoteIndex].dateUpdated)) {
-              entities.add(localEntities[localIndex]);
+              entities.add(_parser.fromJson(jsonDecode(
+              await _dataConnectionService.post(_apiPath, localEntities[localIndex]))));
+
             } else {
               entities.add(remoteEntities[remoteIndex]);
             }
@@ -163,5 +182,22 @@ class CacheService<T extends Entity> extends Cache<T> {
     return (await storeBulk(entities))
         .map((e) => jsonEncode(e.toJson()))
         .toList();
+  }
+
+  Future<bool> setCacheSyncFlags(
+      HashMap<String, String> serverCheckSums, ) async {
+    return await _m.protectWrite(() async {
+      bool anyUnsynced = false;
+      serverCheckSums.forEach((key, value) async {
+        if (value == EntityState.deleted.toString()) {
+          await deleteUnprotected(key);
+          cacheCheckSums.remove(key);
+        } else if (cacheCheckSums[key] != value) {
+          cacheSyncFlags[key] = false;
+          anyUnsynced = true;
+        }
+      });
+      return anyUnsynced;
+    });
   }
 }

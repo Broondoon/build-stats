@@ -169,31 +169,7 @@ void main() {
       expect(entities.any((e) => e.id == entity2.id), isTrue);
     });
 
-    test('Set Cache Sync Flags', () async {
-      // Create and store mock entities
-      final entity1 = MockEntity();
-      final entity2 = MockEntity();
-      when(entity1.id).thenReturn('1');
-      when(entity2.id).thenReturn('2');
-      when(entity1.getChecksum()).thenReturn('checksum1');
-      when(entity2.getChecksum()).thenReturn('checksum2');
-      when(entity1.toJson()).thenReturn({'id': '1', 'data': 'data1'});
-      when(entity2.toJson()).thenReturn({'id': '2', 'data': 'data2'});
-
-      await cache.store(entity1.id, entity1);
-      await cache.store(entity2.id, entity2);
-
-      // Set cache sync flags with different checksums
-      HashMap<String, String> serverCheckSums = HashMap();
-      serverCheckSums[entity1.id] = 'checksum1_modified'; // Different checksum
-      serverCheckSums[entity2.id] = 'checksum2'; // Same checksum
-
-      await cache.setCacheSyncFlags(serverCheckSums);
-
-      // Check that cacheSyncFlags have been updated
-      expect(cache.cacheSyncFlags[entity1.id], false);
-      expect(cache.cacheSyncFlags[entity2.id], true);
-    });
+    
 
     test('Get Cache Check States', () async {
       // Create and store mock entities
@@ -233,24 +209,5 @@ void main() {
       expect(cache.cacheSyncFlags[entity.id], true);
     });
 
-    test('Set Cache Sync Flags with Deleted Entity', () async {
-      // Create and store a mock entity
-      final entity = MockEntity();
-      when(entity.id).thenReturn('1');
-      when(entity.getChecksum()).thenReturn('checksum1');
-      when(entity.toJson()).thenReturn({'id': '1', 'data': 'data1'});
-
-      await cache.store(entity.id, entity);
-
-      // Set cache sync flags indicating the entity is deleted
-      HashMap<String, String> serverCheckSums = HashMap();
-      serverCheckSums[entity.id] = EntityState.deleted.toString();
-
-      await cache.setCacheSyncFlags(serverCheckSums);
-
-      // cacheCheckSums should not contain the entity
-      Map<String, String> cacheCheckStates = await cache.getCacheCheckStates();
-      expect(cacheCheckStates.containsKey(entity.id), isFalse);
-    });
   });
 }

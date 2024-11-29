@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:build_stats_flutter/model/entity/checklist.dart';
+import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/entity/user.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
@@ -35,13 +36,14 @@ class ToCSV {
     if (checklists == null) {
       return;
     }
+    checklists.sort((a, b) => a.name.compareTo(b.name));
     final checklistDaysCache = injector.get<ChecklistDayCache>();
     final itemCache = injector.get<ItemCache>();
     final unitCache = injector.get<UnitCache>();
     HashMap<String, String> units = HashMap.from(await unitCache
         .getCompanyUnits(user)
         .then((value) => Map<String, String>.fromEntries(
-            value!.map((e) => MapEntry(e.id, e.name ?? '')))));
+            value!.map((e) => MapEntry(e.id, e.name)))));
     units.addEntries([const MapEntry('', '')]);
     for (Checklist checklist in checklists) {
       final checklistDays =
@@ -49,12 +51,23 @@ class ToCSV {
       if (checklistDays == null) {
         continue;
       }
+      checklistDays.sort((a, b) => a.date.compareTo(b.date));
       for (ChecklistDay checklistDay in checklistDays) {
         final items = await itemCache.getItemsForChecklistDay(checklistDay);
-        for (String catagory in items.keys) {
+        List<String> keys = items.keys.toList();
+        keys.sort();
+        for (String catagory in keys) {
+          List<Item> itemsList = items[catagory]!;
+          //sort by unit and then by desc
+          itemsList.sort((a, b) {
+            if (a.unitId == b.unitId) {
+              return (a.desc ?? '').compareTo(b.desc ?? '');
+            }
+            return (units[a.unitId ?? ''] ?? '').compareTo(units[b.unitId ?? ''] ?? '');
+          });
           for (var item in items[catagory]!) {
             data.add([
-              checklist.name ?? '',
+              checklist.name,
               checklistDay.date.toIso8601String(),
               catagory,
               units[item.unitId ?? ''] ?? '',
@@ -74,7 +87,7 @@ class ToCSV {
       data,
       setHeadersInFirstRow: true,
       fileName:
-          '${worksite.id}_Full_Export_${DateTime.now().toIso8601String().replaceAll(RegExp(r'[.\:-]'), "_")}.csv',
+          '${worksite.name.isEmpty ? worksite.id : worksite.name}_Full_Export_${DateTime.now().toIso8601String().replaceAll(RegExp(r'[.\:-]'), "_")}.csv',
       removeDuplicates: true,
     );
   }

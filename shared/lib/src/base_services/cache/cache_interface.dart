@@ -11,5 +11,5 @@ abstract class CacheInterface<T extends Entity> {
   Future<T> store(String key, T value);
   Future<void> delete(String key);
   Future<HashMap<String, String>> getCacheCheckStates();
-  Future<bool> setCacheSyncFlags(HashMap<String, String> serverCheckSums);
+  // Future<bool> setCacheSyncFlags(HashMap<String, String> serverCheckSums);
 }

@@ -1,6 +1,7 @@
 // cache_service_test.dart
 
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'package:build_stats_flutter/model/Domain/Exception/http_exception.dart';
 import 'package:build_stats_flutter/model/Domain/Service/cache_service.dart';
@@ -318,6 +319,67 @@ void main() {
 
       // entity2 should be from the server
       expect(entity2Loaded.dateUpdated, equals(entity2.dateUpdated));
+    });
+
+    test('Set Cache Sync Flags', () async {
+      // // Create and store mock entities
+      // // final entity1 = MockEntity();
+      // // final entity2 = MockEntity();
+      // when(entity1.id).thenReturn('1');
+      // when(entity2.id).thenReturn('2');
+      // when(entity1.getChecksum()).thenReturn('checksum1');
+      // when(entity2.getChecksum()).thenReturn('checksum2');
+      // when(entity1.toJson()).thenReturn({'id': '1', 'data': 'data1'});
+      // when(entity2.toJson()).thenReturn({'id': '2', 'data': 'data2'});
+
+      final entity1 = TestEntity(
+        id: 'entity1',
+        dateUpdated: DateTime.now().subtract(Duration(days: 2)),
+      );
+      final entity2 = TestEntity(
+        id: 'entity2',
+        dateUpdated: DateTime.now(),
+      );
+
+      await cacheService.store(entity1.id, entity1);
+      await cacheService.store(entity2.id, entity2);
+
+      // Set cache sync flags with different checksums
+      HashMap<String, String> serverCheckSums = HashMap();
+      serverCheckSums[entity1.id] = 'checksum1_modified'; // Different checksum
+      serverCheckSums[entity2.id] = entity2.getChecksum(); // Same checksum
+
+      await cacheService.setCacheSyncFlags(serverCheckSums);
+
+      // Check that cacheSyncFlags have been updated
+      expect(cacheService.cacheSyncFlags[entity1.id], false);
+      expect(cacheService.cacheSyncFlags[entity2.id], true);
+    });
+
+    
+    test('Set Cache Sync Flags with Deleted Entity', () async {
+      // Create and store a mock entity
+      // final entity = MockEntity();
+      // when(entity.id).thenReturn('1');
+      // when(entity.getChecksum()).thenReturn('checksum1');
+      // when(entity.toJson()).thenReturn({'id': '1', 'data': 'data1'});
+
+      final entity = TestEntity(
+        id: 'entity1',
+        dateUpdated: DateTime.now().subtract(Duration(days: 2)),
+      );
+
+      await cacheService.store(entity.id, entity);
+
+      // Set cache sync flags indicating the entity is deleted
+      HashMap<String, String> serverCheckSums = HashMap();
+      serverCheckSums[entity.id] = EntityState.deleted.toString();
+
+      await cacheService.setCacheSyncFlags(serverCheckSums);
+
+      // cacheCheckSums should not contain the entity
+      Map<String, String> cacheCheckStates = await cacheService.getCacheCheckStates();
+      expect(cacheCheckStates.containsKey(entity.id), isFalse);
     });
   });
 }

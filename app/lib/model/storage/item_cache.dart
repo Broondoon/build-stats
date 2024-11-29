@@ -2,11 +2,13 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
+import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/model/Domain/Service/cache_service.dart';
 import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
+import 'package:injector/injector.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
 import 'package:shared/cache.dart';
