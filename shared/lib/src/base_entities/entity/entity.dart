@@ -5,19 +5,17 @@ enum EntityState { deleted }
 
 class Entity implements EntityInterface {
   String id;
-  late String? name;
+  late String name;
   DateTime dateCreated;
   DateTime dateUpdated;
   bool flagForDeletion = false;
   Entity(
       {
       required this.id,
-      this.name,
+      this.name = "",
       required this.dateCreated,
       required this.dateUpdated,
-      this.flagForDeletion = false}){
-        name ??= "";
-      }
+      this.flagForDeletion = false});
 
   Entity.fromEntity({required Entity entity})
       : id = entity.id,
