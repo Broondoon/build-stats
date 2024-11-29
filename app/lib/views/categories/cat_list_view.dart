@@ -82,18 +82,17 @@ class _CategoryListState extends State<CategoryList> {
     Overlay.of(context).insert(_catOverlayEntry!);
   }
 
-  // TODO: I WANT THE OVERLAY TO GIVE ME INFO?
-  // THERE ARE OTHER WAYS THAN CURSED FUNCTION JUGGLING I KNOW IT
   void createNewCat(String newCatTitle) {
-    // _catOverlayEntry?.remove();
-    addNewCat(newCatTitle);
+    if (newCatTitle.isNotEmpty) {
+      addNewCat(newCatTitle);
+    }
   }
 
   void showOldCatOverlay(String catTitle) {
     _catOverlayEntry = OverlayEntry (
       builder: (context) => BaseOverlay.oldCat(
         overlayRef: _catOverlayEntry!,
-        closefunct: _removeOldCatOverlay,
+        closefunct: () {},
         catTitle: catTitle,
         // pageday: widget.pageday,
         // checklistDay: widget.checklistDay,
@@ -101,10 +100,6 @@ class _CategoryListState extends State<CategoryList> {
     );
 
     Overlay.of(context).insert(_catOverlayEntry!);
-  }
-
-  void _removeOldCatOverlay() {//String newCatTitle){
-    // _catOverlayEntry?.remove();
   }
 
   // OF NOTE: There is no checking for duplicate category titles, which will probably break backend

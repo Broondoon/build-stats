@@ -1,10 +1,12 @@
 // View Imports:
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
+import 'package:build_stats_flutter/views/overlay/contacts_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/new_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/new_worksite_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/old_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
+import 'package:build_stats_flutter/views/overlay/pro_info_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 
@@ -89,6 +91,24 @@ class BaseOverlay extends StatefulWidget {
       comments: comments,
     );
 
+  factory BaseOverlay.projinfo({
+    required OverlayEntry overlayRef,
+  }) =>
+    BaseOverlay(
+      overlayRef: overlayRef,
+      choice: overlayChoice.projinfo,
+      closefunct: () {},
+    );
+  
+  factory BaseOverlay.contacts({
+    required OverlayEntry overlayRef,
+  }) =>
+    BaseOverlay(
+      overlayRef: overlayRef,
+      choice: overlayChoice.contacts,
+      closefunct: () {},
+    );
+
   @override
   State<BaseOverlay> createState() => _BaseOverlayState();
 }
@@ -141,6 +161,7 @@ class _BaseOverlayState extends State<BaseOverlay> {
       case overlayChoice.newcategory:
         return NewCat(
           changeNewCatName: changeNewCatName,
+          removeOverlayFunct: _removeOverlay,
         );
       case overlayChoice.category:
         return OldCat(
@@ -154,6 +175,10 @@ class _BaseOverlayState extends State<BaseOverlay> {
           changeInfoFunct: changeWorksiteInfo,
           removeOverlayFunct: _removeOverlay,
         );
+      case overlayChoice.projinfo:
+        return ProjInfo();
+      case overlayChoice.contacts:
+        return Contacts();
     }
   }
 
@@ -168,6 +193,10 @@ class _BaseOverlayState extends State<BaseOverlay> {
         return widget.catTitle!;
       case overlayChoice.worksite:
         return 'New Worksite';
+      case overlayChoice.projinfo:
+        return 'Project Settings';
+      case overlayChoice.contacts:
+        return 'Project Contacts';
     }
   }
 
@@ -240,6 +269,9 @@ class _BaseOverlayState extends State<BaseOverlay> {
     }
     else if (widget.choice == overlayChoice.worksite) {
       print('CLOSING NEW WORKSITE OVERLAY');
+      // WHY AM I DOING IT LIKE THIS?
+      // THIS SHOULD NOT BE THE RESPONSIBLILITY OF BASE OVERLAY TO CHECK THIS
+      // PAST BRENDAN WHAT WITCHCRAFT DID YOU WEAVE IN THE DARKEST NIGHT AT TIME OF THE WITCHING HOUR?
       if (minimumReqsToSave) {
         print('SAVING NEW WORKSITE BECAUSE FORMS FILLED');
         widget.closefunct(

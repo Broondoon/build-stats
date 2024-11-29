@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 class NewCat extends StatefulWidget implements OverlayImpInterface {
   const NewCat({
     super.key,
-    required this.changeNewCatName
+    required this.changeNewCatName,
+    required this.removeOverlayFunct,
   });
 
   final Function changeNewCatName;
+  final Function removeOverlayFunct;
 
-  // TODO: fix this so that it actually does somthing, because as now it's BROKEN
   @override
   void timeToClose() {
     
@@ -24,6 +25,7 @@ class NewCat extends StatefulWidget implements OverlayImpInterface {
 class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
   late String catName = '';
   TextEditingController catNameEdit = TextEditingController();
+  bool readyToCreate = false;
 
   @override
   void initState() {
@@ -35,32 +37,25 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
 
   void _saveCatChanges() {
     catName = catNameEdit.text;
+
+    setState(() {
+      if (catName.isNotEmpty) {
+        readyToCreate = true;
+      }
+      else {
+        readyToCreate = false;
+      }
+    });
+
     widget.changeNewCatName(catName);
   }
   
   @override
   Widget build(BuildContext context) {
     return Column(
-      // mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // const SizedBox(
-        //   width: 200,
-        //   height: 40,
-        //   // child: Card(
-        //     child: Center(
-        //       child: Text(
-        //         'New Category',
-        //         style: MyAppStyle.largeFont,
-        //       ),
-        //     ),
-        //   // ),
-        // ),
-        const SizedBox(
-          height: 4,
-        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          
           children: [
             const Text(
               'Name:',
@@ -75,19 +70,41 @@ class _NewCatState extends State<NewCat> { // implements OverlayImpInterface {
               child: TextFormField(
                 controller: catNameEdit,
                 style: MyAppStyle.regularFont,
-                // textAlign: TextAlign.center, // This centeres horizontally :(
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  // border: InputBorder.none,
                   hintText: '',
-                  // contentPadding: EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
             ),
           ],
         ),
-
-        const SizedBox(),
+        const Spacer(),
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
+            shape: RoundedRectangleBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+              side: BorderSide(
+                width: 1,
+                color: readyToCreate
+                  ? Colors.black
+                  : const Color.fromARGB(255, 202, 202, 202),
+              ),
+            ),
+          ),
+          onPressed: () {
+            widget.removeOverlayFunct();
+          },
+          child: Text(
+            'Create Worksite',
+            style: TextStyle(
+              fontSize: 18,
+              color: readyToCreate
+                ? Colors.black
+                : const Color.fromARGB(255, 202, 202, 202),
+            )
+          ),
+        ),
       ],
     );
   }

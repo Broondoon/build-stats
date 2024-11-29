@@ -43,6 +43,9 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
     String newContractor,
     List<(String, String)> newpeople,
   ) {
+    // Should this go inside or outside of the setState() method?
+    // TODO: Call method from MyAppState to 
+
     setState(() {
       numWorksites++;
 
@@ -54,7 +57,6 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
         );
       }
 
-        // TODO: TELL BACKEND TO CREATE NEW WORKSITE
       worksiteList.add(
         WorksiteItem(
           context: context, 
@@ -66,9 +68,7 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
           people: newpeople,
         ),
       );
-    },
-    );
-    // Just hwat is this indenting
+    });
   }
 
   @override

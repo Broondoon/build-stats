@@ -112,6 +112,19 @@ class _NewWorksiteState extends State<NewWorksite> {
     return null;
   }
 
+  Widget? getTextWarning() {
+    if (!readyToSave) {
+      return const Text(
+        'Fields Missing!',
+        style: TextStyle(
+          fontSize: 18,
+          color: Colors.red,
+        ),
+      );
+    }
+    return null;
+  }
+
   void canWeSave() {
     setState(() {
       readyToSave = checkSave();
@@ -221,17 +234,21 @@ class _NewWorksiteState extends State<NewWorksite> {
         ),
         getAddContactButton() ?? Container(),
         const Spacer(),
+        getTextWarning() ?? Container(),
         TextButton(
           // style: MyAppStyle.buttonStyle,
           style: TextButton.styleFrom(
-            backgroundColor: readyToSave
-              ? const Color.fromARGB(255, 227, 227, 227)
-              : Colors.black,
+            // backgroundColor: readyToSave
+            //   ? const Color.fromARGB(255, 227, 227, 227)
+            //   : Colors.black,
             padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            shape: RoundedRectangleBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8.0)),
               side: BorderSide(
                 width: 1,
+                color: readyToSave
+                  ? Colors.black
+                  : const Color.fromARGB(255, 202, 202, 202),
               ),
             ),
           ),
@@ -239,9 +256,14 @@ class _NewWorksiteState extends State<NewWorksite> {
             print('SAVE BUTTON PRESSED');
             createNewWorksite();
           },
-          child: const Text(
+          child: Text(
             'Create Worksite',
-            style: MyAppStyle.regularFont, 
+            style: TextStyle(
+              fontSize: 18,
+              color: readyToSave
+                ? Colors.black
+                : const Color.fromARGB(255, 202, 202, 202),
+            )
           ),
         ),
       ],

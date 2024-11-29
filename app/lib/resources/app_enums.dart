@@ -20,6 +20,8 @@ enum overlayChoice {
   newcategory,
   category,
   worksite,
+  projinfo,
+  contacts,
 }
 
 enum topBarChoice {
