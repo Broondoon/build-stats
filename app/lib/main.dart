@@ -1,17 +1,8 @@
 // View Imports:
-import 'dart:async';
-
-import 'package:build_stats_flutter/model/entity/unit.dart';
-import 'package:build_stats_flutter/model/storage/data_sync/data_sync.dart';
-import 'package:build_stats_flutter/model/storage/local_storage/to_CSV.dart';
-import 'package:build_stats_flutter/model/storage/unit_cache.dart';
-import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
-import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
-import 'package:build_stats_flutter/views/checklist/my_checklist_page.dart';
-import 'package:build_stats_flutter/views/date/date_row_view.dart';
+import 'package:build_stats_flutter/views/landing_page/landing_page_view.dart';
 
 // Model Imports:
-import 'package:build_stats_flutter/model/entity/user.dart';
+import 'package:build_stats_flutter/model/entity/unit.dart';
 import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
@@ -21,26 +12,18 @@ import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
+import 'package:build_stats_flutter/model/storage/data_sync/data_sync.dart';
+import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 
 // Resource Imports:
-import 'package:build_stats_flutter/resources/app_colours.dart';
-import 'package:build_stats_flutter/resources/app_style.dart';
-import 'package:build_stats_flutter/resources/app_enums.dart';
-import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
-import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
-import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
 import 'package:build_stats_flutter/views/state_controller.dart';
-import 'package:build_stats_flutter/views/worksite/worksites_page_view.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared/app_strings.dart';
 
-// ??? Imports:
+// Custom Imports:
 import 'package:shared/cache.dart';
 
 // External Imports:
 import 'dart:io';
 import 'package:flutter/material.dart';
-// import 'package:localstorage/localstorage.dart';
 import 'package:mutex/mutex.dart';
 import 'package:provider/provider.dart';
 import 'package:injector/injector.dart';
@@ -202,8 +185,6 @@ void main() async {
     );
   });
 
-  
-
   try {
     runApp(const MyApp()
         // const ProviderScope(child: MyApp()),
@@ -212,44 +193,7 @@ void main() async {
     print(e);
     exit(1);
   }
-
-  // try {
-  //   runApp(const MyApp());
-  // } catch (e) {
-  //   print(e);
-  //   exit(1);
-  // }
 }
-
-
-
-// Future<void> initTestStorage() async {
-//   Worksite testWorksite = Worksite(
-//     id: "Worksite1",
-//     checklistIds: ["Checklist1"],
-//   );
-//   Checklist testChecklist = Checklist(
-//       id: "Checklist1",
-//       worksiteId: "Worksite1",
-//       date: DateTime.now(),
-//       comment: "This is a comment",
-//       itemIds: ["Item1"]);
-//   Item testItem = Item(
-//       id: "Item1",
-//       checklistId: "Checklist1",
-//       unit: "unit",
-//       desc: "desc",
-//       result: "result",
-//       comment: "comment",
-//       creatorId: 1,
-//       verified: true);
-
-//   await WorksiteCache.StoreWorksite(testWorksite);
-//   print("stored worksite");
-//   await ChecklistCache.StoreChecklist(testChecklist);
-//   print("stored checklist");
-//   await ItemCache.StoreItem(testItem);
-// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -275,115 +219,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         ),
         // home: MyLandingPage(), //MyChecklistPage(),
-        home: MyLandingPage(), //MyScratchPage(),
-      ),
-    );
-  }
-}
-
-class MyLandingPage extends StatelessWidget {
-  const MyLandingPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              // color: MyAppColours.g5,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  MyAppColours.g3,
-                  MyAppColours.g5
-                ]
-              ),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween, // MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  // A sneaky hack! Forces spaceBetween to put things where we want them
-                  height: 0.0,
-                  width: 0.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'SiteReady',
-                      style: MyAppStyle.titleFont,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 4),
-                      child: Image.asset(
-                        'assets/images/site_ready_logo.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ],
-                ),
-                // SizedBox(
-                //   height: 0.0,
-                //   width: 0.0,
-                // ),
-                Column(
-                  children: [
-                    SizedBox(
-                      width: 120,
-                      height: 40,
-                      child: TextButton(
-                        style: MyAppStyle.titleButtonStyle,
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const MyWorksitesPage();
-                          }));
-                        },
-                        child: const Text(
-                          'Office',
-                          style: MyAppStyle.titleScreenSmallFont,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    SizedBox(
-                      width: 120,
-                      height: 40,
-                      child: TextButton(
-                        style: MyAppStyle.titleButtonStyle,
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const MyChecklistPage();
-                          }));
-                        },
-                        child: const Text(
-                          'Worksite',
-                          style: MyAppStyle.titleScreenSmallFont,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 0.0,
-                  width: 0.0,
-                ),
-              ],
-            ),
-          ),
-        ],
+        home: const MyLandingPage(), //MyScratchPage(),
       ),
     );
   }
