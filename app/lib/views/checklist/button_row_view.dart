@@ -59,7 +59,7 @@ class _ButtonRowState extends State<ButtonRow> {
         //   width: 8,
         // ),
         SizedBox(
-          width: 100,
+          width: 120,
           height: 40,
           child: TextButton(
             style: MyAppStyle.buttonStyle,
@@ -87,6 +87,21 @@ class _ButtonRowState extends State<ButtonRow> {
             onPressed: widget.commentFunct,
             child: const Text(
               'Comments',
+              style: MyAppStyle.regularFont,
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        SizedBox(
+          width: 120,
+          height: 40,
+          child: TextButton(
+            style: MyAppStyle.buttonStyle,
+            onPressed: () {},
+            child: const Text(
+              'Export',
               style: MyAppStyle.regularFont,
             ),
           ),
