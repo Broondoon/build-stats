@@ -37,7 +37,15 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
-  void addWorksite() {
+  void addWorksite(
+    String workname, 
+    String newIntId, 
+    String newContractor,
+    List<(String, String)> newpeople,
+  ) {
+    // Should this go inside or outside of the setState() method?
+    // TODO: Call method from MyAppState to 
+
     setState(() {
       numWorksites++;
 
@@ -50,12 +58,17 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
       }
 
       worksiteList.add(
-        // TODO: TELL BACKEND TO CREATE NEW WORKSITE
         WorksiteItem(
-          context: context, numWorksites: numWorksites, currDay: currDay),
-        );
-      },
-    );
+          context: context, 
+          // numWorksites: numWorksites, 
+          currDay: currDay,
+          workname: workname,
+          intId: newIntId,
+          contractor: newContractor,
+          people: newpeople,
+        ),
+      );
+    });
   }
 
   @override

@@ -105,10 +105,10 @@ class _OldCatState extends State<OldCat> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          widget.catTitle,
-          style: MyAppStyle.largeFont,
-        ),
+        // Text(
+        //   widget.catTitle,
+        //   style: MyAppStyle.largeFont,
+        // ),
         Flexible(
           child: ListView.builder(
             itemCount: _itemList.length,

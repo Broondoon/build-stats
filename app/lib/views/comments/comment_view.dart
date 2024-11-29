@@ -1,5 +1,4 @@
 // View Imports:
-
 import 'package:build_stats_flutter/resources/app_colours.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
@@ -13,7 +12,7 @@ class CommentSection extends StatefulWidget implements OverlayImpInterface {
   @override
   void timeToClose() {
     // ...suposedly implemented by the State class?
-    print("STATED POORLY");
+    print('STATED POORLY');
   }
 
   @override
@@ -23,21 +22,21 @@ class CommentSection extends StatefulWidget implements OverlayImpInterface {
 class _CommentSectionState extends State<CommentSection> {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return // Column(
       // mainAxisAlignment: MainAxisAlignment.,
-      children: [
-        Container(
-          color: MyAppColours.g4,
-          child: SizedBox(
-            height: 40,
-            child: Center(
-              child: Text(
-                "Comments",
-                style: MyAppStyle.regularFont,
-              ),
-            ),
-          ),
-        ),
+      // children: [
+        // Container(
+        //   color: MyAppColours.g4,
+        //   child: const SizedBox(
+        //     height: 40,
+        //     child: Center(
+        //       child: Text(
+        //         'Comments',
+        //         style: MyAppStyle.regularFont,
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
@@ -46,20 +45,20 @@ class _CommentSectionState extends State<CommentSection> {
                 width: 2.0,
               )
             ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
               // TODO: REFACTOR FOR LOADING AND CODE MANIPULATION OF TEXT CONTENT
               child: TextField(
                 maxLines: null,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: "Start writing something..."
+                  hintText: 'Start writing something...'
                 ),
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ); // ,
+      // ],
+    // );
   }
 }

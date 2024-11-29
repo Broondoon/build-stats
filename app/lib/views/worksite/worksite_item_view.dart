@@ -2,22 +2,39 @@
 
 import 'package:build_stats_flutter/main.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/views/checklist/my_checklist_page.dart';
 import 'package:flutter/material.dart';
 
 class WorksiteItem extends StatelessWidget {
   const WorksiteItem({
     super.key,
     required this.context,
-    required this.numWorksites,
+    // required this.numWorksites,
     required this.currDay,
+    required this.workname,
+    required this.intId,
+    required this.contractor,
+    required this.people,
   });
 
   final BuildContext context;
-  final int numWorksites;
+  // final int numWorksites;
   final DateTime currDay;
+  final String workname; 
+  final String intId; 
+  final String contractor;
+  final List<(String, String)> people;
 
   @override
   Widget build(BuildContext context) {
+
+    List<Widget> peopleWidgets = [];
+    for ((String, String) person in people) {
+      peopleWidgets.add(
+        Text('${person.$1}: ${person.$2}'),
+      );
+    }
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -38,20 +55,21 @@ class WorksiteItem extends StatelessWidget {
           children: [
             // TODO: READ FROM WORKSITE
             Text(
-              "Worksite $numWorksites",
+              workname,
               style: MyAppStyle.regularFont,
             ),
             Text(
-              "2024-H92088",
+              intId,
             ),
             Text(
-              "Start Date: ${currDay.year}-${currDay.month}-${currDay.day}",
+              'Start Date: ${currDay.year}-${currDay.month}-${currDay.day}',
             ),
-            Text(
-              "General Contractor: Sam Wilkonson",
-            ),
-            Text(
-              "Site Superintendent: Alice McHarris",
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: peopleWidgets.length,
+              itemBuilder: (context, index) {
+                return peopleWidgets[index];
+              }
             ),
           ],
         ),
