@@ -28,7 +28,7 @@ class MyAppState extends ChangeNotifier {
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
   late HashMap<String, String> units = HashMap<String, String>();
-  bool dataSyncing = false; //just a quick flag to ensure we only start the data sync once.
+  bool dataSyncing = true; //just a quick flag to ensure we only start the data sync once.
   bool localDataLoaded = false; //just a quick flag to ensure we only load Local Data Once.
   // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
@@ -149,11 +149,13 @@ class MyAppState extends ChangeNotifier {
 
   // OF NOTE: There is no checking for duplicate category titles, which will probably break backend
   // FORBIDDEN TECHNIQUE: OSTRICH BURIES INTO SAND
+  //kyle: I can probably just throw an exception that you can catch. Not hard. Whats a bigger issue is that we don't upd
   Future<void> addNewCat(String newCatTitle) async {
     ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
     print('ADDING NEW CAT $newCatTitle');
     await changeManager.addCategory(currChecklistDay!, newCatTitle);
+    
 
     notifyListeners();   
   }
@@ -161,7 +163,7 @@ class MyAppState extends ChangeNotifier {
   Future<Item> updateItem(Item changedItem) async {
     ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
 
-    Item returnItem = await changeManager.updateItem(changedItem, currChecklistDay!, pageDay);
+    Item returnItem = await changeManager.updateItem(changedItem, currChecklistDay!, pageDay );
 
     await flicker();
 

@@ -123,11 +123,19 @@ class CacheService<T extends Entity> extends Cache<T> {
   Future<List<String>?> LoadBulk(String apiPath, Function(T) comparer) async {
     List<T> entities = <T>[];
     try {
-      String? entitiesJsonRemote = await _dataConnectionService.get(apiPath);
       List<T> localEntities = (await _fileIOService.readDataFile(_filePath))
               ?.where((e) => comparer(e))
               .toList() ??
           <T>[];
+
+      if(apiPath.contains(ID_TempIDPrefix)){
+        entities = localEntities;
+        return (await storeBulk(entities))
+            .map((e) => jsonEncode(e.toJson()))
+            .toList();
+      }
+      
+      String? entitiesJsonRemote =  await _dataConnectionService.get(apiPath);
       List<T> remoteEntities = (entitiesJsonRemote?.isEmpty ?? true)
           ? []
           : (jsonDecode(entitiesJsonRemote) as List<dynamic>)
@@ -170,6 +178,12 @@ class CacheService<T extends Entity> extends Cache<T> {
       });
     } on HttpException catch (e) {
       switch (e.response) {
+        case HttpResponse.NotFound:
+          entities = (await _fileIOService.readDataFile(_filePath))
+                  ?.where((e) => comparer(e))
+                  .toList() ??
+              <T>[];
+          break;
         case HttpResponse.ServiceUnavailable:
           entities = (await _fileIOService.readDataFile(_filePath))
                   ?.where((e) => comparer(e))
@@ -182,6 +196,14 @@ class CacheService<T extends Entity> extends Cache<T> {
     return (await storeBulk(entities))
         .map((e) => jsonEncode(e.toJson()))
         .toList();
+  }
+
+  @override
+  Future<T> storeUnprotected(String key, T value) async {
+    T storedVal = await super.storeUnprotected(key, value);
+    //Need to save it, or data sync will detect a difference in cache, and then try to get the latest version from the file.
+    await _fileIOService.saveDataFile(_filePath, [storedVal]);
+    return storedVal;
   }
 
   Future<bool> setCacheSyncFlags(

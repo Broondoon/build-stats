@@ -117,7 +117,7 @@ class BaseChecklistDay extends Entity {
   }
 
   addCategory(String category) {
-    itemsByCatagory[category] = [];
+    itemsByCatagory[category] = List<String>.empty(growable: true);
   }
 
   removeCategory(String category) {
@@ -153,6 +153,9 @@ class BaseChecklistDay extends Entity {
   getCategoryForItem(BaseItem item) {
     for (String key in itemsByCatagory.keys) {
       if (itemsByCatagory[key]!.contains(item.id)) {
+        return key;
+      }
+      else if(itemsByCatagory[key]!.contains(ID_TempIDPrefix + item.id)){
         return key;
       }
     }

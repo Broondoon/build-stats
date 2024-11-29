@@ -478,10 +478,11 @@ class ChangeManager {
     if(checklistDays == null){
       return [];
     }
+    checklistDays = checklistDays.where((element) => element.date.compareTo(checklistDay.date) <= 0).toList();
     //sort in reverse order
     checklistDays.sort((a, b) => -(b.date.compareTo(a.date)));
-    int itemIndex = checklistDays.indexWhere((element) => element.id == checklistDay.id);
-    checklistDays = checklistDays.sublist(itemIndex, checklistDays.length-1 == itemIndex ? null: checklistDays.length-1 );
+    //int itemIndex = checklistDays.indexWhere((element) => element.id == checklistDay.id);
+    //checklistDays = checklistDays.sublist(itemIndex, checklistDays.length-1 == itemIndex ? null: checklistDays.length-1 );
     List<String> items = [];
     List<String> avoidItemIds = [];
     for (ChecklistDay day in checklistDays) {
@@ -640,9 +641,9 @@ class ChangeManager {
     _itemCache.delete(id);
   }
 
-  Future<void> addCategory(ChecklistDay checklistDay, String category) async {
+  Future<ChecklistDay> addCategory(ChecklistDay checklistDay, String category) async {
     checklistDay.addCategory(category);
-    await _checklistDayCache.store(checklistDay.id, checklistDay);
+    return await _checklistDayCache.store(checklistDay.id, checklistDay);
   }
 
   Future<void> editCategory(ChecklistDay checklistDay, DateTime date,

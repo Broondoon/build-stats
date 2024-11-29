@@ -102,6 +102,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         cacheCheckSums[key] = value.getChecksum();
       }
       cacheSyncFlags[key] = true;
+      value.dateUpdated = DateTime.now().toUtc();
       await _cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
       return value;
     } else {

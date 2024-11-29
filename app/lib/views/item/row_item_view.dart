@@ -1,5 +1,4 @@
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';
-import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
 import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:build_stats_flutter/views/units/unit_dropdown_view.dart';
