@@ -1,11 +1,14 @@
 // View Imports:
-import 'package:build_stats_flutter/main.dart';
+import 'package:build_stats_flutter/model/entity/worksite.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/views/navigation/nav_bar_view.dart';
 import 'package:build_stats_flutter/views/navigation/top_bar_view.dart';
 import 'package:build_stats_flutter/views/overlay/base_overlay_view.dart';
+import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:build_stats_flutter/views/worksite/worksite_item_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyWorksitesPage extends StatefulWidget {
   const MyWorksitesPage({
@@ -25,10 +28,36 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
   // TODO: decide if this should be pulled from elsewhere
   DateTime currDay = DateTime.now();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadWorksites();
+  }
+
+  Future<void> _loadWorksites() async {
+    List<Worksite> worksites = await Provider.of<MyAppState>(
+      context,
+      listen: false,
+    ).loadUserWorksites();
+
+    for (Worksite worksite in worksites) {
+      print('WORKSITE NAME: ${worksite.name}');
+      int tmpid = 6;
+      // setState(() {
+        addWorksite(
+          worksite.name, 
+          '2024-AD8${tmpid + worksites.length}', 
+          'Crackstone Construction', 
+          [('Foreman', 'Frank')],
+        );
+      // });
+    }
+  }
+
   void showNewWorksiteOverlay() {
     _overlayEntry = OverlayEntry(
       builder: (context) => BaseOverlay(
-        closefunct: addWorksite, // () {},
+        closefunct: addNewWorksite,
         overlayRef: _overlayEntry!,
         choice: overlayChoice.worksite,
       ),
@@ -37,15 +66,36 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
     Overlay.of(context).insert(_overlayEntry!);
   }
 
+  void addNewWorksite(
+    String workname, 
+    String newIntId, 
+    String newContractor,
+    List<(String, String)> newpeople,
+  ) {
+    Provider.of<MyAppState>(
+      context,
+      listen: false,
+    ).saveNewWorksite(
+      workname,
+      newIntId,
+      newContractor,
+      newpeople,
+    );
+
+    addWorksite(
+      workname, 
+      newIntId, 
+      newContractor,
+      newpeople,
+    );
+  }
+
   void addWorksite(
     String workname, 
     String newIntId, 
     String newContractor,
     List<(String, String)> newpeople,
   ) {
-    // Should this go inside or outside of the setState() method?
-    // TODO: Call method from MyAppState to 
-
     setState(() {
       numWorksites++;
 
@@ -111,6 +161,8 @@ class _MyWorksitesPageState extends State<MyWorksitesPage> {
                   ),
                 ),
               ),
+              // const Spacer(),
+              // const NavBottomBar(),
             ],
           ),
         ),

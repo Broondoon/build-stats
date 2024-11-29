@@ -30,8 +30,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
           title: Text(
             whichAppBar == topBarChoice.worksitelist
               ? 'Worksites'
-              // : appState.currWorksite., 
-              : 'Worksite 1', // TODO: Bug Kyle to add .name to worksite constructor
+              : appState.currWorksite!.name,
+              // : 'Worksite 1', // TODO: Bug Kyle to add .name to worksite constructor
             style: MyAppStyle.largeFont,
             // style: MyAppStyle.largeWhiteFont,
           ),

@@ -114,41 +114,48 @@ Future<void> main() async {
 
   // DEFAULT VALUE CREATION
   //units
+  // BRENDAN NOTE: From interview, these were the most important units
   List<String> unitNames = [
-    'm',
-    'm2',
-    'm3',
-    'cm',
-    'cm2',
-    'cm3',
-    'mm',
-    'mm2',
-    'mm3',
-    'km',
-    'km2',
-    'ft',
-    'ft2',
-    'ft3',
-    'in',
-    'in2',
-    'in3',
-    'yd',
-    'yd2',
-    'yd3',
-    'mi',
-    'men',
-    'days',
+    'ls',
+    'ea',
+    'lf',
+    'sf',
+    // 'm',
+    // 'm2',
+    // 'm3',
+    // 'cm',
+    // 'cm2',
+    // 'cm3',
+    // 'mm',
+    // 'mm2',
+    // 'mm3',
+    // 'km',
+    // 'km2',
+    // 'ft',
+    // 'ft2',
+    // 'ft3',
+    // 'in',
+    // 'in2',
+    // 'in3',
+    // 'yd',
+    // 'yd2',
+    // 'yd3',
+    // 'mi',
+    // 'men',
+    // 'days',
+    '',
     'used',
-    'L',
-    'gal',
-    'kg',
-    't',
-    'lb',
-    'oz',
-    'g',
+    // 'L',
+    // 'gal',
+    // 'kg',
+    // 't',
+    // 'lb',
+    // 'oz',
+    // 'g',
     'bags',
     'boxes',
     'pallets',
+    'panels',
     'pieces',
     'rolls',
     'sheets',
@@ -167,6 +174,7 @@ Future<void> main() async {
 
   Worksite worksiteTest = Worksite(
     id: ID_WorksitePrefix + "1",
+    name: 'Sunvalley Poultry',
     companyId: ID_CompanyPrefix + "1",
     ownerId: ID_UserPrefix + "1",
     dateCreated: DateTime.now().toUtc(),
@@ -190,16 +198,73 @@ Future<void> main() async {
   Item itemTest = Item(
       id: ID_ItemPrefix + "1",
       checklistDayId: ID_ChecklistDayPrefix + "1",
-      unitId: ID_UnitPrefix + "m",
-      desc: "test desc",
-      result: "test result",
+      unitId: ID_UnitPrefix + "units",
+      desc: "Wall Panels (avg 14/day)",
+      result: '',
       comment: 'test',
       creatorId: ID_UserPrefix + "1",
       verified: true,
       dateCreated: DateTime.now().toUtc(),
       dateUpdated: DateTime.now().toUtc());
 
-  checklistDayTest.addItemId('Test', itemTest.id);
+  checklistDayTest.addItemId('Labour', itemTest.id);
+
+  Item itemTest2 = Item(
+      id: ID_ItemPrefix + "2",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unitId: ID_UnitPrefix + "units",
+      desc: "Ceiling Panels (avg 14/day)",
+      result: '',
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Labour', itemTest2.id);
+
+  Item itemTest3 = Item(
+      id: ID_ItemPrefix + "3",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unitId: ID_UnitPrefix + "used",
+      desc: "Forklift 5K 14'-17' DF IND - one month plus one week duration",
+      result: '',
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Equipment', itemTest3.id);
+
+  Item itemTest4 = Item(
+      id: ID_ItemPrefix + "4",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unitId: ID_UnitPrefix + "panels",
+      desc: "Wall Panels 3'-9\" wide X 29'-11\" long",
+      result: '',
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Materials', itemTest4.id);
+
+  Item itemTest5 = Item(
+      id: ID_ItemPrefix + "5",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unitId: ID_UnitPrefix + "panels",
+      desc: "Ceiling Panels 3'-9\" wide X 29'-11\" long",
+      result: '',
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Materials', itemTest5.id);
+
   checklistTest.addChecklistDay(checklistDayTest, null, null);
   worksiteTest.checklistIds!.add(checklistTest.id);
 
@@ -209,6 +274,10 @@ Future<void> main() async {
       .get<ChecklistDayCache>()
       .store(checklistDayTest.id, checklistDayTest);
   injector.get<ItemCache>().store(itemTest.id, itemTest);
+  injector.get<ItemCache>().store(itemTest2.id, itemTest2);
+  injector.get<ItemCache>().store(itemTest3.id, itemTest3);
+  injector.get<ItemCache>().store(itemTest4.id, itemTest4);
+  injector.get<ItemCache>().store(itemTest5.id, itemTest5);
 
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
