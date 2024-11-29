@@ -76,7 +76,8 @@ class Cache<T extends Entity> implements CacheInterface<T> {
   Future<List<T>> storeBulk(List<T> entities) async {
     return await _m.protectWrite(() async {
       List<T> storedEntities = [];
-      for (T entity in entities) {
+      print(entities);
+      for (T entity in List.from(entities)) {
         T storedEntity = await storeUnprotected(entity.id, entity);
         storedEntities.add(storedEntity);
       }

@@ -50,6 +50,8 @@ class ItemCache extends CacheService<Item> {
       items[catagory] = [];
     }
     for (Item item in unsortedItems) {
+      if(checklistDay.getCategoryForItem(item) == null) continue;
+      if(items[checklistDay.getCategoryForItem(item)] == null) items[checklistDay.getCategoryForItem(item)] = [];
       items[checklistDay.getCategoryForItem(item)]!.add(item);
     }
     return items;

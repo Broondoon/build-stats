@@ -61,7 +61,9 @@ class CacheService<T extends Entity> extends Cache<T> {
       : super(_parser, _cacheLocalStorage, _m, _idPrefix);
 
   Future<void> LoadFromFileOnStartup() async {
-    await storeBulk(await _fileIOService.readDataFile(_filePath) ?? <T>[]);
+    //because this is borking in store bulk, and we need this working now.
+    await _fileIOService.deleteDataFile(_filePath);
+    //await storeBulk(await _fileIOService.readDataFile(_filePath) ?? <T>[]);
   }
 
 
@@ -84,12 +86,14 @@ class CacheService<T extends Entity> extends Cache<T> {
                 jsonDecode(await _dataConnectionService.get("$_apiPath/$key"))
                     as Map<String, dynamic>)
             : null;
-        T? entityLocal = await _fileIOService.readDataFileByKey(_filePath, key);
+        String? cacheLocal = await _cacheLocalStorage.getItem(key);
+        T? entityLocal = cacheLocal != null ? _parser.fromJson(jsonDecode(cacheLocal)) : await _fileIOService.readDataFileByKey(_filePath, key);
 
         if (entityLocal != null && entityServer != null) {
           if(entityLocal.dateUpdated.isAfter(entityServer.dateUpdated)){
             entity = _parser.fromJson(jsonDecode(
               await _dataConnectionService.post(_apiPath, entityLocal)));
+              cacheSyncFlags[key] = true;
           } else {
             entity = entityServer;
           }
@@ -143,6 +147,7 @@ class CacheService<T extends Entity> extends Cache<T> {
                   _parser.fromJson(e as Map<String, dynamic>) as T)
               .toList()
               .cast<T>();
+      
       //TEMP IMPELMENTATION: If we have conflciting versions of the same entities, we will need to medaite that. For now, we'll just overwrite with the version most recently updated.
       List<String> ids = localEntities.map((e) => e.id).toList();
       ids.insertAll(0, remoteEntities.map((e) => e.id));
@@ -169,7 +174,7 @@ class CacheService<T extends Entity> extends Cache<T> {
                 .isAfter(remoteEntities[remoteIndex].dateUpdated)) {
               entities.add(_parser.fromJson(jsonDecode(
               await _dataConnectionService.post(_apiPath, localEntities[localIndex]))));
-
+              cacheSyncFlags[id] = true;
             } else {
               entities.add(remoteEntities[remoteIndex]);
             }

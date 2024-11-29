@@ -28,7 +28,7 @@ class MyAppState extends ChangeNotifier {
   DateTime pageDay = DateTime.now();
   late DateTime startDay = pageDay;
   late HashMap<String, String> units = HashMap<String, String>();
-  bool dataSyncing = true; //just a quick flag to ensure we only start the data sync once.
+  bool dataSyncing = false; //just a quick flag to ensure we only start the data sync once.
   bool localDataLoaded = false; //just a quick flag to ensure we only load Local Data Once.
   // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
