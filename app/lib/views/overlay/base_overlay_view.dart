@@ -1,14 +1,11 @@
 // View Imports:
-import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/resources/app_enums.dart';
 import 'package:build_stats_flutter/views/comments/comment_view.dart';
 import 'package:build_stats_flutter/views/overlay/new_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/new_worksite_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/old_cat_overlay_view.dart';
 import 'package:build_stats_flutter/views/overlay/overlay_interface.dart';
-import 'package:build_stats_flutter/views/state_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
 
 // A key failure of this BaseOverlay system is the

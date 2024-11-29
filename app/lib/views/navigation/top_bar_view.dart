@@ -32,7 +32,8 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
               ? 'Worksites'
               // : appState.currWorksite., 
               : 'Worksite 1', // TODO: Bug Kyle to add .name to worksite constructor
-            style: MyAppStyle.largeFont
+            style: MyAppStyle.largeFont,
+            // style: MyAppStyle.largeWhiteFont,
           ),
           automaticallyImplyLeading: false, // <--- Uncomment this to remove app bar back button
           // See: https://stackoverflow.com/questions/44978216/flutter-remove-back-button-on-appbar
@@ -45,11 +46,25 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Text(
                   'Start Date: ${appState.startDay.year}-${appState.startDay.month}-${appState.startDay.day}',
                   style: MyAppStyle.largeFont,
+                  // style: MyAppStyle.largeWhiteFont,
                 ),
               ),
             ]
             : null,
-          );
+          // NOTE: This look reminds me of old Windows app bar gradients
+          // flexibleSpace: Container(
+          //   decoration: const BoxDecoration(
+          //     gradient: LinearGradient(
+          //       begin: Alignment.topLeft,
+          //       end: Alignment.bottomRight,
+          //       colors: [
+          //         MyAppColours.g3,
+          //         MyAppColours.g5
+          //       ],
+          //     )
+          //   )
+          // ),
+        );
       },
     );
   }

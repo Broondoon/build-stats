@@ -7,6 +7,7 @@ import 'package:build_stats_flutter/model/storage/local_storage/to_CSV.dart';
 import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/views/checklist/button_row_view.dart';
 import 'package:build_stats_flutter/views/categories/cat_list_view.dart';
+import 'package:build_stats_flutter/views/checklist/my_checklist_page.dart';
 import 'package:build_stats_flutter/views/date/date_row_view.dart';
 
 // Model Imports:
@@ -290,7 +291,15 @@ class MyLandingPage extends StatelessWidget {
         children: [
           Container(
             decoration: const BoxDecoration(
-              color: MyAppColours.g5,
+              // color: MyAppColours.g5,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  MyAppColours.g3,
+                  MyAppColours.g5
+                ]
+              ),
             ),
           ),
           Center(
@@ -304,9 +313,23 @@ class MyLandingPage extends StatelessWidget {
                   height: 0.0,
                   width: 0.0,
                 ),
-                const Text(
-                  'SiteReady',
-                  style: MyAppStyle.titleFont,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'SiteReady',
+                      style: MyAppStyle.titleFont,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      child: Image.asset(
+                        'assets/images/site_ready_logo.png',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
                 ),
                 // SizedBox(
                 //   height: 0.0,
@@ -314,23 +337,42 @@ class MyLandingPage extends StatelessWidget {
                 // ),
                 Column(
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const MyWorksitesPage();
-                        }));
-                      },
-                      child: const Text('Office'),
+                    SizedBox(
+                      width: 120,
+                      height: 40,
+                      child: TextButton(
+                        style: MyAppStyle.titleButtonStyle,
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const MyWorksitesPage();
+                          }));
+                        },
+                        child: const Text(
+                          'Office',
+                          style: MyAppStyle.titleScreenSmallFont,
+                        ),
+                      ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const MyChecklistPage();
-                        }));
-                      },
-                      child: const Text('Worksite'),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    SizedBox(
+                      width: 120,
+                      height: 40,
+                      child: TextButton(
+                        style: MyAppStyle.titleButtonStyle,
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const MyChecklistPage();
+                          }));
+                        },
+                        child: const Text(
+                          'Worksite',
+                          style: MyAppStyle.titleScreenSmallFont,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -344,188 +386,5 @@ class MyLandingPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class MyChecklistPage extends StatefulWidget {
-  const MyChecklistPage({super.key});
-
-  @override
-  State<MyChecklistPage> createState() => _MyChecklistPageState();
-}
-
-class _MyChecklistPageState extends State<MyChecklistPage> {
-  // ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
-
-  // User currUser = User(
-  //       id: '${ID_UserPrefix}1',
-  //       companyId: '${ID_CompanyPrefix}1',
-  //       dateCreated: DateTime.now(),
-  //       dateUpdated: DateTime.now(),
-  // );
-
-  // Worksite? currWorksite;
-  // Checklist? currChecklist;
-  // ChecklistDay? currChecklistDay;
-  // List<List<String>>? currItemsByCat = [];
-  // DateTime pageDay = DateTime.now();
-  // late DateTime startDay = pageDay;
-  OverlayEntry? _overlayEntry;
-  late Future<void> serverFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    // _loadEverything();
-    serverFuture = Provider.of<MyAppState>(
-      context,
-      listen: false,
-    ).loadEverything();
-  }
-
-  // Future<void> _loadEverything() async {    
-  //   List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
-
-  //   if (userWorksites.isEmpty) {
-  //     currWorksite = await changeManager.createWorksite(currUser);
-  //   }
-  //   else {
-  //     // TODO: actually load the right one
-  //     // But for now, just load the first one
-  //     currWorksite = userWorksites.first;
-  //   }
-
-  //   List<String> checklistIds = currWorksite!.checklistIds ?? [];
-
-  //   if (checklistIds.isEmpty) {
-  //     currChecklist = await changeManager.createChecklist(currWorksite!);
-  //   }
-  //   else {
-  //     currChecklist = await changeManager.getChecklistById(checklistIds.first);
-  //   }
-
-  //   currChecklistDay = await changeManager.GetChecklistDayByDate(pageDay, currChecklist!);
-  // }
-
-  // setState(() {
-  // getItemsByCategory() gives ids
-  // getItemById() gives the item I want
-
-  // List<String> categories = currChecklistDay!.getCategories();
-  // currItemsByCat = [];
-
-  // categories.forEach((cat) {
-  //   print("CETORGY:");
-  //   print(cat);
-
-  //   List<String> catIds = currChecklistDay!.getItemsByCategory(cat);
-  //   currItemsByCat!.add(catIds);
-  // });
-  // });
-
-  // TODO: Untangle this mess so that we can actually refactor it into a view
-  void _showCommentOverlay(BuildContext context) {
-    // TODO: LOAD COMMENTS WHEN RAN
-    String comments = 'placeholder';
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => BaseOverlay.comment(
-        closefunct: () {}, // _removeOverlay, //TODO: This is bad
-        overlayRef: _overlayEntry!,
-        // choice: overlayChoice.comments,
-        comments: comments,
-        // pageday: pageDay,
-        // checklistDay: currChecklistDay,
-      ),
-    );
-
-    Overlay.of(context).insert(_overlayEntry!);
-
-    //// This piece of code closes the overlay once 2 seconds have passed!
-    // Future.delayed(const Duration(seconds: 2), () {
-    //   overlayEntry?.remove();
-    // });
-  }
-
-  Future<void> testFutureBuilderWithDelay() async {
-    await Future.delayed(const Duration(seconds: 5), () {
-      print('Delay done!');
-    });
-  }
-
-  // void _updatePageDay(DateTime newDay) {
-  //   setState(() {
-  //     pageDay = newDay;
-  //   });
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    // var appState = context.watch<MyAppState>();
-    // return Consumer<MyAppState>(
-    //   builder: (
-    //     context, 
-    //     appState, 
-    //     child,
-    //   ) {
-        return FutureBuilder<void>(
-          // future: testFutureBuilderWithDelay(),
-          // future: appState.loadEverything(),
-          future: serverFuture,
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Text('Waiting...')
-              );
-            } else if (snapshot.hasError) {
-              return Scaffold (
-                body: Text(
-                  'Error: ${snapshot.error}',  // Display the error
-                  style: const TextStyle(
-                    color: Colors.red
-                  ),
-                ),
-              );
-            } else if (snapshot.connectionState == ConnectionState.done) {
-              return Scaffold(
-                // backgroundColor: Colors.transparent,
-                appBar: const TopBar(
-                  whichAppBar: topBarChoice.checklist,
-                ),
-              
-                bottomNavigationBar: const NavBottomBar(),
-              
-                body: Column(
-                  children: [
-                    const DateRow(),
-              
-                    const CategoryList(
-                      // pageday: pageDay,
-                      // checklistDay: currChecklistDay!,
-                    ),
-              
-                    // CommentCard(),
-              
-                    ButtonRow(
-                      editFunct: () {},
-                      saveFunct: () {},
-                      commentFunct: () {
-                        _showCommentOverlay(context);
-                      },
-                    ),
-              
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return const Text('Nope, nada');
-            }
-          }
-        );
-    //   },
-    // );
   }
 }

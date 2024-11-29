@@ -2,6 +2,7 @@
 
 import 'package:build_stats_flutter/main.dart';
 import 'package:build_stats_flutter/resources/app_style.dart';
+import 'package:build_stats_flutter/views/checklist/my_checklist_page.dart';
 import 'package:flutter/material.dart';
 
 class WorksiteItem extends StatelessWidget {

@@ -9,8 +9,14 @@ class MyAppStyle {
   static const TextStyle largeFont =
       TextStyle(fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold);
 
+  static const TextStyle largeWhiteFont =
+      TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold);
+
   static const TextStyle titleFont =
-      TextStyle(fontSize: 48, color: Colors.black, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 48, color: Colors.white, fontWeight: FontWeight.bold);
+
+  static const TextStyle titleScreenSmallFont =
+      TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.normal);
 
   // Buttons
   static const stdButtomSize = 42.0;
@@ -33,6 +39,29 @@ class MyAppStyle {
         side: BorderSide(
           // color: MyAppColours.g1,
           width: 1,
+        ),
+      ),
+    ),
+  );
+
+  static ButtonStyle titleButtonStyle = const ButtonStyle(
+    // backgroundColor: WidgetStatePropertyAll<Color>(MyAppColours.g3),
+    // backgroundColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+    //   return states.contains(WidgetState.pressed) ? MyAppColours.g1 : MyAppColours.g6;
+    // }),
+
+    // foregroundColor: WidgetStatePropertyAll<Color>(MyAppColours.g6),
+
+    padding: WidgetStatePropertyAll<EdgeInsets>(
+      EdgeInsets.fromLTRB(4, 2, 4, 2),
+    ),
+
+    shape: WidgetStatePropertyAll<OutlinedBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        side: BorderSide(
+          color: Colors.white,
+          width: 2,
         ),
       ),
     ),
