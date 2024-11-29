@@ -205,10 +205,8 @@ class MyApp extends StatelessWidget {
     // Need to access the app state in the unit cache to potentially update units on data sync. 
     // so regestring it as a singleton to grab it when needed.
     // Brendan fix: We intentionally provoke an exception
-    try {
-      Injector.appInstance.get<MyAppState>();
-    } catch (e) {
-      Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState());
+    if(!Injector.appInstance.exists<MyAppState>(dependencyName: 'AppState')) {
+      Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState(), dependencyName: "AppState");
     }
     
     return ChangeNotifierProvider(
