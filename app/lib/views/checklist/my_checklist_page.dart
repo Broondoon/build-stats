@@ -21,6 +21,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   OverlayEntry? _overlayEntry;
   late Future<void> serverFuture;
 
+  late Function _exportWorksiteFunc;
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,10 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       context,
       listen: false,
     ).loadEverything();
+    _exportWorksiteFunc = Provider.of<MyAppState>(
+      context,
+      listen: false,
+    ).exportWorksite;
   }
 
   // TODO: Untangle this mess so that we can actually refactor it into a view
@@ -103,6 +109,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                   commentFunct: () {
                     _showCommentOverlay(context);
                   },
+                  exportFunct: _exportWorksiteFunc,
                 ),
           
                 const SizedBox(

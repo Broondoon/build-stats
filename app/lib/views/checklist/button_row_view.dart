@@ -9,11 +9,13 @@ class ButtonRow extends StatefulWidget {
     required this.editFunct,
     required this.saveFunct,
     required this.commentFunct,
+    required this.exportFunct,
   });
 
   final Function editFunct;
   final Function saveFunct;
   final VoidCallback commentFunct;
+  final Function exportFunct;
 
   @override
   State<ButtonRow> createState() => _ButtonRowState();
