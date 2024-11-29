@@ -20,7 +20,7 @@ class DataSyncTimerBase implements DataSyncTimerInterface{
   @override
   Timer dataSyncFunction(){
    return Timer.periodic(Duration(seconds: DataSyncTimerDurationSeconds), (timer) async {
-    User user = Injector.appInstance.get<MyAppState>().currUser;
+    User user = Injector.appInstance.get<MyAppState>(dependencyName: AppStateDependancyName).currUser;
     await Injector.appInstance.get<DataSync>().checkCacheSync(user);
   });
   }

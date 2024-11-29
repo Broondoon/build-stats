@@ -17,6 +17,7 @@ import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 
 // Resource Imports:
 import 'package:build_stats_flutter/views/state_controller.dart';
+import 'package:shared/app_strings.dart';
 
 // Custom Imports:
 import 'package:shared/cache.dart';
@@ -205,12 +206,12 @@ class MyApp extends StatelessWidget {
     // Need to access the app state in the unit cache to potentially update units on data sync. 
     // so regestring it as a singleton to grab it when needed.
     // Brendan fix: We intentionally provoke an exception
-    if(!Injector.appInstance.exists<MyAppState>(dependencyName: 'AppState')) {
-      Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState(), dependencyName: "AppState");
+    if(!Injector.appInstance.exists<MyAppState>(dependencyName: AppStateDependancyName)) {
+      Injector.appInstance.registerSingleton<MyAppState>(() => MyAppState(), dependencyName: AppStateDependancyName);
     }
     
     return ChangeNotifierProvider(
-      create: (context) => Injector.appInstance.get<MyAppState>(),//MyAppState(),
+      create: (context) => Injector.appInstance.get<MyAppState>(dependencyName: AppStateDependancyName),//MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'SiteReady',

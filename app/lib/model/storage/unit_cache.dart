@@ -55,7 +55,7 @@ class UnitCache extends CacheService<Unit> {
       List<Unit>? units = (await getAll((x) async => null));
       if (units != null) {
         //This is an absolute guess if it will work.
-        Injector.appInstance.get<MyAppState>().setUnits(units);
+        Injector.appInstance.get<MyAppState>(dependencyName: AppStateDependancyName).setUnits(units);
       }
       return true;
     }

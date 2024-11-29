@@ -70,3 +70,6 @@ String Default_FallbackDate = "1969-07-20";
 
 //Datasync Timer length
 int DataSyncTimerDurationSeconds = 2;
+
+//appstate dependancy named
+String AppStateDependancyName = "appState";
