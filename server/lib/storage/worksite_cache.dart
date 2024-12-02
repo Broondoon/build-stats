@@ -13,14 +13,5 @@ class WorksiteCache extends CacheService<Worksite> {
   final ReadWriteMutex _m;
 
   WorksiteCache(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m) {
-    Worksite test = Worksite(
-        id: ID_WorksitePrefix + "1",
-        companyId: ID_CompanyPrefix + "1",
-        ownerId: ID_UserPrefix + "1",
-        dateCreated: DateTime.now(),
-        dateUpdated: DateTime.now());
-    test.checklistIds = [ID_ChecklistPrefix + "1"];
-    testDeepCache[test.id] = jsonEncode(test.toJson());
-  }
+      : super(_parser, _cacheLocalStorage, _m, ID_WorksitePrefix);
 }

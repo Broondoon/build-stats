@@ -1,0 +1,47 @@
+# Use the Flutter base image
+FROM cirrusci/flutter:latest
+
+# Install dependencies and upgrade Dart SDK
+RUN apt-get update && \
+    apt-get install -y wget unzip && \
+    rm -rf /usr/lib/dart && \
+    wget https://storage.googleapis.com/dart-archive/channels/stable/release/3.5.3/sdk/dartsdk-linux-x64-release.zip && \
+    unzip dartsdk-linux-x64-release.zip -d /usr/lib/dart && \
+    rm dartsdk-linux-x64-release.zip && \
+    ln -sf /usr/lib/dart/dart-sdk/bin/* /usr/local/bin/ && \
+    rm -rf /sdks/flutter/bin/cache/dart-sdk && \
+    ln -s /usr/lib/dart/dart-sdk /sdks/flutter/bin/cache/dart-sdk
+
+# Create a non-root user
+RUN useradd -ms /bin/bash flutteruser
+
+# Set permissions for Flutter SDK and required directories
+RUN mkdir -p /app /shared && \
+    chown -R flutteruser:flutteruser /app /shared /sdks/flutter && \
+    git config --global --add safe.directory /sdks/flutter
+
+# Switch to the non-root user
+USER flutteruser
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy the app and shared directories
+COPY ./app /app
+COPY ./shared /shared
+
+# Pre-download Flutter dependencies and run doctor
+RUN flutter precache --web --no-version-check
+RUN flutter doctor --no-version-check
+
+# Install Flutter dependencies
+COPY ./app/pubspec.* /app/
+RUN flutter pub get
+# Build the Flutter app (assuming it's a web app)
+RUN flutter build web
+
+# Expose the port used by the Flutter web server
+EXPOSE 8080
+
+# Command to run the Flutter app
+CMD ["flutter", "run", "-d", "web-server", "--web-port=8080"]

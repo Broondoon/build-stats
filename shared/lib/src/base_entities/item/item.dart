@@ -3,17 +3,19 @@ import 'package:shared/src/base_entities/entity/entity.dart';
 
 class BaseItem extends Entity {
   late String checklistDayId;
-  late String? unit;
+  late String? unitId;
   late String? desc;
   late String? result;
   late String? comment;
   late String? creatorId;
   late bool? verified;
+  String? prevId;
 
   BaseItem({
     required super.id,
+    super.name,
     required this.checklistDayId,
-    this.unit,
+    this.unitId,
     this.desc,
     this.result,
     this.comment,
@@ -22,90 +24,71 @@ class BaseItem extends Entity {
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
+    this.prevId,
   });
 
-  BaseItem.fromBaseItem({required BaseItem item})
-      : super(
-          id: item.id,
-          dateCreated: item.dateCreated,
-          dateUpdated: item.dateUpdated,
-          flagForDeletion: item.flagForDeletion,
-        ) {
-    checklistDayId = item.checklistDayId;
-    unit = item.unit;
-    desc = item.desc;
-    result = item.result;
-    comment = item.comment;
-    creatorId = item.creatorId;
-    verified = item.verified;
-  }
+  BaseItem.fromBaseItem({required BaseItem item}) : this.fromEntity(entity: item, checklistDayId: item. checklistDayId, unitId: item.unitId, desc: item.desc, result: item.result, comment: item.comment, creatorId: item.creatorId, verified: item.verified, prevId: item.prevId);
+
+  BaseItem.fromEntity({required super.entity, required this.checklistDayId, this.unitId, this.desc, this.result, this.comment, this.creatorId, this.verified, this.prevId})
+      : super.fromEntity();
 
   @override
   toJson() {
-    return {
-      'id': id,
-      'checklistDayId': checklistDayId,
-      'unit': unit,
-      'desc': desc,
-      'result': result,
-      'comment': comment,
-      'creatorId': creatorId,
-      'verified': verified,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
-      'flagForDeletion': flagForDeletion,
-    };
+        Map<String, dynamic> map = super.toJson();
+    map['checklistDayId'] = checklistDayId;
+    map['unitId'] = unitId;
+    map['desc'] = desc;
+    map['result'] = result;
+    map['comment'] = comment;
+    map['creatorId'] = creatorId;
+    map['verified'] = verified?.toString() ?? "";
+    map['prevId'] = prevId ?? "";
+    map['flagForDeletion'] = flagForDeletion.toString();
+    return map;
   }
 
   @override
   toJsonTransfer() {
-    return {
-      'id': id,
-      'checklistDayId': checklistDayId,
-      'unit': unit,
-      'desc': desc,
-      'result': result,
-      'comment': comment,
-      'creatorId': creatorId,
-      'verified': verified,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
-    };
+        Map<String, dynamic> map = super.toJsonTransfer();
+    map['checklistDayId'] = checklistDayId;
+    map['unitId'] = unitId;
+    map['desc'] = desc;
+    map['result'] = result;
+    map['comment'] = comment;
+    map['creatorId'] = creatorId;
+    map['verified'] = verified?.toString() ?? "";
+    map['prevId'] = prevId ?? "";
+    return map;
   }
 
   @override
   joinData() {
-    return [
-      id,
+    return super.joinData() + '|' + ([
       checklistDayId,
-      unit ?? '',
+      unitId ?? '',
       desc ?? '',
       result ?? '',
       comment ?? '',
       creatorId?.toString() ?? '',
       verified?.toString() ?? '',
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
-    ].join('|');
+      prevId ?? '',
+    ].join('|'));
   }
 }
 
 class BaseItemFactory<T extends BaseItem> extends EntityFactory<T> {
   @override
   BaseItem fromJson(Map<String, dynamic> json) {
-    return BaseItem(
-        id: json['id'],
+    return BaseItem.fromEntity(
+        entity: super.fromJson(json),
         checklistDayId: json['checklistDayId'],
-        unit: json['unit'],
+        unitId: json['unitId'],
         desc: json['desc'],
         result: json['result'],
         comment: json['comment'],
         creatorId: json['creatorId'],
-        verified: json['verified'],
-        dateCreated:
-            DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
-        dateUpdated:
-            DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-        flagForDeletion: json['flagForDeletion'] ?? false);
+        verified: json['verified'] == "true",
+        prevId: json['prevId'],
+    );
   }
 }

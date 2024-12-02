@@ -14,8 +14,8 @@ class ChecklistDayCache extends CacheService<ChecklistDay> {
       ChecklistDayFactory parser,
       LocalStorage localStorage,
       ReadWriteMutex m)
-      : super(dataConnectionService, fileIOService, parser, API_WorksitePath,
-            Dir_ChecklistDayFileString, localStorage, m);
+      : super(dataConnectionService, fileIOService, parser, API_ChecklistDayPath,
+            Dir_ChecklistDayFileString, localStorage, m, ID_ChecklistDayPrefix);
 
   Future<List<ChecklistDay>?> getChecklistDaysForChecklist(
           Checklist checklist) async =>
@@ -34,7 +34,7 @@ class ChecklistCache extends CacheService<Checklist> {
       LocalStorage localStorage,
       ReadWriteMutex m)
       : super(dataConnectionService, fileIOService, parser, API_ChecklistPath,
-            Dir_ChecklistFileString, localStorage, m);
+            Dir_ChecklistFileString, localStorage, m, ID_ChecklistPrefix);
 
   Future<List<Checklist>?> getChecklistForWorksite(Worksite worksite) async =>
       await get(

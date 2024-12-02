@@ -26,4 +26,9 @@ Once everything is set, just open the project in VS Code or any editor, navigate
 All rights reserved. This code may not be copied, modified, or distributed without permission.
 
 Server files altered from https://github.com/dart-lang/samples/tree/main/server/simple by Dart DevRel
+See lisence in Server/Documentation_From_Server_Source/License.txt.
 
+**AI Usage**
+Chat GPT was used to generate test cases and mock files for shared, server, and app, though hand altered to actually work properly and test all resources.
+Chat GPT used extensively to help debug and advise, too many instances to really track. However, it was not really used to generate actual implemented production level code, besides as an advisor and idea/algorithm assistant. 
+Copilot used throughout as part of just general programming (I.E quick fill and auto fill, but not really text exchange.)

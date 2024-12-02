@@ -6,64 +6,47 @@ class BaseUser extends Entity {
 
   BaseUser({
     required super.id,
+    super.name,
     required this.companyId,
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
   });
 
-  BaseUser.fromBaseUser({required BaseUser user})
-      : super(
-            id: user.id,
-            dateCreated: user.dateCreated,
-            dateUpdated: user.dateUpdated,
-            flagForDeletion: user.flagForDeletion) {
-    companyId = user.companyId;
-  }
+  BaseUser.fromBaseUser({required BaseUser user}) : this.fromEntity(entity: user, companyId: user.companyId);
+
+  BaseUser.fromEntity({required super.entity, required this.companyId})
+      : super.fromEntity();
 
   @override
   toJson() {
-    return {
-      'id': id,
-      'companyId': companyId,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
-      'flagForDeletion': flagForDeletion,
-    };
+        Map<String, dynamic> map = super.toJson();
+    map['companyId'] = companyId;
+    return map;
   }
 
   @override
   toJsonTransfer() {
-    return {
-      'id': id,
-      'companyId': companyId,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
-    };
+        Map<String, dynamic> map = super.toJsonTransfer();
+    map['companyId'] = companyId;
+    return map;
   }
 
   @override
   joinData() {
-    return [
-      id,
+    return super.joinData() + '|' + ([
       companyId,
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
-    ].join('|');
+    ].join('|'));
   }
 }
 
 class BaseUserFactory<T extends BaseUser> extends EntityFactory<T> {
   @override
   BaseUser fromJson(Map<String, dynamic> json) {
-    BaseUser user = BaseUser(
-      id: json['id'],
+    BaseUser user = BaseUser.fromEntity(
+      entity: super.fromJson(json),
       companyId: json['companyId'],
-      dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
-      dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] ?? false,
     );
-
     return user;
   }
 }

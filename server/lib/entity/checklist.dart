@@ -4,8 +4,8 @@ import 'package:shared/app_strings.dart';
 class Checklist extends BaseChecklist {
   Checklist({
     required super.id,
-    required super.worksiteId,
     super.name,
+    required super.worksiteId,
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
@@ -27,6 +27,7 @@ class ChecklistFactory extends BaseChecklistFactory<Checklist> {
 class ChecklistDay extends BaseChecklistDay {
   ChecklistDay({
     required super.id,
+    super.name,
     required super.checklistId,
     required super.date,
     super.comment,

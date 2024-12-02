@@ -5,8 +5,8 @@ import 'package:shared/app_strings.dart';
 class Checklist extends BaseChecklist {
   Checklist({
     required super.id,
-    required super.worksiteId,
     super.name,
+    required super.worksiteId,
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
@@ -16,26 +16,14 @@ class Checklist extends BaseChecklist {
       : super.fromBaseChecklist();
 
   (bool, String?) getChecklistDayID(DateTime date) {
-    String dateKey = '${date.year}-${date.month}-${date.day}';
+    String dateKey =
+        '${date.toUtc().year}-${date.toUtc().month.toString().padLeft(2, '0')}-${date.toUtc().day.toString().padLeft(2, '0')}';
     if (checklistIdsByDate.isEmpty) {
       return (false, ID_DefaultBlankChecklistDayID);
     } else if (checklistIdsByDate.containsKey(dateKey)) {
       return (true, checklistIdsByDate[dateKey]);
     } else {
-      List<String> keys = checklistIdsByDate.keys.toList();
-      keys.sort();
-      for (String key in keys.reversed) {
-        if (DateTime.parse(key).isBefore(DateTime.parse(dateKey))) {
-          return (
-            checklistIdsByDate[key] == ID_DefaultBlankChecklistDayID,
-            checklistIdsByDate[key]
-          );
-        }
-      }
-      return (
-        checklistIdsByDate[keys.last] == ID_DefaultBlankChecklistDayID,
-        checklistIdsByDate[keys.last]
-      );
+      return (false, ID_DefaultBlankChecklistDayID);
     }
   }
 }
@@ -52,6 +40,7 @@ class ChecklistFactory extends BaseChecklistFactory<Checklist> {
 class ChecklistDay extends BaseChecklistDay {
   ChecklistDay({
     required super.id,
+    super.name,
     required super.checklistId,
     required super.date,
     super.comment,

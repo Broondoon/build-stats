@@ -12,18 +12,5 @@ class ItemCache extends CacheService<Item> {
   final LocalStorage _cacheLocalStorage;
   final ReadWriteMutex _m;
   ItemCache(this._parser, this._cacheLocalStorage, this._m)
-      : super(_parser, _cacheLocalStorage, _m) {
-    Item test = Item(
-        id: ID_ItemPrefix + "1",
-        checklistDayId: ID_ChecklistDayPrefix + "1",
-        unit: "test unit",
-        desc: "test desc",
-        result: "test result",
-        comment: 'test',
-        creatorId: ID_UserPrefix + "1",
-        verified: true,
-        dateCreated: DateTime.now(),
-        dateUpdated: DateTime.now());
-    testDeepCache[test.id] = jsonEncode(test.toJson());
-  }
+      : super(_parser, _cacheLocalStorage, _m, ID_ItemPrefix);
 }

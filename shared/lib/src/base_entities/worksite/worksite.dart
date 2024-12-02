@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:shared/app_strings.dart';
@@ -10,6 +11,7 @@ class BaseWorksite extends Entity {
 
   BaseWorksite({
     required super.id,
+    super.name,
     this.ownerId,
     this.companyId,
     this.checklistIds,
@@ -20,72 +22,51 @@ class BaseWorksite extends Entity {
     checklistIds ??= <String>[];
   }
 
-  BaseWorksite.fromBaseWorksite({required BaseWorksite worksite})
-      : super(
-          id: worksite.id,
-          dateCreated: worksite.dateCreated,
-          dateUpdated: worksite.dateUpdated,
-          flagForDeletion: worksite.flagForDeletion,
-        ) {
-    ownerId = worksite.ownerId;
-    companyId = worksite.companyId;
-    checklistIds = worksite.checklistIds;
-  }
+
+  BaseWorksite.fromEntity({required super.entity, this.ownerId, this.companyId, this.checklistIds})
+      : super.fromEntity();
+  
+  BaseWorksite.fromBaseWorksite({required BaseWorksite worksite}) : this.fromEntity(entity: worksite, ownerId: worksite.ownerId, companyId: worksite.companyId, checklistIds: worksite.checklistIds);
 
   @override
   toJson() {
-    return {
-      'id': id,
-      'ownerId': ownerId,
-      'companyId': companyId,
-      'checklistIds': checklistIds,
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
-      'flagForDeletion': flagForDeletion,
-    };
+    Map<String, dynamic> map = super.toJson();
+    map['ownerId'] = ownerId;
+    map['companyId'] = companyId;
+    map['checklistIds'] = checklistIds;
+    return map;
   }
 
   @override
   toJsonTransfer() {
-    return {
-      'id': id,
-      'ownerId': ownerId,
-      'companyId': companyId,
-      'checklistIds':
-          checklistIds?.where((x) => !x.startsWith(ID_TempIDPrefix)).toList(),
-      'dateCreated': dateCreated.toIso8601String(),
-      'dateUpdated': dateUpdated.toIso8601String(),
-    };
+    Map<String, dynamic> map = super.toJsonTransfer();
+    map['ownerId'] = ownerId;
+    map['companyId'] = companyId;
+    map['checklistIds'] = checklistIds?.where((x) => !x.startsWith(ID_TempIDPrefix)).toList();
+    return map;
   }
 
   @override
   joinData() {
-    return [
-      id,
+    return super.joinData() + '|' + ([
       ownerId ?? '',
       companyId ?? '',
       checklistIds
               ?.where((element) => !element.startsWith(ID_TempIDPrefix))
               .join(',') ??
           '',
-      dateCreated.toIso8601String(),
-      dateUpdated.toIso8601String(),
-    ].join('|');
+    ].join('|'));
   }
 }
 
 class BaseWorksiteFactory<T extends BaseWorksite> extends EntityFactory<T> {
   @override
   BaseWorksite fromJson(Map<String, dynamic> json) {
-    BaseWorksite worksite = BaseWorksite(
-      id: json['id'],
+    BaseWorksite worksite = BaseWorksite.fromEntity(
+      entity: super.fromJson(json),
       ownerId: json['ownerId'],
       companyId: json['companyId'],
-      checklistIds: List<String>.from(json['checklistIds'] ?? <String>[]),
-      dateCreated: DateTime.parse(json['dateCreated'] ?? Default_FallbackDate),
-      dateUpdated: DateTime.parse(json['dateUpdated'] ?? Default_FallbackDate),
-      flagForDeletion: json['flagForDeletion'] ?? false,
-    );
+      checklistIds: List<String>.from(json['checklistIds'] ?? <String>[]));
     return worksite;
   }
 }

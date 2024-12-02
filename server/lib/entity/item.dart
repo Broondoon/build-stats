@@ -3,8 +3,9 @@ import 'package:shared/item.dart';
 class Item extends BaseItem {
   Item({
     required super.id,
+    super.name,
     required super.checklistDayId,
-    super.unit,
+    super.unitId,
     super.desc,
     super.result,
     super.comment,
@@ -13,6 +14,7 @@ class Item extends BaseItem {
     required super.dateCreated,
     required super.dateUpdated,
     super.flagForDeletion = false,
+    super.prevId,
   });
 
   Item.fromBaseItem({required super.item}) : super.fromBaseItem();

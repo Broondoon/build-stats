@@ -1,25 +1,27 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
+import 'dart:math';
 import 'package:meta/meta.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shared/app_strings.dart';
-import 'package:shared/src/base_entities/entity/entity.dart';
+import 'package:shared/entity.dart';
 import 'package:shared/src/base_services/cache/cache_interface.dart';
 import 'package:shared/src/base_services/cache/localStorage.dart';
 
 class Cache<T extends Entity> implements CacheInterface<T> {
-  final EntityFactory<T> _parser;
+  final EntityFactoryInterface<T> _parser;
   final HashMap<String, String> cacheCheckSums = HashMap<String, String>();
   final HashMap<String, bool> cacheSyncFlags = HashMap<String, bool>();
   final ReadWriteMutex _m;
+  final String _idPrefix;
   final LocalStorage _cacheLocalStorage;
 
-  Cache(this._parser, this._cacheLocalStorage, this._m);
+  Cache(this._parser, this._cacheLocalStorage, this._m, this._idPrefix);
 
   @override
-  Future<List<T>?> get(
-      List<String> keys, Function(List<String>?) onCacheMiss) async {
+  Future<List<T>?> get(List<String> keys,
+      Future<List<String>?> Function(List<String>?) onCacheMiss) async {
     List<String> entitiesJson = [];
     List<String> missingKeys = [];
     (entitiesJson, missingKeys) = await _m.protectRead(() async {
@@ -27,8 +29,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
       List<String> missingKeysFound = [];
       for (String key in keys) {
         String? entityJson;
-        //TODO: Get Sync working in the background. Dirty work around to ignore the cache otherwise.
-        if ((key.startsWith(ID_TempIDPrefix)) &&
+        if ((key.startsWith(ID_TempIDPrefix)) ||
             (cacheSyncFlags[key] ?? false)) {
           entityJson = await _cacheLocalStorage.getItem(key);
         }
@@ -47,24 +48,36 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         .cast<T>();
 
     if (missingKeys.isNotEmpty) {
-      List<T>? missingEntities = await onCacheMiss(missingKeys);
+      List<T>? missingEntities = (await onCacheMiss(missingKeys))
+          ?.map((x) => _parser.fromJson(jsonDecode(x)))
+          .cast<T>()
+          .toList();
       if (missingEntities != null) {
         entities.addAll(await storeBulk(missingEntities));
       }
     }
+
     return entities;
   }
 
   @override
-  Future<List<T>?> getAll(Function(List<String>?) onCacheMiss) async {
-    return await get(_cacheLocalStorage.keys.toList(), onCacheMiss);
+  Future<List<T>?> getAll(
+      Future<List<String>?> Function(List<String>?) onCacheMiss) async {
+    return await get(
+        _cacheLocalStorage.keys
+            .where((x) =>
+                x.startsWith(_idPrefix) ||
+                x.startsWith(ID_TempIDPrefix + _idPrefix))
+            .toList(),
+        onCacheMiss);
   }
 
   @override
   Future<List<T>> storeBulk(List<T> entities) async {
     return await _m.protectWrite(() async {
       List<T> storedEntities = [];
-      for (T entity in entities) {
+      print(entities);
+      for (T entity in List.from(entities)) {
         T storedEntity = await storeUnprotected(entity.id, entity);
         storedEntities.add(storedEntity);
       }
@@ -90,6 +103,7 @@ class Cache<T extends Entity> implements CacheInterface<T> {
         cacheCheckSums[key] = value.getChecksum();
       }
       cacheSyncFlags[key] = true;
+      value.dateUpdated = DateTime.now().toUtc();
       await _cacheLocalStorage.setItem(key, jsonEncode(value.toJson()));
       return value;
     } else {
@@ -115,21 +129,6 @@ class Cache<T extends Entity> implements CacheInterface<T> {
     } else {
       throw Exception("Store must be called within a write lock");
     }
-  }
-
-  @override
-  Future<void> setCacheSyncFlags(
-      HashMap<String, String> serverCheckSums) async {
-    return await _m.protectWrite(() async {
-      serverCheckSums.forEach((key, value) async {
-        if (cacheCheckSums[key] != value) {
-          cacheSyncFlags[key] = false;
-        } else if (serverCheckSums[key] == EntityState.deleted.toString()) {
-          await deleteUnprotected(key);
-          cacheCheckSums.remove(key);
-        }
-      });
-    });
   }
 
   @override

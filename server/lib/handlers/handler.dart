@@ -15,7 +15,7 @@ abstract class HandlerInterface<T extends Entity> {
 
 class RequestHandler<T extends Entity> implements HandlerInterface<T> {
   final CacheService<T> _cache;
-  final EntityFactory<T> _parser;
+  final EntityFactoryInterface<T> _parser;
 
   RequestHandler(this._cache, this._parser);
 
@@ -29,8 +29,10 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
       T? entity = await _cache.getById(id);
       dynamic test = entity?.toJsonTransfer();
       print(test);
-      return Response.ok(entity?.toJsonTransfer(), headers: {...jsonHeaders});
+      return Response.ok(jsonEncode(entity?.toJsonTransfer()),
+          headers: {...jsonHeaders});
     } catch (e) {
+      print(e);
       return Response.internalServerError(body: e.toString());
     }
   }
@@ -46,6 +48,7 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
         headers: {...jsonHeaders},
       );
     } catch (e) {
+      print(e);
       return Response.internalServerError(body: e.toString());
     }
   }
@@ -56,10 +59,11 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
       T entity = _parser.fromJson(jsonDecode((await request.readAsString())));
       T? entityResponse = await _cache.store(entity.id, entity);
       return Response.ok(
-        entityResponse.toJsonTransfer(),
+        jsonEncode(entityResponse.toJsonTransfer()),
         headers: {...jsonHeaders},
       );
     } catch (e) {
+      print(e);
       return Response.internalServerError(body: e.toString());
     }
   }
@@ -78,6 +82,7 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
         headers: {...jsonHeaders},
       );
     } catch (e) {
+      print(e);
       return Response.internalServerError(body: e.toString());
     }
   }

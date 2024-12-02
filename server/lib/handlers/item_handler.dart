@@ -17,17 +17,18 @@ class ItemHandler extends RequestHandler<Item> {
   Future<Response> handleGetItemsOnChecklistDay(
       Request request, String checklistDayId) async {
     try {
-      List<Item>? items = (await _itemCache.getAll((x) async =>
-              await _itemCache.LoadBulk(
-                  (Item x) => x.checklistDayId == checklistDayId)))
+      List<Item>? items = (await _itemCache.getAll((x) async => null
+              //(x) async => await _itemCache.LoadBulk((Item x) => x.checklistDayId == checklistDayId)
+              ))
           ?.where((x) => x.checklistDayId == checklistDayId)
           .toList();
-      if (items == null) {
+      if (items == null || items.isEmpty) {
         return Response.notFound("No items found");
       } else {
-        return Response.ok(jsonEncode(items), headers: {...jsonHeaders});
+        return Response.ok(
+            jsonEncode(items.map((x) => x.toJsonTransfer()).toList()),
+            headers: {...jsonHeaders});
       }
-      return Response.ok(items, headers: {...jsonHeaders});
     } catch (e) {
       return Response.internalServerError(body: e.toString());
     }
@@ -38,22 +39,25 @@ class ItemHandler extends RequestHandler<Item> {
     try {
       ChecklistDayCache _checklistCache =
           Injector.appInstance.get<ChecklistDayCache>();
-      List<String>? checklistDayIds = (await _checklistCache.getAll((x) async =>
-              await _checklistCache.LoadBulk(
-                  (ChecklistDay x) => x.checklistId == checklistId)))
+      List<String>? checklistDayIds = (await _checklistCache.getAll(
+              (x) async => null
+              //(x) async => await _checklistCache.LoadBulk((ChecklistDay x) => x.checklistId == checklistId)
+              ))
           ?.where((x) => x.checklistId == checklistId)
           .map((x) => x.id)
           .toList();
 
-      List<Item>? items = (await _itemCache.getAll((x) async =>
-              await _itemCache.LoadBulk((Item x) =>
-                  checklistDayIds?.contains(x.checklistDayId) ?? false)))
+      List<Item>? items = (await _itemCache.getAll((x) async => null
+              //(x) async => await _itemCache.LoadBulk((Item x) => checklistDayIds?.contains(x.checklistDayId) ?? false)
+              ))
           ?.where((x) => checklistDayIds?.contains(x.checklistDayId) ?? false)
           .toList();
-      if (items == null) {
+      if (items == null || items.isEmpty) {
         return Response.notFound("No items found");
       } else {
-        return Response.ok(jsonEncode(items), headers: {...jsonHeaders});
+        return Response.ok(
+            jsonEncode(items.map((x) => x.toJsonTransfer()).toList()),
+            headers: {...jsonHeaders});
       }
     } catch (e) {
       return Response.internalServerError(body: e.toString());
