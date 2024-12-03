@@ -1,5 +1,7 @@
 import 'dart:convert';
-import 'dart:ffi';
+// BRENDAN NOTE: Kyle this isn't available in the current version of flutter?
+// It broke the web build so I'm turning it off (it's an unused import anyways?)
+// import 'dart:ffi';
 
 import 'package:build_stats_flutter/model/Domain/Service/data_connection_service.dart';
 import 'package:build_stats_flutter/model/Domain/change_manager.dart';

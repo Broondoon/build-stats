@@ -120,6 +120,19 @@ Future<void> main() async {
     'ea',
     'lf',
     'sf',
+    'used',
+    'bags',
+    'boxes',
+    'pallets',
+    'panels',
+    'pieces',
+    'rolls',
+    'sheets',
+    'units',
+    'hours',
+    'other',
+  ];
+
     // 'm',
     // 'm2',
     // 'm3',
@@ -143,8 +156,6 @@ Future<void> main() async {
     // 'mi',
     // 'men',
     // 'days',
-    '',
-    'used',
     // 'L',
     // 'gal',
     // 'kg',
@@ -152,16 +163,7 @@ Future<void> main() async {
     // 'lb',
     // 'oz',
     // 'g',
-    'bags',
-    'boxes',
-    'pallets',
-    'panels',
-    'pieces',
-    'rolls',
-    'sheets',
-    'units',
-    'other'
-  ];
+
   for (String unitName in unitNames) {
     Unit unit = Unit(
         id: ID_UnitPrefix + unitName,
@@ -198,8 +200,8 @@ Future<void> main() async {
   Item itemTest = Item(
       id: ID_ItemPrefix + "1",
       checklistDayId: ID_ChecklistDayPrefix + "1",
-      unitId: ID_UnitPrefix + "units",
-      desc: "Wall Panels (avg 14/day)",
+      unitId: ID_UnitPrefix + "hours",
+      desc: "Foreman Frank's Hours",
       result: '',
       comment: 'test',
       creatorId: ID_UserPrefix + "1",
@@ -208,6 +210,34 @@ Future<void> main() async {
       dateUpdated: DateTime.now().toUtc());
 
   checklistDayTest.addItemId('Labour', itemTest.id);
+
+  Item itemTest6 = Item(
+      id: ID_ItemPrefix + "6",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unitId: ID_UnitPrefix + "hours",
+      desc: "Leadhand Dan's Hours",
+      result: '',
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Labour', itemTest6.id);
+
+  Item itemTest7 = Item(
+      id: ID_ItemPrefix + "7",
+      checklistDayId: ID_ChecklistDayPrefix + "1",
+      unitId: ID_UnitPrefix + "hours",
+      desc: "Manual Labour Paul's Hours",
+      result: '',
+      comment: 'test',
+      creatorId: ID_UserPrefix + "1",
+      verified: true,
+      dateCreated: DateTime.now().toUtc(),
+      dateUpdated: DateTime.now().toUtc());
+
+  checklistDayTest.addItemId('Labour', itemTest7.id);
 
   Item itemTest2 = Item(
       id: ID_ItemPrefix + "2",
@@ -278,6 +308,8 @@ Future<void> main() async {
   injector.get<ItemCache>().store(itemTest3.id, itemTest3);
   injector.get<ItemCache>().store(itemTest4.id, itemTest4);
   injector.get<ItemCache>().store(itemTest5.id, itemTest5);
+  injector.get<ItemCache>().store(itemTest6.id, itemTest7);
+  injector.get<ItemCache>().store(itemTest7.id, itemTest6);
 
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
