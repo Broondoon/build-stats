@@ -42,8 +42,8 @@ class DataSync {
             (await _checklistDayCache.getCacheCheckStates()).keys.toList(),
         API_DataObject_ItemStateList:
             (await _itemCache.getCacheCheckStates()).keys.toList(),
-        API_DataObject_UnitStateList:
-            (await _unitCache.getCacheCheckStates()).keys.toList(),
+       // API_DataObject_UnitStateList:
+           // (await _unitCache.getCacheCheckStates()).keys.toList(),
       };
 
       //send our cache states to the server
@@ -64,8 +64,8 @@ class DataSync {
             HashMap<String,String>.from(serverResponseJson[API_DataObject_ChecklistDayStateList]));
           await _itemCache.setCacheSyncFlags(
             HashMap<String,String>.from(serverResponseJson[API_DataObject_ItemStateList]));
-          await _unitCache.setCacheSyncFlags(
-            HashMap<String,String>.from(serverResponseJson[API_DataObject_UnitStateList]));
+          //await _unitCache.setCacheSyncFlags(
+          //  HashMap<String,String>.from(serverResponseJson[API_DataObject_UnitStateList]));
         } else {
           throw HttpException(response.statusCode, response.body);
         }
