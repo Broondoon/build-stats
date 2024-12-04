@@ -101,7 +101,7 @@ class _ButtonRowState extends State<ButtonRow> {
           height: 40,
           child: TextButton(
             style: MyAppStyle.buttonStyle,
-            onPressed: () {},
+            onPressed: () => widget.exportFunct(),
             child: const Text(
               'Export',
               style: MyAppStyle.regularFont,
