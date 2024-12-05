@@ -1,4 +1,6 @@
+
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:build_stats_flutter/model/entity/checklist.dart';
 import 'package:build_stats_flutter/model/entity/item.dart';
@@ -7,13 +9,15 @@ import 'package:build_stats_flutter/model/storage/checklist_cache.dart';
 import 'package:build_stats_flutter/model/storage/item_cache.dart';
 import 'package:build_stats_flutter/model/storage/unit_cache.dart';
 import 'package:build_stats_flutter/model/storage/worksite_cache.dart';
-import 'package:to_csv/to_csv.dart' as exportCSV;
+import 'package:csv/csv.dart';
 import 'package:injector/injector.dart';
+import 'package:external_path/external_path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ToCSV {
   // ignore: non_constant_identifier_names
-  static WorksiteToCSV(User user, String worksiteId) async {
-    List<String> headers = [
+      static WorksiteToCSV(User user, String worksiteId) async {
+List<String> headers = [
       'ChecklistName',
       'Date',
       'Catagory',
@@ -25,6 +29,7 @@ class ToCSV {
       'ChecklistDayComment'
     ];
     List<List<String>> data = [];
+    data.add(headers);
 
     final injector = Injector.appInstance;
     final worksite = await injector.get<WorksiteCache>().getById(worksiteId);
@@ -65,7 +70,7 @@ class ToCSV {
             }
             return (units[a.unitId ?? ''] ?? '').compareTo(units[b.unitId ?? ''] ?? '');
           });
-          for (var item in items[catagory]!) {
+          for (var item in itemsList) {
             data.add([
               checklist.name,
               checklistDay.date.toIso8601String(),
@@ -82,13 +87,28 @@ class ToCSV {
       }
     }
 
-    await exportCSV.myCSV(
-      headers,
-      data,
-      setHeadersInFirstRow: true,
-      fileName:
-          '${worksite.name.isEmpty ? worksite.id : worksite.name}_Full_Export_${DateTime.now().toIso8601String().replaceAll(RegExp(r'[.\:-]'), "_")}.csv',
-      removeDuplicates: true,
-    );
-  }
+    // List<dynamic> Test = await exportCSV.myCSV(
+    //   headers,
+    //   data,
+    //   setHeadersInFirstRow: true,
+    //   fileName:
+    //       '${worksite.name.isEmpty ? worksite.id : worksite.name}_Full_Export_${DateTime.now().toIso8601String().replaceAll(RegExp(r'[.\:-]'), "_")}',
+    //   removeDuplicates: true,
+    // );
+    String dir;
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      dir = (await getDownloadsDirectory())!.path;
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      dir =  await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+    } else {
+      dir = (await getApplicationDocumentsDirectory()).path;
+    }
+
+    String csv = const ListToCsvConverter().convert(data);
+    String filePath = "$dir/${worksite.name.isEmpty ? worksite.id : worksite.name}_Full_Export_${DateTime.now().toIso8601String().replaceAll(RegExp(r'[.\:-]'), "_")}.csv";
+    File file = File(filePath);
+    await file.writeAsString(csv);
+      }
+
+  
 }
