@@ -97,6 +97,7 @@ class ChangeManager {
   Future<Worksite> updateWorksite(Worksite worksite) async {
     if (worksite.id.startsWith(ID_TempIDPrefix)) {
       try {
+        worksite.dateUpdated = DateTime.now().toUtc();
         Worksite updatedWorksite = _worksiteFactory.fromJson(jsonDecode(
             await _worksiteDataConnectionService.post(
                 API_WorksitePath, worksite)));
@@ -220,6 +221,7 @@ class ChangeManager {
       }
       try {
         //update checklist
+        checklist.dateUpdated = DateTime.now().toUtc();
         Checklist updatedChecklist = _checklistFactory.fromJson(jsonDecode(
             await _checklistDataConnectionService.post(
                 API_ChecklistPath, checklist)));
@@ -396,6 +398,7 @@ class ChangeManager {
       }
       try {
         //update checklist day
+        checklistDay.dateUpdated = DateTime.now().toUtc();
         ChecklistDay updatedChecklistDay = _checklistDayFactory.fromJson(
             jsonDecode(await _checklistDayDataConnectionService.post(
                 API_ChecklistDayPath, checklistDay)));
@@ -566,6 +569,7 @@ class ChangeManager {
 
         try {
           //update Item
+          item.dateUpdated = DateTime.now().toUtc();
           Item updatedItem = _itemFactory.fromJson(jsonDecode(
               await _itemDataConnectionService.post(API_ItemPath, item)));
 
