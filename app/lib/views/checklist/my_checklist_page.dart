@@ -11,7 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MyChecklistPage extends StatefulWidget {
-  const MyChecklistPage({super.key});
+  const MyChecklistPage({
+    super.key,
+    required this.worksiteName,
+  });
+
+  final String worksiteName;
 
   @override
   State<MyChecklistPage> createState() => _MyChecklistPageState();
@@ -29,7 +34,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     serverFuture = Provider.of<MyAppState>(
       context,
       listen: false,
-    ).loadEverything();
+    ).loadEverything(
+      widget.worksiteName,
+    );
     _exportWorksiteFunc = Provider.of<MyAppState>(
       context,
       listen: false,
