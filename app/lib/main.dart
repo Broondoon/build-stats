@@ -34,7 +34,7 @@ import 'package:shared/entity.dart';
 // import 'package:build_stats_flutter/views/scratch.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   // await initLocalStorage();
   // await initTestStorage();
 
