@@ -10,3 +10,5 @@ shared/pubspec.lock
 **/.git
 **/build
 **/Dockerfile
+
+**/build_complete
