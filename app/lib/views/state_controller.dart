@@ -32,6 +32,8 @@ class MyAppState extends ChangeNotifier {
   bool localDataLoaded = false; //just a quick flag to ensure we only load Local Data Once.
   // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
+  final bool OFFLINE = true;
+
   // This is a micro getter function???
   // DateTime get padeDay => _pageDay; 
 

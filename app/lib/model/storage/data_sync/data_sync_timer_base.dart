@@ -21,8 +21,21 @@ class DataSyncTimerBase implements DataSyncTimerInterface{
   Timer dataSyncFunction(){
    return Timer.periodic(Duration(seconds: DataSyncTimerDurationSeconds), (timer) async {
     User user = Injector.appInstance.get<MyAppState>(dependencyName: AppStateDependancyName).currUser;
-    await Injector.appInstance.get<DataSync>().checkCacheSync(user);
-  });
+
+      try {
+        await Injector.appInstance.get<DataSync>().checkCacheSync(user);
+      } catch (e) {
+        if (Injector.appInstance.get<MyAppState>(dependencyName: AppStateDependancyName).OFFLINE) {
+          // Now... what do we do here?
+          // If we catch, basically checkCacheSync() doesn't complete.
+          // Which means we won't be getting an updated user from the funct.
+          // But... it's not as if this original code was using it. No harm no foul?
+        }
+        else {
+          rethrow;
+        }
+      }
+    });
   }
 
   @override

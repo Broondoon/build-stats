@@ -43,7 +43,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
     _overlayEntry = OverlayEntry(
       builder: (context) => BaseOverlay.comment(
-        closefunct: () {}, // _removeOverlay, //TODO: This is bad
+        closefunct: () {}, // TODO: Remove this parameter from BaseOverlay.comment
         overlayRef: _overlayEntry!,
         comments: comments,
       ),
@@ -72,7 +72,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Text('Waiting...')
+            body: Center(child: Text('Loading...'))
           );
         } else if (snapshot.hasError) {
           return Scaffold (
