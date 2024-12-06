@@ -40,6 +40,11 @@ start_app_instances:
 	@cd  ${APP_PATH} && start build_stats_flutter.exe
 
 demo: 
+    @echo "Starting demo"
+    @$(MAKE) start_app_instances
+    @$(MAKE) start_server
+
+full_demo: 
 ifeq ($(wildcard $(SERVER_BUILD_FLAG)),)
 	@$(MAKE) build_server
 endif

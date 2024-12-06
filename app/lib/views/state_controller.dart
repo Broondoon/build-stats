@@ -32,6 +32,8 @@ class MyAppState extends ChangeNotifier {
   bool dataSyncing = false; //just a quick flag to ensure we only start the data sync once.
   bool localDataLoaded = false; //just a quick flag to ensure we only load Local Data Once.
 
+  final bool OFFLINE = false;
+  
   Future<void> loadEverything(String worksiteName) async {
     // If we haven't started data syncing yet, start it now. Load Everything might be called after this again, so ensure we only do this once.
     if(!dataSyncing){
