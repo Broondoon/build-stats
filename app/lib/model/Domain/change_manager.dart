@@ -127,6 +127,7 @@ class ChangeManager {
     } else if (worksite.getChecksum() !=
         (await _worksiteCache.getById(worksite.id))!.getChecksum()) {
       try {
+        worksite.dateUpdated = DateTime.now().toUtc();
         worksite = await _worksiteCache.store(
             worksite.id,
             _worksiteFactory.fromJson(jsonDecode(
@@ -261,6 +262,7 @@ class ChangeManager {
     } else if (checklist.getChecksum() !=
         (await _checklistCache.getById(checklist.id))!.getChecksum()) {
       try {
+        checklist.dateUpdated = DateTime.now().toUtc();
         checklist = await _checklistCache.store(
             checklist.id,
             _checklistFactory.fromJson(jsonDecode(
@@ -444,6 +446,7 @@ class ChangeManager {
     } else if (checklistDay.getChecksum() !=
         (await _checklistDayCache.getById(checklistDay.id))!.getChecksum()) {
       try {
+        checklistDay.dateUpdated = DateTime.now().toUtc();
         checklistDay = await _checklistDayCache.store(
             checklistDay.id,
             _checklistDayFactory.fromJson(jsonDecode(
@@ -594,6 +597,7 @@ class ChangeManager {
     } else if (item.getChecksum() !=
         (await _itemCache.getById(item.id))!.getChecksum()) {
       try {
+        item.dateUpdated = DateTime.now().toUtc();
         item = await _itemCache.store(
             item.id,
             _itemFactory.fromJson(jsonDecode(
