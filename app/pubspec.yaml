@@ -44,6 +44,9 @@ dependencies:
   http: ^1.2.2
   injector: ^4.0.0
   to_csv: ^4.0.4
+  csv: ^5.1.1
+  external_path: ^2.0.1
+  path_provider: ^2.1.5
     
  
 dev_dependencies:

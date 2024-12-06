@@ -311,6 +311,7 @@ Future<void> main() async {
   injector.get<ItemCache>().store(itemTest6.id, itemTest7);
   injector.get<ItemCache>().store(itemTest7.id, itemTest6);
 
+  print(File(Platform.script.toFilePath()).parent.path);
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
   final port = int.parse(Platform.environment['PORT'] ?? Server_Port);
@@ -340,7 +341,7 @@ Future<void> main() async {
 
 // Serve files from the file system.
 final _staticHandler =
-    shelf_static.createStaticHandler('public', defaultDocument: 'index.html');
+    shelf_static.createStaticHandler('${File(Platform.script.toFilePath()).parent.parent.path}\\public', defaultDocument: 'index.html');
 
 // Router instance to handler requests.
 final _router = shelf_router.Router()

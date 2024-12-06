@@ -43,9 +43,9 @@ class WorksiteItem extends StatelessWidget {
         Navigator.push(
           context, MaterialPageRoute(
             builder: (context) {
-              // TODO: GET SELECTED CHECKLIST INFO
-              // AND PASS IT TO THE CHECKLIST PAGE?
-              return const MyChecklistPage();
+              return MyChecklistPage(
+                worksiteName: workname
+              );
             },
           ),
         );
@@ -56,7 +56,6 @@ class WorksiteItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // TODO: READ FROM WORKSITE
             Text(
               workname,
               style: MyAppStyle.largeFont,

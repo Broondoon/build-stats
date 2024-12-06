@@ -90,7 +90,14 @@ class MyLandingPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return const MyChecklistPage();
+                            // Ah, no, this is a very real issue with my ductape solution.
+                            // If we stick with the concept that a foreman is already
+                            // registered for their one specific worksite, then
+                            // we would instead load from... idk storage or some
+                            // environment variable here.
+                            return const MyChecklistPage(
+                              worksiteName: '',
+                            );
                           }));
                         },
                         child: const Text(
