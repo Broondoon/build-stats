@@ -239,19 +239,19 @@ Future<void> main() async {
 
   checklistDayTest.addItemId('Labour', itemTest7.id);
 
-  Item itemTest2 = Item(
-      id: ID_ItemPrefix + "2",
-      checklistDayId: ID_ChecklistDayPrefix + "1",
-      unitId: ID_UnitPrefix + "units",
-      desc: "Ceiling Panels (avg 14/day)",
-      result: '',
-      comment: 'test',
-      creatorId: ID_UserPrefix + "1",
-      verified: true,
-      dateCreated: DateTime.now().toUtc(),
-      dateUpdated: DateTime.now().toUtc());
+  // Item itemTest2 = Item(
+  //     id: ID_ItemPrefix + "2",
+  //     checklistDayId: ID_ChecklistDayPrefix + "1",
+  //     unitId: ID_UnitPrefix + "units",
+  //     desc: "Ceiling Panels (avg 14/day)",
+  //     result: '',
+  //     comment: 'test',
+  //     creatorId: ID_UserPrefix + "1",
+  //     verified: true,
+  //     dateCreated: DateTime.now().toUtc(),
+  //     dateUpdated: DateTime.now().toUtc());
 
-  checklistDayTest.addItemId('Labour', itemTest2.id);
+  // checklistDayTest.addItemId('Labour', itemTest2.id);
 
   Item itemTest3 = Item(
       id: ID_ItemPrefix + "3",
@@ -304,7 +304,7 @@ Future<void> main() async {
       .get<ChecklistDayCache>()
       .store(checklistDayTest.id, checklistDayTest);
   injector.get<ItemCache>().store(itemTest.id, itemTest);
-  injector.get<ItemCache>().store(itemTest2.id, itemTest2);
+  // injector.get<ItemCache>().store(itemTest2.id, itemTest2);
   injector.get<ItemCache>().store(itemTest3.id, itemTest3);
   injector.get<ItemCache>().store(itemTest4.id, itemTest4);
   injector.get<ItemCache>().store(itemTest5.id, itemTest5);
