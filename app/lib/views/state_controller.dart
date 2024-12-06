@@ -22,6 +22,7 @@ class MyAppState extends ChangeNotifier {
 
   ChangeManager changeManager = Injector.appInstance.get<ChangeManager>();
   Worksite? currWorksite;
+  String? currWorksiteName;
   Checklist? currChecklist;
   ChecklistDay? currChecklistDay;
   List<String>? currItemsIdsByCat = [];
@@ -30,12 +31,8 @@ class MyAppState extends ChangeNotifier {
   late HashMap<String, String> units = HashMap<String, String>();
   bool dataSyncing = false; //just a quick flag to ensure we only start the data sync once.
   bool localDataLoaded = false; //just a quick flag to ensure we only load Local Data Once.
-  // OverlayEntry? _overlayEntry; //TODO: is this needed?
 
-  // This is a micro getter function???
-  // DateTime get padeDay => _pageDay; 
-
-  Future<void> loadEverything() async {
+  Future<void> loadEverything(String worksiteName) async {
     // If we haven't started data syncing yet, start it now. Load Everything might be called after this again, so ensure we only do this once.
     if(!dataSyncing){
       Injector.appInstance.get<DataSync>().startDataSyncTimer();// Start the data sync timer so we can keep the app synced to the Server.
@@ -53,14 +50,30 @@ class MyAppState extends ChangeNotifier {
 
     List<Worksite> userWorksites = await changeManager.getUserWorksites(currUser) ?? [];
 
-    if (userWorksites.isEmpty) {
+    // This is a tad bit spaghetti, though I don't have time to fix it.
+    // It's arising from difficulty with refreshing a current worksite
+    // Probably not needed if we can prove that loadItemsFromCat() can NEVER be called
+    // without currWorksite existing.
+    if (userWorksites.isEmpty || worksiteName.isEmpty) {
       currWorksite = await changeManager.createWorksite(currUser);
     }
     else {
-      // TODO: actually load the right one
-      // But for now, just load the first one
-      currWorksite = userWorksites.first;
+      bool foundIt = false;
+
+      for (Worksite worksite in userWorksites) {
+        if (worksite.name == worksiteName) {
+          currWorksite = worksite;
+          foundIt = true;
+        }
+      }
+
+      if (foundIt == false) {
+        print('>>> SOMETHING WRONG; COULD NOT MATCH NAME TO WORKSITES IN LIST');
+        currWorksite = userWorksites.first;
+      }
     }
+
+    currWorksiteName = currWorksite!.name;
 
     List<String> checklistIds = currWorksite!.checklistIds ?? [];
 
@@ -77,10 +90,11 @@ class MyAppState extends ChangeNotifier {
   }
 
   Future<List<String>> loadItemsFromCat(String catName) async {
-    // currItemsIdsByCat = await changeManager.get
 
     // TODO: see if this is totally catastrophic
-    await loadEverything();
+    await loadEverything(
+      currWorksiteName ?? ''
+    );
 
     return changeManager.getChecklistDayCategoryItems(currChecklistDay!, catName);
   }
@@ -171,7 +185,9 @@ class MyAppState extends ChangeNotifier {
   }
 
   Future<void> flicker() async {
-    await loadEverything();
+    await loadEverything(
+      currWorksiteName ?? ''
+    );
   }
 
   //Units are a bit of a pain, as they arn't gathered like everything else, meaning that the caches can't actually detect if they're out of date unless it's done during data sync. 
