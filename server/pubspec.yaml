@@ -12,6 +12,7 @@ dependencies:
     path: ../shared
   mutex: ^3.1.0
   injector: ^4.0.0
+  shelf_cors_headers: ^0.1.5
 
 dev_dependencies:
   http: ^1.2.2
