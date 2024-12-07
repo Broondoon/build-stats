@@ -3,6 +3,8 @@ import 'package:shared/entity.dart';
 
 //For now, not implementing local file storage for web.
 class JsonFileAccess<T extends Entity> implements FileIOService<T> {
+  final EntityFactory<T> _parser;
+  JsonFileAccess(this._parser);
   @override
   Future<bool> deleteDataFile(String path) async => true;
 

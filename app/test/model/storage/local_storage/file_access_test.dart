@@ -1,7 +1,8 @@
 // json_file_access_test.dart
 
 import 'dart:convert';
-import 'dart:io';
+//import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'package:build_stats_flutter/model/storage/local_storage/file_access.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
