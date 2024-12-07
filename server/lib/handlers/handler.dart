@@ -22,6 +22,8 @@ class RequestHandler<T extends Entity> implements HandlerInterface<T> {
   final jsonHeaders = {
     'content-type': 'application/json',
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type',
   };
 
   @override

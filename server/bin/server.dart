@@ -346,6 +346,12 @@ final _staticHandler =
 
 // Router instance to handler requests.
 final _router = shelf_router.Router()
+..options('/<ignored|.*>', (Request request) => Response.ok('',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Origin, Content-Type',
+        }))
   ..post(
       API_DataSync, Injector.appInstance.get<DataSync>().handleCheckCacheSync)
   ..get(API_Worksite + '/<id>',

@@ -20,6 +20,9 @@ class DataSync {
 
   final jsonHeaders = {
     'content-type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type',
   };
 
   Future<Response> handleCheckCacheSync(Request request) async {
