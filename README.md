@@ -18,10 +18,9 @@ Requirements:
 
 Follow [these instructions](https://docs.flutter.dev/get-started/install) to download and install the Flutter SDK, and follow the `flutter doctor` to ensure your environment has everything it needs.
 
-1. Download and install the .exe from the GitHub releases section of this repo.
-2. Clone this repo onto your local machine.
-3. In the command line, run `make demo` from the root folder of the project to build and start running the server.
-4. Open the .exe to start running the app.
+1. Clone this repo onto your local machine.
+2. In the command line, run `make full_demo` from the root folder of the project to build and start running the server.
+3. Open the .exe to start running the app.
 
 ---
 
