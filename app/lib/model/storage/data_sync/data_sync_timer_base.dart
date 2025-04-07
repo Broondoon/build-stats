@@ -31,9 +31,10 @@ class DataSyncTimerBase implements DataSyncTimerInterface{
           // Which means we won't be getting an updated user from the funct.
           // But... it's not as if this original code was using it. No harm no foul?
         }
-        else {
-          rethrow;
-        }
+        // Removing this else branch so that the demo doesn't crash.
+        // else {
+        //   rethrow;
+        // }
       }
     });
   }
